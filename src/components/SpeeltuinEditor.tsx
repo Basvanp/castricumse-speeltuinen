@@ -42,6 +42,7 @@ const SpeeltuinEditor = () => {
 
   const [dragOver, setDragOver] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [gpsFromPhoto, setGpsFromPhoto] = useState(false);
   const { mutate: createSpeeltuin, isPending } = useCreateSpeeltuin();
   const { toast } = useToast();
 
@@ -96,6 +97,7 @@ const SpeeltuinEditor = () => {
 
   const handleFileUpload = useCallback(async (file: File) => {
     setUploading(true);
+    setGpsFromPhoto(false);
     
     // Enhanced file validation
     const maxSizeInMB = 5;
@@ -162,6 +164,7 @@ const SpeeltuinEditor = () => {
           latitude,
           longitude,
         }));
+        setGpsFromPhoto(true);
         toast({
           title: "GPS-locatie gevonden!",
           description: `Coördinaten automatisch ingesteld: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
@@ -302,6 +305,7 @@ const SpeeltuinEditor = () => {
           heeft_schaduw: false,
           is_rolstoeltoegankelijk: false,
         });
+        setGpsFromPhoto(false);
       },
       onError: (error) => {
         toast({
@@ -361,26 +365,38 @@ const SpeeltuinEditor = () => {
             required
           />
         </div>
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <Label htmlFor="latitude">Latitude</Label>
-            <Input
-              id="latitude"
-              type="number"
-              step="any"
-              value={formData.latitude || ''}
-              onChange={(e) => setFormData(prev => ({ ...prev, latitude: parseFloat(e.target.value) || 0 }))}
-            />
-          </div>
-          <div>
-            <Label htmlFor="longitude">Longitude</Label>
-            <Input
-              id="longitude"
-              type="number"
-              step="any"
-              value={formData.longitude || ''}
-              onChange={(e) => setFormData(prev => ({ ...prev, longitude: parseFloat(e.target.value) || 0 }))}
-            />
+        <div className="space-y-2">
+          {gpsFromPhoto && (
+            <div className="flex items-center gap-2 text-sm text-green-600">
+              <CheckCircle className="h-4 w-4" />
+              <span>GPS uit foto</span>
+            </div>
+          )}
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label htmlFor="latitude">Latitude</Label>
+              <Input
+                id="latitude"
+                type="number"
+                step="any"
+                value={formData.latitude || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, latitude: parseFloat(e.target.value) || 0 }))}
+                disabled={gpsFromPhoto}
+                className={gpsFromPhoto ? "bg-muted text-muted-foreground" : ""}
+              />
+            </div>
+            <div>
+              <Label htmlFor="longitude">Longitude</Label>
+              <Input
+                id="longitude"
+                type="number"
+                step="any"
+                value={formData.longitude || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, longitude: parseFloat(e.target.value) || 0 }))}
+                disabled={gpsFromPhoto}
+                className={gpsFromPhoto ? "bg-muted text-muted-foreground" : ""}
+              />
+            </div>
           </div>
         </div>
       </div>
