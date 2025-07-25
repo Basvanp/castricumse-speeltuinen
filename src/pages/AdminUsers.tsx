@@ -64,22 +64,22 @@ const AdminUsers = () => {
     fetchUsers();
   }, []);
 
-  // Invite new user
+  // Invite new user - secure implementation
   const handleInviteUser = async () => {
     try {
-      const { error: signUpError } = await supabase.auth.signUp({
-        email: inviteEmail,
-        password: 'TempPassword123!', // User will need to reset
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth`
-        }
+      // Use the secure invitation function instead of direct signup
+      const { data, error } = await supabase.rpc('invite_user_secure', {
+        user_email: inviteEmail,
+        user_role: inviteRole
       });
 
-      if (signUpError) throw signUpError;
+      if (error) throw error;
 
+      // For now, inform admin that invitation system needs email integration
       toast({
-        title: "Uitnodiging verstuurd",
-        description: `Uitnodiging verstuurd naar ${inviteEmail}`,
+        title: "Uitnodiging functie",
+        description: "Uitnodiging systeem vereist email integratie. Gebruiker moet handmatig worden aangemaakt via Supabase dashboard.",
+        variant: "default"
       });
 
       setInviteEmail('');
@@ -89,7 +89,7 @@ const AdminUsers = () => {
     } catch (error: any) {
       toast({
         title: "Fout",
-        description: error.message || "Kon uitnodiging niet versturen",
+        description: error.message || "Kon uitnodiging niet verwerken",
         variant: "destructive"
       });
     }

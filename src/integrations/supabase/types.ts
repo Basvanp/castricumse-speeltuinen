@@ -192,6 +192,13 @@ export type Database = {
         }
         Returns: boolean
       }
+      invite_user_secure: {
+        Args: {
+          user_email: string
+          user_role?: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: Json
+      }
     }
     Enums: {
       app_role: "admin" | "user"
