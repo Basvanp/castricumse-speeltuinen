@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          session_id: string | null
+          speeltuin_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          session_id?: string | null
+          speeltuin_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          session_id?: string | null
+          speeltuin_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_events_speeltuin_id_fkey"
+            columns: ["speeltuin_id"]
+            isOneToOne: false
+            referencedRelation: "speeltuinen"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       speeltuinen: {
         Row: {
           afbeelding_url: string | null
@@ -127,7 +162,23 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      daily_stats: {
+        Row: {
+          date: string | null
+          filter_uses: number | null
+          page_views: number | null
+          speeltuin_views: number | null
+          unique_visitors: number | null
+        }
+        Relationships: []
+      }
+      popular_speeltuinen: {
+        Row: {
+          naam: string | null
+          view_count: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_user_role: {

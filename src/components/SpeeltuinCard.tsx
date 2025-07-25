@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ExternalLink, Copy } from 'lucide-react';
 import { Speeltuin } from '@/types/speeltuin';
 import { useToast } from '@/hooks/use-toast';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 interface SpeeltuinCardProps {
   speeltuin: Speeltuin;
@@ -12,6 +13,12 @@ interface SpeeltuinCardProps {
 
 const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin }) => {
   const { toast } = useToast();
+  const { trackEvent } = useAnalytics();
+
+  // Track speeltuin view when card is rendered
+  useEffect(() => {
+    trackEvent('speeltuin_view', speeltuin.id);
+  }, [trackEvent, speeltuin.id]);
 
   const copyToClipboard = () => {
     if (speeltuin.fixi_copy_tekst) {

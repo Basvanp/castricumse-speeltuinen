@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { useAnalytics } from '@/hooks/useAnalytics';
 import { SpeeltuinFilters as FiltersType } from '@/types/speeltuin';
 
 interface SpeeltuinFiltersProps {
@@ -10,6 +11,8 @@ interface SpeeltuinFiltersProps {
 }
 
 const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({ filters, onFiltersChange }) => {
+  const { trackEvent } = useAnalytics();
+
   const updateFilter = (
     category: keyof FiltersType,
     key: string,
@@ -22,6 +25,11 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({ filters, onFiltersC
         [key]: value,
       },
     });
+    
+    // Track filter usage
+    if (value) {
+      trackEvent('filter_used', undefined, { filter_category: category, filter_key: key });
+    }
   };
 
   return (

@@ -1,9 +1,38 @@
 import React from 'react';
 import AdminLayout from '@/components/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BarChart3, Users, Eye, TrendingUp } from 'lucide-react';
+import { BarChart3, Users, Eye, TrendingUp, Loader2 } from 'lucide-react';
+import { useAnalyticsStats } from '@/hooks/useAnalyticsStats';
 
 const AdminStats = () => {
+  const { data: stats, isLoading, error } = useAnalyticsStats();
+
+  if (isLoading) {
+    return (
+      <AdminLayout 
+        title="Statistieken" 
+        description="Analytics en gebruiksstatistieken van de speeltuinen website"
+      >
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      </AdminLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <AdminLayout 
+        title="Statistieken" 
+        description="Analytics en gebruiksstatistieken van de speeltuinen website"
+      >
+        <div className="text-center text-muted-foreground">
+          Fout bij het laden van statistieken
+        </div>
+      </AdminLayout>
+    );
+  }
+
   return (
     <AdminLayout 
       title="Statistieken" 
@@ -18,8 +47,8 @@ const AdminStats = () => {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">2,847</div>
-              <p className="text-xs text-muted-foreground">+12% van vorige maand</p>
+              <div className="text-2xl font-bold">{stats?.totalVisitors.toLocaleString() || 0}</div>
+              <p className="text-xs text-muted-foreground">Afgelopen 30 dagen</p>
             </CardContent>
           </Card>
           <Card>
@@ -28,8 +57,8 @@ const AdminStats = () => {
               <Eye className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">8,436</div>
-              <p className="text-xs text-muted-foreground">+5% van vorige week</p>
+              <div className="text-2xl font-bold">{stats?.speeltuinViews.toLocaleString() || 0}</div>
+              <p className="text-xs text-muted-foreground">Afgelopen 30 dagen</p>
             </CardContent>
           </Card>
           <Card>
@@ -38,8 +67,8 @@ const AdminStats = () => {
               <BarChart3 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">Leeftijd 6-12</div>
-              <p className="text-xs text-muted-foreground">47% van alle searches</p>
+              <div className="text-2xl font-bold">{stats?.popularFilter || 'N/A'}</div>
+              <p className="text-xs text-muted-foreground">Meest gebruikt filter</p>
             </CardContent>
           </Card>
           <Card>
@@ -48,8 +77,8 @@ const AdminStats = () => {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">3m 42s</div>
-              <p className="text-xs text-muted-foreground">+8s van vorige maand</p>
+              <div className="text-2xl font-bold">{stats?.avgSessionTime || 'N/A'}</div>
+              <p className="text-xs text-muted-foreground">Gemiddelde bezoektijd</p>
             </CardContent>
           </Card>
         </div>
@@ -62,18 +91,16 @@ const AdminStats = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Speeltuin Bakkum</span>
-                  <span className="text-sm font-medium">847 views</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Speeltuin Centrum</span>
-                  <span className="text-sm font-medium">612 views</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Speeltuin De Woude</span>
-                  <span className="text-sm font-medium">435 views</span>
-                </div>
+                {stats?.popularSpeeltuinen && stats.popularSpeeltuinen.length > 0 ? (
+                  stats.popularSpeeltuinen.map((speeltuin, index) => (
+                    <div key={index} className="flex items-center justify-between">
+                      <span className="text-sm">{speeltuin.naam}</span>
+                      <span className="text-sm font-medium">{speeltuin.view_count} views</span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground">Nog geen data beschikbaar</p>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -84,28 +111,22 @@ const AdminStats = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Mobiel</span>
-                  <span className="text-sm font-medium">68%</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Desktop</span>
-                  <span className="text-sm font-medium">28%</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Tablet</span>
-                  <span className="text-sm font-medium">4%</span>
-                </div>
+                {stats?.deviceStats.map((device, index) => (
+                  <div key={index} className="flex items-center justify-between">
+                    <span className="text-sm">{device.device}</span>
+                    <span className="text-sm font-medium">{device.percentage}%</span>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Note about future implementation */}
+        {/* Real-time note */}
         <Card>
           <CardContent className="pt-6">
             <p className="text-sm text-muted-foreground text-center">
-              Uitgebreide analytics dashboard wordt binnenkort geïmplementeerd met real-time data uit de database.
+              📊 Real-time analytics geïmplementeerd! Data wordt automatisch bijgewerkt elke 5 minuten.
             </p>
           </CardContent>
         </Card>

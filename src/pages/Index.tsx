@@ -1,5 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useSpeeltuinen } from '@/hooks/useSpeeltuinen';
+import { useAnalytics } from '@/hooks/useAnalytics';
 import { Speeltuin, SpeeltuinFilters } from '@/types/speeltuin';
 import SpeeltuinKaart from '@/components/SpeeltuinKaart';
 import SpeeltuinCard from '@/components/SpeeltuinCard';
@@ -10,6 +11,7 @@ import { Settings, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Index = () => {
   const { data: speeltuinen = [], isLoading, error } = useSpeeltuinen();
+  const { trackEvent } = useAnalytics();
   const [selectedSpeeltuin, setSelectedSpeeltuin] = useState<Speeltuin | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [filters, setFilters] = useState<SpeeltuinFilters>({
@@ -38,6 +40,11 @@ const Index = () => {
       rolstoeltoegankelijk: false,
     },
   });
+
+  // Track page view on mount
+  useEffect(() => {
+    trackEvent('page_view');
+  }, [trackEvent]);
 
   const filteredSpeeltuinen = useMemo(() => {
     return speeltuinen.filter((speeltuin) => {
