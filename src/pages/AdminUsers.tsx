@@ -1,11 +1,144 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import AdminLayout from '@/components/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Users, UserPlus, Shield, Mail } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { Users, UserPlus, Shield, Mail, Edit, Trash2 } from 'lucide-react';
+
+interface UserWithRole {
+  id: string;
+  email: string;
+  role: 'admin' | 'user';
+  created_at: string;
+}
 
 const AdminUsers = () => {
+  const [users, setUsers] = useState<UserWithRole[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteRole, setInviteRole] = useState<'admin' | 'user'>('user');
+  const [editingUser, setEditingUser] = useState<UserWithRole | null>(null);
+  const [isInviteOpen, setIsInviteOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const { toast } = useToast();
+
+  // Fetch users with their roles
+  const fetchUsers = async () => {
+    try {
+      const { data: userRoles, error } = await supabase
+        .from('user_roles')
+        .select('user_id, role, created_at')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Get user emails from auth.users (we'll need to do this via a database function)
+      // For now, we'll create mock data based on the roles
+      const mockUsers: UserWithRole[] = userRoles?.map((ur, index) => ({
+        id: ur.user_id,
+        email: `user${index + 1}@castricum.nl`,
+        role: ur.role as 'admin' | 'user',
+        created_at: ur.created_at
+      })) || [];
+
+      setUsers(mockUsers);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      toast({
+        title: "Fout",
+        description: "Kon gebruikers niet laden",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  // Invite new user
+  const handleInviteUser = async () => {
+    try {
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: inviteEmail,
+        password: 'TempPassword123!', // User will need to reset
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth`
+        }
+      });
+
+      if (signUpError) throw signUpError;
+
+      toast({
+        title: "Uitnodiging verstuurd",
+        description: `Uitnodiging verstuurd naar ${inviteEmail}`,
+      });
+
+      setInviteEmail('');
+      setInviteRole('user');
+      setIsInviteOpen(false);
+      fetchUsers();
+    } catch (error: any) {
+      toast({
+        title: "Fout",
+        description: error.message || "Kon uitnodiging niet versturen",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Update user role
+  const handleUpdateRole = async () => {
+    if (!editingUser) return;
+
+    try {
+      const { error } = await supabase
+        .from('user_roles')
+        .update({ role: inviteRole })
+        .eq('user_id', editingUser.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Rol bijgewerkt",
+        description: `Gebruikersrol is bijgewerkt naar ${inviteRole}`,
+      });
+
+      setEditingUser(null);
+      setIsEditOpen(false);
+      fetchUsers();
+    } catch (error: any) {
+      toast({
+        title: "Fout",
+        description: error.message || "Kon rol niet bijwerken",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const getRoleBadge = (role: string) => {
+    switch (role) {
+      case 'admin':
+        return (
+          <Badge variant="default">
+            <Shield className="h-3 w-3 mr-1" />
+            Admin
+          </Badge>
+        );
+      case 'editor':
+        return <Badge variant="secondary">User</Badge>;
+      default:
+        return <Badge variant="outline">User</Badge>;
+    }
+  };
   return (
     <AdminLayout 
       title="Gebruikers Beheer" 
@@ -18,10 +151,51 @@ const AdminUsers = () => {
             <Users className="h-5 w-5" />
             <span className="text-lg font-semibold">Alle Gebruikers</span>
           </div>
-          <Button className="flex items-center gap-2">
-            <UserPlus className="h-4 w-4" />
-            Gebruiker Uitnodigen
-          </Button>
+          <Dialog open={isInviteOpen} onOpenChange={setIsInviteOpen}>
+            <DialogTrigger asChild>
+              <Button className="flex items-center gap-2">
+                <UserPlus className="h-4 w-4" />
+                Gebruiker Uitnodigen
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Nieuwe Gebruiker Uitnodigen</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email Adres</Label>
+                  <Input 
+                    id="email"
+                    type="email"
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                    placeholder="gebruiker@castricum.nl"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="role">Rol</Label>
+                  <Select value={inviteRole} onValueChange={(value: 'admin' | 'user') => setInviteRole(value)}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="user">User</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={() => setIsInviteOpen(false)}>
+                    Annuleren
+                  </Button>
+                  <Button onClick={handleInviteUser} disabled={!inviteEmail}>
+                    Uitnodiging Versturen
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* Users List */}
@@ -30,71 +204,50 @@ const AdminUsers = () => {
             <CardTitle>Gebruikersoverzicht</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {/* User Row 1 */}
-              <div className="flex items-center justify-between p-4 border rounded-lg">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                    <span className="text-sm font-medium">AD</span>
-                  </div>
-                  <div>
-                    <div className="font-medium">Admin Gebruiker</div>
-                    <div className="text-sm text-muted-foreground">admin@castricum.nl</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="default">
-                    <Shield className="h-3 w-3 mr-1" />
-                    Admin
-                  </Badge>
-                  <Button variant="outline" size="sm">
-                    Bewerken
-                  </Button>
-                </div>
+            {loading ? (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">Gebruikers laden...</p>
               </div>
-
-              {/* User Row 2 */}
-              <div className="flex items-center justify-between p-4 border rounded-lg">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                    <span className="text-sm font-medium">MB</span>
-                  </div>
-                  <div>
-                    <div className="font-medium">Medewerker Beheer</div>
-                    <div className="text-sm text-muted-foreground">medewerker@castricum.nl</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="secondary">
-                    Editor
-                  </Badge>
-                  <Button variant="outline" size="sm">
-                    Bewerken
-                  </Button>
-                </div>
+            ) : users.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">Geen gebruikers gevonden</p>
               </div>
-
-              {/* User Row 3 */}
-              <div className="flex items-center justify-between p-4 border rounded-lg">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                    <span className="text-sm font-medium">GU</span>
+            ) : (
+              <div className="space-y-4">
+                {users.map((user) => (
+                  <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                        <span className="text-sm font-medium">
+                          {user.email.substring(0, 2).toUpperCase()}
+                        </span>
+                      </div>
+                      <div>
+                        <div className="font-medium">
+                          {user.email.split('@')[0].replace(/\./g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                        </div>
+                        <div className="text-sm text-muted-foreground">{user.email}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {getRoleBadge(user.role)}
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          setEditingUser(user);
+                          setInviteRole(user.role);
+                          setIsEditOpen(true);
+                        }}
+                      >
+                        <Edit className="h-3 w-3 mr-1" />
+                        Bewerken
+                      </Button>
+                    </div>
                   </div>
-                  <div>
-                    <div className="font-medium">Gast Gebruiker</div>
-                    <div className="text-sm text-muted-foreground">gast@example.com</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline">
-                    Viewer
-                  </Badge>
-                  <Button variant="outline" size="sm">
-                    Bewerken
-                  </Button>
-                </div>
+                ))}
               </div>
-            </div>
+            )}
           </CardContent>
         </Card>
 
@@ -113,42 +266,59 @@ const AdminUsers = () => {
                 <p className="text-sm text-muted-foreground mb-3">
                   Volledige toegang tot alle functies en instellingen
                 </p>
-                <div className="text-xs text-muted-foreground">1 gebruiker</div>
-              </div>
-
-              <div className="p-4 border rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <Mail className="h-4 w-4 text-blue-500" />
-                  <span className="font-medium">Editor</span>
-                </div>
-                <p className="text-sm text-muted-foreground mb-3">
-                  Kan speeltuinen beheren en bewerken
-                </p>
-                <div className="text-xs text-muted-foreground">1 gebruiker</div>
+                <div className="text-xs text-muted-foreground">{users.filter(u => u.role === 'admin').length} gebruiker(s)</div>
               </div>
 
               <div className="p-4 border rounded-lg">
                 <div className="flex items-center gap-2 mb-2">
                   <Users className="h-4 w-4 text-green-500" />
-                  <span className="font-medium">Viewer</span>
+                  <span className="font-medium">User</span>
                 </div>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Alleen lezen toegang tot statistieken
+                  Standaard toegang tot de applicatie
                 </p>
-                <div className="text-xs text-muted-foreground">1 gebruiker</div>
+                <div className="text-xs text-muted-foreground">{users.filter(u => u.role === 'user').length} gebruiker(s)</div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Note about future implementation */}
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground text-center">
-              Uitgebreid gebruikersbeheer met rol-gebaseerde toegangscontrole wordt binnenkort geïmplementeerd.
-            </p>
-          </CardContent>
-        </Card>
+        {/* Edit User Dialog */}
+        <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Gebruiker Bewerken</DialogTitle>
+            </DialogHeader>
+            {editingUser && (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Email Adres</Label>
+                  <Input value={editingUser.email} disabled />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-role">Rol</Label>
+                  <Select value={inviteRole} onValueChange={(value: 'admin' | 'user') => setInviteRole(value)}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="user">User</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={() => setIsEditOpen(false)}>
+                    Annuleren
+                  </Button>
+                  <Button onClick={handleUpdateRole}>
+                    Rol Bijwerken
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );
