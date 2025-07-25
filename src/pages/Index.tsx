@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useSpeeltuinen } from '@/hooks/useSpeeltuinen';
 import { Speeltuin, SpeeltuinFilters } from '@/types/speeltuin';
-import SpeeltuinKaart from '@/components/SpeeltuinKaart';
+// import SpeeltuinKaart from '@/components/SpeeltuinKaart';
 import SpeeltuinCard from '@/components/SpeeltuinCard';
 import SpeeltuinFiltersComponent from '@/components/SpeeltuinFilters';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import { Settings } from 'lucide-react';
 const Index = () => {
   console.log('Index component rendering...');
   const { data: speeltuinen = [], isLoading, error } = useSpeeltuinen();
+  console.log('Speeltuinen data:', speeltuinen, 'Loading:', isLoading, 'Error:', error);
   const [selectedSpeeltuin, setSelectedSpeeltuin] = useState<Speeltuin | null>(null);
   const [filters, setFilters] = useState<SpeeltuinFilters>({
     leeftijd: {
@@ -137,13 +138,12 @@ const Index = () => {
 
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-8">
-            {/* Map */}
+            {/* Map - Temporarily disabled for debugging */}
             <div>
-              <h2 className="text-xl font-semibold mb-4">Kaart</h2>
-              <SpeeltuinKaart 
-                speeltuinen={filteredSpeeltuinen} 
-                onSpeeltuinSelect={setSelectedSpeeltuin}
-              />
+              <h2 className="text-xl font-semibold mb-4">Kaart (tijdelijk uitgeschakeld)</h2>
+              <div className="h-96 w-full rounded-lg overflow-hidden shadow-lg bg-muted flex items-center justify-center">
+                <p className="text-muted-foreground">Kaart component tijdelijk uitgeschakeld voor debugging</p>
+              </div>
             </div>
 
             {/* Selected Speeltuin */}

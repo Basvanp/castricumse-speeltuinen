@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useNavigate, Link } from 'react-router-dom';
 import { LogOut, Plus, Home, AlertTriangle } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import SpeeltuinEditor from '@/components/SpeeltuinEditor';
 
 const Admin = () => {
