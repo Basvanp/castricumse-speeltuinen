@@ -33,11 +33,20 @@ const Index = () => {
       gras: false,
       rubber: false,
       tegels: false,
+      kunstgras: false,
+    },
+    grootte: {
+      klein: false,
+      middel: false,
+      groot: false,
     },
     overig: {
       omheind: false,
       schaduw: false,
       rolstoeltoegankelijk: false,
+      horeca: false,
+      toilet: false,
+      parkeerplaats: false,
     },
   });
 
@@ -78,16 +87,27 @@ const Index = () => {
         (filters.ondergrond.zand && speeltuin.ondergrond_zand) ||
         (filters.ondergrond.gras && speeltuin.ondergrond_gras) ||
         (filters.ondergrond.rubber && speeltuin.ondergrond_rubber) ||
-        (filters.ondergrond.tegels && speeltuin.ondergrond_tegels);
+        (filters.ondergrond.tegels && speeltuin.ondergrond_tegels) ||
+        (filters.ondergrond.kunstgras && speeltuin.ondergrond_kunstgras);
+
+      // Grootte filter
+      const grootteMatch = 
+        (!Object.values(filters.grootte).some(v => v)) ||
+        (filters.grootte.klein && speeltuin.grootte === 'klein') ||
+        (filters.grootte.middel && speeltuin.grootte === 'middel') ||
+        (filters.grootte.groot && speeltuin.grootte === 'groot');
 
       // Overig filter
       const overigMatch = 
         (!Object.values(filters.overig).some(v => v)) ||
         (filters.overig.omheind && speeltuin.is_omheind) ||
         (filters.overig.schaduw && speeltuin.heeft_schaduw) ||
-        (filters.overig.rolstoeltoegankelijk && speeltuin.is_rolstoeltoegankelijk);
+        (filters.overig.rolstoeltoegankelijk && speeltuin.is_rolstoeltoegankelijk) ||
+        (filters.overig.horeca && speeltuin.heeft_horeca) ||
+        (filters.overig.toilet && speeltuin.heeft_toilet) ||
+        (filters.overig.parkeerplaats && speeltuin.heeft_parkeerplaats);
 
-      return leeftijdMatch && voorzieningenMatch && ondergrondMatch && overigMatch;
+      return leeftijdMatch && voorzieningenMatch && ondergrondMatch && grootteMatch && overigMatch;
     });
   }, [speeltuinen, filters]);
 

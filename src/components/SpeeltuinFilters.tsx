@@ -99,6 +99,33 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({ filters, onFiltersC
         </div>
 
         <div>
+          <h3 className="font-medium mb-3">Grootte</h3>
+          <div className="space-y-2">
+            {Object.entries(filters.grootte).map(([key, value]) => {
+              const labels: { [key: string]: string } = {
+                klein: 'Klein (buurt speeltuintje)',
+                middel: 'Middel',
+                groot: 'Groot (speelpark)',
+              };
+              return (
+                <div key={key} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`grootte-${key}`}
+                    checked={value}
+                    onCheckedChange={(checked) =>
+                      updateFilter('grootte', key, checked as boolean)
+                    }
+                  />
+                  <Label htmlFor={`grootte-${key}`}>
+                    {labels[key] || key}
+                  </Label>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div>
           <h3 className="font-medium mb-3">Overig</h3>
           <div className="space-y-2">
             {Object.entries(filters.overig).map(([key, value]) => {
@@ -106,6 +133,9 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({ filters, onFiltersC
                 omheind: 'Omheind',
                 schaduw: 'Schaduw',
                 rolstoeltoegankelijk: 'Rolstoeltoegankelijk',
+                horeca: 'Horeca aanwezig',
+                toilet: 'Toilet beschikbaar',
+                parkeerplaats: 'Parkeerplaats nabij',
               };
               return (
                 <div key={key} className="flex items-center space-x-2">

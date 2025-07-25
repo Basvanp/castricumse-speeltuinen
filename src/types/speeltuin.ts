@@ -19,16 +19,23 @@ export interface Speeltuin {
   ondergrond_gras: boolean;
   ondergrond_rubber: boolean;
   ondergrond_tegels: boolean;
+  ondergrond_kunstgras: boolean;
   
   // Leeftijd (age groups)
   geschikt_peuters: boolean;
   geschikt_kleuters: boolean;
   geschikt_kinderen: boolean;
   
+  // Grootte (size)
+  grootte: 'klein' | 'middel' | 'groot';
+  
   // Overig (other features)
   is_omheind: boolean;
   heeft_schaduw: boolean;
   is_rolstoeltoegankelijk: boolean;
+  heeft_horeca: boolean;
+  heeft_toilet: boolean;
+  heeft_parkeerplaats: boolean;
   
   // Fixi integration
   fixi_copy_tekst?: string;
@@ -58,10 +65,19 @@ export interface SpeeltuinFilters {
     gras: boolean;
     rubber: boolean;
     tegels: boolean;
+    kunstgras: boolean;
+  };
+  grootte: {
+    klein: boolean;
+    middel: boolean;
+    groot: boolean;
   };
   overig: {
     omheind: boolean;
     schaduw: boolean;
     rolstoeltoegankelijk: boolean;
+    horeca: boolean;
+    toilet: boolean;
+    parkeerplaats: boolean;
   };
 }

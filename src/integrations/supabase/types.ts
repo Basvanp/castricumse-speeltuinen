@@ -57,12 +57,16 @@ export type Database = {
           geschikt_kinderen: boolean | null
           geschikt_kleuters: boolean | null
           geschikt_peuters: boolean | null
+          grootte: Database["public"]["Enums"]["speeltuin_grootte"] | null
           heeft_bankjes: boolean | null
           heeft_glijbaan: boolean | null
+          heeft_horeca: boolean | null
           heeft_kabelbaan: boolean | null
+          heeft_parkeerplaats: boolean | null
           heeft_schaduw: boolean | null
           heeft_schommel: boolean | null
           heeft_sportveld: boolean | null
+          heeft_toilet: boolean | null
           heeft_zandbak: boolean | null
           id: string
           is_omheind: boolean | null
@@ -72,6 +76,7 @@ export type Database = {
           naam: string
           omschrijving: string | null
           ondergrond_gras: boolean | null
+          ondergrond_kunstgras: boolean | null
           ondergrond_rubber: boolean | null
           ondergrond_tegels: boolean | null
           ondergrond_zand: boolean | null
@@ -85,12 +90,16 @@ export type Database = {
           geschikt_kinderen?: boolean | null
           geschikt_kleuters?: boolean | null
           geschikt_peuters?: boolean | null
+          grootte?: Database["public"]["Enums"]["speeltuin_grootte"] | null
           heeft_bankjes?: boolean | null
           heeft_glijbaan?: boolean | null
+          heeft_horeca?: boolean | null
           heeft_kabelbaan?: boolean | null
+          heeft_parkeerplaats?: boolean | null
           heeft_schaduw?: boolean | null
           heeft_schommel?: boolean | null
           heeft_sportveld?: boolean | null
+          heeft_toilet?: boolean | null
           heeft_zandbak?: boolean | null
           id?: string
           is_omheind?: boolean | null
@@ -100,6 +109,7 @@ export type Database = {
           naam: string
           omschrijving?: string | null
           ondergrond_gras?: boolean | null
+          ondergrond_kunstgras?: boolean | null
           ondergrond_rubber?: boolean | null
           ondergrond_tegels?: boolean | null
           ondergrond_zand?: boolean | null
@@ -113,12 +123,16 @@ export type Database = {
           geschikt_kinderen?: boolean | null
           geschikt_kleuters?: boolean | null
           geschikt_peuters?: boolean | null
+          grootte?: Database["public"]["Enums"]["speeltuin_grootte"] | null
           heeft_bankjes?: boolean | null
           heeft_glijbaan?: boolean | null
+          heeft_horeca?: boolean | null
           heeft_kabelbaan?: boolean | null
+          heeft_parkeerplaats?: boolean | null
           heeft_schaduw?: boolean | null
           heeft_schommel?: boolean | null
           heeft_sportveld?: boolean | null
+          heeft_toilet?: boolean | null
           heeft_zandbak?: boolean | null
           id?: string
           is_omheind?: boolean | null
@@ -128,6 +142,7 @@ export type Database = {
           naam?: string
           omschrijving?: string | null
           ondergrond_gras?: boolean | null
+          ondergrond_kunstgras?: boolean | null
           ondergrond_rubber?: boolean | null
           ondergrond_tegels?: boolean | null
           ondergrond_zand?: boolean | null
@@ -202,6 +217,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      speeltuin_grootte: "klein" | "middel" | "groot"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -330,6 +346,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      speeltuin_grootte: ["klein", "middel", "groot"],
     },
   },
 } as const

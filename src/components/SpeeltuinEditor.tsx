@@ -30,6 +30,9 @@ const SpeeltuinEditor = () => {
     ondergrond_gras: false,
     ondergrond_rubber: false,
     ondergrond_tegels: false,
+    ondergrond_kunstgras: false,
+    // Grootte
+    grootte: 'middel' as 'klein' | 'middel' | 'groot',
     // Leeftijd
     geschikt_peuters: false,
     geschikt_kleuters: false,
@@ -38,6 +41,9 @@ const SpeeltuinEditor = () => {
     is_omheind: false,
     heeft_schaduw: false,
     is_rolstoeltoegankelijk: false,
+    heeft_horeca: false,
+    heeft_toilet: false,
+    heeft_parkeerplaats: false,
   });
 
   const [dragOver, setDragOver] = useState(false);
@@ -383,12 +389,17 @@ const SpeeltuinEditor = () => {
           ondergrond_gras: false,
           ondergrond_rubber: false,
           ondergrond_tegels: false,
+          ondergrond_kunstgras: false,
+          grootte: 'middel' as 'klein' | 'middel' | 'groot',
           geschikt_peuters: false,
           geschikt_kleuters: false,
           geschikt_kinderen: false,
           is_omheind: false,
           heeft_schaduw: false,
           is_rolstoeltoegankelijk: false,
+          heeft_horeca: false,
+          heeft_toilet: false,
+          heeft_parkeerplaats: false,
         });
         setGpsFromPhoto(false);
       },
@@ -536,6 +547,7 @@ const SpeeltuinEditor = () => {
                 { key: 'ondergrond_gras', label: 'Gras' },
                 { key: 'ondergrond_rubber', label: 'Rubber' },
                 { key: 'ondergrond_tegels', label: 'Tegels' },
+                { key: 'ondergrond_kunstgras', label: 'Kunstgras' },
               ].map(({ key, label }) => (
                 <div key={key} className="flex items-center space-x-2">
                   <Checkbox
@@ -577,6 +589,32 @@ const SpeeltuinEditor = () => {
           </CardContent>
         </Card>
 
+        {/* Grootte */}
+        <Card>
+          <CardContent className="pt-6">
+            <h3 className="font-medium mb-4">Grootte</h3>
+            <div className="space-y-3">
+              {[
+                { key: 'klein', label: 'Klein (buurt speeltuintje)' },
+                { key: 'middel', label: 'Middel' },
+                { key: 'groot', label: 'Groot (speelpark)' },
+              ].map(({ key, label }) => (
+                <div key={key} className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    id={`grootte-${key}`}
+                    name="grootte"
+                    checked={formData.grootte === key}
+                    onChange={() => setFormData(prev => ({ ...prev, grootte: key as 'klein' | 'middel' | 'groot' }))}
+                    className="h-4 w-4"
+                  />
+                  <Label htmlFor={`grootte-${key}`}>{label}</Label>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Overig */}
         <Card>
           <CardContent className="pt-6">
@@ -586,6 +624,9 @@ const SpeeltuinEditor = () => {
                 { key: 'is_omheind', label: 'Omheind' },
                 { key: 'heeft_schaduw', label: 'Schaduw' },
                 { key: 'is_rolstoeltoegankelijk', label: 'Rolstoeltoegankelijk' },
+                { key: 'heeft_horeca', label: 'Horeca aanwezig' },
+                { key: 'heeft_toilet', label: 'Toilet beschikbaar' },
+                { key: 'heeft_parkeerplaats', label: 'Parkeerplaats nabij' },
               ].map(({ key, label }) => (
                 <div key={key} className="flex items-center space-x-2">
                   <Checkbox
