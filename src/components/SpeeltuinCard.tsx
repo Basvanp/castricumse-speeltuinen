@@ -59,20 +59,42 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin }) => {
     return overig;
   };
 
+  // Get a consistent placeholder image based on speeltuin name
+  const getPlaceholderImage = () => {
+    const placeholders = [
+      'photo-1472396961693-142e6e269027', // deer beside trees and mountain
+      'photo-1465146344425-f00d5f5c8f07', // orange flowers
+      'photo-1509316975850-ff9c5deb0cd9', // pine trees
+      'photo-1513836279014-a89f7a76ae86', // trees at daytime
+      'photo-1518495973542-4542c06a5843', // sun light through trees
+      'photo-1506744038136-46273834b3fb', // water surrounded by trees
+    ];
+    
+    // Use name hash to consistently pick the same image for the same playground
+    const hash = speeltuin.naam.split('').reduce((a, b) => {
+      a = ((a << 5) - a) + b.charCodeAt(0);
+      return a & a;
+    }, 0);
+    
+    const index = Math.abs(hash) % placeholders.length;
+    return `https://images.unsplash.com/${placeholders[index]}?auto=format&fit=crop&w=800&q=80`;
+  };
+
   return (
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="text-xl">{speeltuin.naam}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {speeltuin.afbeelding_url && (
+        {/* Playground image - always show (placeholder if no real image) */}
+        <div className="h-96 w-full rounded-lg overflow-hidden shadow-lg">
           <img
-            src={speeltuin.afbeelding_url}
+            src={speeltuin.afbeelding_url || getPlaceholderImage()}
             alt={speeltuin.naam}
-            className="w-full h-48 object-cover rounded-md"
+            className="w-full h-full object-cover"
             loading="lazy"
           />
-        )}
+        </div>
         
         {speeltuin.omschrijving && (
           <p className="text-muted-foreground">{speeltuin.omschrijving}</p>
