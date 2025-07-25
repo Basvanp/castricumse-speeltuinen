@@ -257,7 +257,7 @@ const SpeeltuinEditor = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.naam || (!formData.latitude || !formData.longitude)) {
+    if (!formData.naam || (!formData.latitude && !formData.longitude)) {
       toast({
         title: "Verplichte velden",
         description: "Vul minimaal naam en locatie in.",
