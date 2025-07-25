@@ -12,16 +12,22 @@ export const useUserRole = () => {
   useEffect(() => {
     const fetchUserRole = async () => {
       if (!user) {
+        console.log('🔐 useUserRole: No user found');
         setRole(null);
         setLoading(false);
         return;
       }
+
+      console.log('🔐 useUserRole: Fetching role for user:', user.id);
+      setLoading(true);
 
       try {
         const { data, error } = await supabase
           .from('user_roles')
           .select('role')
           .eq('user_id', user.id);
+
+        console.log('🔐 useUserRole: Database response:', { data, error });
 
         if (error) {
           console.error('Error fetching user role:', error);
@@ -30,12 +36,17 @@ export const useUserRole = () => {
           // Priority: admin > user
           // If user has multiple roles, return the highest priority role
           const roles = data.map(item => item.role);
+          console.log('🔐 useUserRole: Found roles:', roles);
+          
           if (roles.includes('admin')) {
+            console.log('🔐 useUserRole: Setting role to admin');
             setRole('admin');
           } else {
+            console.log('🔐 useUserRole: Setting role to user');
             setRole('user');
           }
         } else {
+          console.log('🔐 useUserRole: No roles found, defaulting to user');
           setRole('user'); // Default if no roles found
         }
       } catch (error) {
@@ -50,6 +61,8 @@ export const useUserRole = () => {
   }, [user]);
 
   const isAdmin = role === 'admin';
+
+  console.log('🔐 useUserRole: Current state:', { role, isAdmin, loading });
 
   return {
     role,

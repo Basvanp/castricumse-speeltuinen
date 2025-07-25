@@ -15,16 +15,22 @@ const Admin = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    console.log('🚀 Admin: Auth state check:', { user: !!user, loading, roleLoading, isAdmin });
+    
     if (!loading && !roleLoading) {
       if (!user) {
+        console.log('🚀 Admin: No user, redirecting to auth');
         navigate('/auth');
       } else if (!isAdmin) {
+        console.log('🚀 Admin: User is not admin, redirecting to home');
         navigate('/');
         toast({
           title: "Access Denied",
           description: "You don't have permission to access the admin panel.",
           variant: "destructive",
         });
+      } else {
+        console.log('🚀 Admin: User is admin, staying on admin page');
       }
     }
   }, [user, loading, roleLoading, isAdmin, navigate, toast]);
