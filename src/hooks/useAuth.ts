@@ -37,6 +37,24 @@ export const useAuth = () => {
   };
 
   const signUp = async (email: string, password: string) => {
+    // Enhanced password validation
+    if (password.length < 12) {
+      return { error: { message: 'Password must be at least 12 characters long' } };
+    }
+    
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSymbols = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    
+    if (!hasUppercase || !hasLowercase || !hasNumbers || !hasSymbols) {
+      return { 
+        error: { 
+          message: 'Password must contain uppercase, lowercase, numbers, and symbols' 
+        } 
+      };
+    }
+
     const redirectUrl = `${window.location.origin}/`;
     
     const { error } = await supabase.auth.signUp({

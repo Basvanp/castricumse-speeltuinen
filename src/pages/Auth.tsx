@@ -26,44 +26,80 @@ const Auth = () => {
     e.preventDefault();
     setLoading(true);
     
-    const { error } = await signIn(email, password);
-    
-    if (error) {
+    try {
+      const { error } = await signIn(email, password);
+      
+      if (error) {
+        // Generic error message to prevent information leakage
+        let errorMessage = "Inloggen mislukt. Controleer je inloggegevens.";
+        
+        // Only show specific errors for certain cases
+        if (error.message?.includes('Email not confirmed')) {
+          errorMessage = "Je account is nog niet bevestigd. Controleer je e-mail.";
+        } else if (error.message?.includes('Too many requests')) {
+          errorMessage = "Te veel inlogpogingen. Probeer het later opnieuw.";
+        }
+        
+        toast({
+          title: "Inloggen mislukt",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Succesvol ingelogd",
+          description: "Welkom terug!",
+        });
+      }
+    } catch (error) {
       toast({
-        title: "Inloggen mislukt",
-        description: error.message,
+        title: "Fout",
+        description: "Er is een onverwachte fout opgetreden.",
         variant: "destructive",
       });
-    } else {
-      toast({
-        title: "Succesvol ingelogd",
-        description: "Je bent nu ingelogd als beheerder.",
-      });
+    } finally {
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     
-    const { error } = await signUp(email, password);
-    
-    if (error) {
+    try {
+      const { error } = await signUp(email, password);
+      
+      if (error) {
+        // Generic error message to prevent information leakage
+        let errorMessage = "Registratie mislukt. Probeer het opnieuw.";
+        
+        // Only show specific errors for certain cases
+        if (error.message?.includes('User already registered')) {
+          errorMessage = "Dit e-mailadres is al geregistreerd.";
+        } else if (error.message?.includes('Password')) {
+          errorMessage = error.message; // Show password validation errors
+        }
+        
+        toast({
+          title: "Registratie mislukt",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Registratie succesvol",
+          description: "Controleer je e-mail voor de bevestigingslink.",
+        });
+      }
+    } catch (error) {
       toast({
-        title: "Registratie mislukt",
-        description: error.message,
+        title: "Fout",
+        description: "Er is een onverwachte fout opgetreden.",
         variant: "destructive",
       });
-    } else {
-      toast({
-        title: "Registratie succesvol",
-        description: "Controleer je e-mail voor de bevestigingslink.",
-      });
+    } finally {
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   return (
@@ -130,7 +166,8 @@ const Auth = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    minLength={6}
+                    minLength={12}
+                    placeholder="Min. 12 tekens, incl. hoofdletters, cijfers en symbolen"
                   />
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>

@@ -1,43 +1,62 @@
 import React, { useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserRole } from '@/hooks/useUserRole';
 import { useSpeeltuinen } from '@/hooks/useSpeeltuinen';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useNavigate, Link } from 'react-router-dom';
-import { LogOut, Plus, Home } from 'lucide-react';
+import { LogOut, Plus, Home, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import SpeeltuinEditor from '@/components/SpeeltuinEditor';
 
 const Admin = () => {
   const { user, signOut, loading } = useAuth();
+  const { isAdmin, loading: roleLoading } = useUserRole();
   const { data: speeltuinen = [] } = useSpeeltuinen();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!loading && !user) {
-      navigate('/auth');
+    if (!loading && !roleLoading) {
+      if (!user) {
+        navigate('/auth');
+      } else if (!isAdmin) {
+        navigate('/');
+        toast({
+          title: "Access Denied",
+          description: "You don't have permission to access the admin panel.",
+          variant: "destructive",
+        });
+      }
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, roleLoading, isAdmin, navigate, toast]);
 
   const handleSignOut = async () => {
-    const { error } = await signOut();
-    if (error) {
-      toast({
-        title: "Uitloggen mislukt",
-        description: error.message,
-        variant: "destructive",
-      });
-    } else {
+    try {
+      const { error } = await signOut();
+      if (error) {
+        throw error;
+      }
+      
+      // Clear any cached data
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      navigate('/auth');
       toast({
         title: "Uitgelogd",
         description: "Je bent succesvol uitgelogd.",
       });
-      navigate('/');
+    } catch (error: any) {
+      toast({
+        title: "Fout",
+        description: error?.message || "Er is een fout opgetreden bij het uitloggen.",
+        variant: "destructive",
+      });
     }
   };
 
-  if (loading) {
+  if (loading || roleLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -48,8 +67,22 @@ const Admin = () => {
     );
   }
 
-  if (!user) {
-    return null;
+  if (!user || !isAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardContent className="pt-6">
+            <div className="flex items-center space-x-2 text-destructive">
+              <AlertTriangle className="h-5 w-5" />
+              <span>Access Denied</span>
+            </div>
+            <p className="mt-2 text-sm text-muted-foreground">
+              You don't have permission to access this page.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   return (

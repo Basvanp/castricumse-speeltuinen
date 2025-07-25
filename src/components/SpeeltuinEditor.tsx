@@ -80,6 +80,32 @@ const SpeeltuinEditor = () => {
   const handleFileUpload = useCallback(async (file: File) => {
     setUploading(true);
     
+    // Enhanced file validation
+    const maxSizeInMB = 5;
+    const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
+    
+    if (file.size > maxSizeInBytes) {
+      toast({
+        title: "Bestand te groot",
+        description: `Het bestand mag niet groter zijn dan ${maxSizeInMB}MB.`,
+        variant: "destructive",
+      });
+      setUploading(false);
+      return;
+    }
+    
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast({
+        title: "Ongeldig bestandstype",
+        description: "Alleen JPEG, PNG en WebP afbeeldingen zijn toegestaan.",
+        variant: "destructive",
+      });
+      setUploading(false);
+      return;
+    }
+    
     try {
       // Extract EXIF data for GPS coordinates
       const exifData = await exifr.parse(file);
