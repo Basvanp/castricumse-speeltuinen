@@ -67,8 +67,8 @@ export type Database = {
           id: string
           is_omheind: boolean | null
           is_rolstoeltoegankelijk: boolean | null
-          latitude: number
-          longitude: number
+          latitude: number | null
+          longitude: number | null
           naam: string
           omschrijving: string | null
           ondergrond_gras: boolean | null
@@ -95,8 +95,8 @@ export type Database = {
           id?: string
           is_omheind?: boolean | null
           is_rolstoeltoegankelijk?: boolean | null
-          latitude: number
-          longitude: number
+          latitude?: number | null
+          longitude?: number | null
           naam: string
           omschrijving?: string | null
           ondergrond_gras?: boolean | null
@@ -123,8 +123,8 @@ export type Database = {
           id?: string
           is_omheind?: boolean | null
           is_rolstoeltoegankelijk?: boolean | null
-          latitude?: number
-          longitude?: number
+          latitude?: number | null
+          longitude?: number | null
           naam?: string
           omschrijving?: string | null
           ondergrond_gras?: boolean | null

@@ -14,8 +14,8 @@ import exifr from 'exifr';
 const SpeeltuinEditor = () => {
   const [formData, setFormData] = useState({
     naam: '',
-    latitude: 0,
-    longitude: 0,
+    latitude: null as number | null,
+    longitude: null as number | null,
     omschrijving: '',
     afbeelding_url: '',
     // Voorzieningen
@@ -264,21 +264,19 @@ const SpeeltuinEditor = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const hasValidGPS = gpsFromPhoto || (formData.latitude !== 0 || formData.longitude !== 0);
-    
-    if (!formData.naam || !hasValidGPS) {
+    if (!formData.naam) {
       toast({
         title: "Verplichte velden",
-        description: gpsFromPhoto 
-          ? "Vul een naam in." 
-          : "Vul minimaal naam en GPS-coördinaten in (via foto of handmatig).",
+        description: "Vul een naam in.",
         variant: "destructive",
       });
       return;
     }
 
     // Generate Fixi copy text
-    const fixiText = `Kapot speeltoestel bij ${formData.naam}, ${formData.latitude}, ${formData.longitude}`;
+    const fixiText = formData.latitude && formData.longitude 
+      ? `Kapot speeltoestel bij ${formData.naam}, ${formData.latitude}, ${formData.longitude}`
+      : `Kapot speeltoestel bij ${formData.naam} (geen GPS-coördinaten beschikbaar)`;
 
     createSpeeltuin({
       ...formData,
@@ -292,8 +290,8 @@ const SpeeltuinEditor = () => {
         // Reset form
         setFormData({
           naam: '',
-          latitude: 0,
-          longitude: 0,
+          latitude: null,
+          longitude: null,
           omschrijving: '',
           afbeelding_url: '',
           heeft_glijbaan: false,
@@ -355,7 +353,7 @@ const SpeeltuinEditor = () => {
             <div>
               <p className="text-lg font-medium">Sleep afbeelding hier</p>
               <p className="text-sm text-muted-foreground">
-                EXIF GPS-data wordt automatisch uitgelezen
+                EXIF GPS-data wordt automatisch uitgelezen (optioneel)
               </p>
             </div>
           </div>
@@ -388,7 +386,7 @@ const SpeeltuinEditor = () => {
                 type="number"
                 step="any"
                 value={formData.latitude || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, latitude: parseFloat(e.target.value) || 0 }))}
+                onChange={(e) => setFormData(prev => ({ ...prev, latitude: e.target.value ? parseFloat(e.target.value) : null }))}
                 disabled={gpsFromPhoto}
                 className={gpsFromPhoto ? "bg-muted text-muted-foreground" : ""}
               />
@@ -400,7 +398,7 @@ const SpeeltuinEditor = () => {
                 type="number"
                 step="any"
                 value={formData.longitude || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, longitude: parseFloat(e.target.value) || 0 }))}
+                onChange={(e) => setFormData(prev => ({ ...prev, longitude: e.target.value ? parseFloat(e.target.value) : null }))}
                 disabled={gpsFromPhoto}
                 className={gpsFromPhoto ? "bg-muted text-muted-foreground" : ""}
               />
