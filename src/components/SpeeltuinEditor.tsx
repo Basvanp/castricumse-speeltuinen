@@ -257,7 +257,7 @@ const SpeeltuinEditor = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.naam || !formData.latitude || !formData.longitude) {
+    if (!formData.naam || (!formData.latitude || !formData.longitude)) {
       toast({
         title: "Verplichte velden",
         description: "Vul minimaal naam en locatie in.",
@@ -370,7 +370,6 @@ const SpeeltuinEditor = () => {
               step="any"
               value={formData.latitude || ''}
               onChange={(e) => setFormData(prev => ({ ...prev, latitude: parseFloat(e.target.value) || 0 }))}
-              required
             />
           </div>
           <div>
@@ -381,7 +380,6 @@ const SpeeltuinEditor = () => {
               step="any"
               value={formData.longitude || ''}
               onChange={(e) => setFormData(prev => ({ ...prev, longitude: parseFloat(e.target.value) || 0 }))}
-              required
             />
           </div>
         </div>
