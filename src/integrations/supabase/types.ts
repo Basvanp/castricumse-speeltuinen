@@ -14,7 +14,93 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      speeltuinen: {
+        Row: {
+          afbeelding_url: string | null
+          created_at: string
+          fixi_copy_tekst: string | null
+          geschikt_kinderen: boolean | null
+          geschikt_kleuters: boolean | null
+          geschikt_peuters: boolean | null
+          heeft_bankjes: boolean | null
+          heeft_glijbaan: boolean | null
+          heeft_kabelbaan: boolean | null
+          heeft_schaduw: boolean | null
+          heeft_schommel: boolean | null
+          heeft_sportveld: boolean | null
+          heeft_zandbak: boolean | null
+          id: string
+          is_omheind: boolean | null
+          is_rolstoeltoegankelijk: boolean | null
+          latitude: number
+          longitude: number
+          naam: string
+          omschrijving: string | null
+          ondergrond_gras: boolean | null
+          ondergrond_rubber: boolean | null
+          ondergrond_tegels: boolean | null
+          ondergrond_zand: boolean | null
+          toegevoegd_door: string | null
+          updated_at: string
+        }
+        Insert: {
+          afbeelding_url?: string | null
+          created_at?: string
+          fixi_copy_tekst?: string | null
+          geschikt_kinderen?: boolean | null
+          geschikt_kleuters?: boolean | null
+          geschikt_peuters?: boolean | null
+          heeft_bankjes?: boolean | null
+          heeft_glijbaan?: boolean | null
+          heeft_kabelbaan?: boolean | null
+          heeft_schaduw?: boolean | null
+          heeft_schommel?: boolean | null
+          heeft_sportveld?: boolean | null
+          heeft_zandbak?: boolean | null
+          id?: string
+          is_omheind?: boolean | null
+          is_rolstoeltoegankelijk?: boolean | null
+          latitude: number
+          longitude: number
+          naam: string
+          omschrijving?: string | null
+          ondergrond_gras?: boolean | null
+          ondergrond_rubber?: boolean | null
+          ondergrond_tegels?: boolean | null
+          ondergrond_zand?: boolean | null
+          toegevoegd_door?: string | null
+          updated_at?: string
+        }
+        Update: {
+          afbeelding_url?: string | null
+          created_at?: string
+          fixi_copy_tekst?: string | null
+          geschikt_kinderen?: boolean | null
+          geschikt_kleuters?: boolean | null
+          geschikt_peuters?: boolean | null
+          heeft_bankjes?: boolean | null
+          heeft_glijbaan?: boolean | null
+          heeft_kabelbaan?: boolean | null
+          heeft_schaduw?: boolean | null
+          heeft_schommel?: boolean | null
+          heeft_sportveld?: boolean | null
+          heeft_zandbak?: boolean | null
+          id?: string
+          is_omheind?: boolean | null
+          is_rolstoeltoegankelijk?: boolean | null
+          latitude?: number
+          longitude?: number
+          naam?: string
+          omschrijving?: string | null
+          ondergrond_gras?: boolean | null
+          ondergrond_rubber?: boolean | null
+          ondergrond_tegels?: boolean | null
+          ondergrond_zand?: boolean | null
+          toegevoegd_door?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
