@@ -78,20 +78,47 @@ const SpeeltuinEditor = () => {
     return `Bevat ${found.join(', ')} en ${last}.`;
   };
 
-  // Convert GPS coordinates from iPhone format (degrees/minutes/seconds arrays)
-  const convertGPSToDecimal = (gpsArray: number[], ref: string) => {
-    if (!gpsArray || !Array.isArray(gpsArray) || gpsArray.length < 3) {
-      return null;
+  // Convert GPS coordinates from various formats to decimal
+  const convertGPSToDecimal = (gpsData: any, ref: string): number | null => {
+    console.log('GPS conversion input:', { gpsData, ref, type: typeof gpsData });
+    
+    if (!gpsData) return null;
+    
+    let degrees = 0, minutes = 0, seconds = 0;
+    
+    // Handle different GPS data formats
+    if (Array.isArray(gpsData) && gpsData.length >= 3) {
+      // Standard array format: [degrees, minutes, seconds]
+      [degrees, minutes, seconds] = gpsData;
+    } else if (typeof gpsData === 'string') {
+      // String format like "52 deg 33' 2.41" N" or "52°33'2.41""
+      const matches = gpsData.match(/(\d+(?:\.\d+)?)[°\s]*(?:deg)?[\s]*(\d+(?:\.\d+)?)['\s]*(?:(\d+(?:\.\d+)?)["'\s]*)?/);
+      if (matches) {
+        degrees = parseFloat(matches[1]) || 0;
+        minutes = parseFloat(matches[2]) || 0;
+        seconds = parseFloat(matches[3]) || 0;
+      }
+    } else if (typeof gpsData === 'number') {
+      // Already in decimal format
+      return ref === 'S' || ref === 'W' ? -gpsData : gpsData;
+    } else if (typeof gpsData === 'object' && gpsData.degrees !== undefined) {
+      // Object format: {degrees: 52, minutes: 33, seconds: 2.41}
+      degrees = gpsData.degrees || 0;
+      minutes = gpsData.minutes || 0;
+      seconds = gpsData.seconds || 0;
     }
     
-    const [degrees, minutes, seconds] = gpsArray;
-    let decimal = degrees + minutes/60 + seconds/3600;
+    console.log('GPS components:', { degrees, minutes, seconds });
     
-    // Make negative for South/West
+    // Convert to decimal
+    let decimal = degrees + minutes / 60 + seconds / 3600;
+    
+    // Apply negative for South/West
     if (ref === 'S' || ref === 'W') {
       decimal = -decimal;
     }
     
+    console.log('Final decimal:', decimal);
     return decimal;
   };
 
@@ -129,28 +156,71 @@ const SpeeltuinEditor = () => {
     }
     
     try {
-      // Parse EXIF data
+      // Parse EXIF data with enhanced configuration
       const exifData = await exifr.parse(file, {
         gps: true,
         mergeOutput: false,
         translateKeys: false,
         translateValues: false,
-        reviveValues: false
+        reviveValues: false,
+        sanitize: false,
+        pick: ['GPSLatitude', 'GPSLongitude', 'GPSLatitudeRef', 'GPSLongitudeRef', 'latitude', 'longitude']
       });
+      
+      console.log('Full EXIF data:', exifData);
       
       let latitude = null;
       let longitude = null;
 
       if (exifData) {
-        // Try simple format first (some cameras)
-        if (exifData?.latitude && exifData?.longitude) {
-          latitude = exifData.latitude;
-          longitude = exifData.longitude;
+        // Try multiple GPS field variations to support different camera formats
+        const latitudeFields = ['GPSLatitude', 'latitude', 'GPS_Latitude', 'Latitude'];
+        const longitudeFields = ['GPSLongitude', 'longitude', 'GPS_Longitude', 'Longitude'];
+        const latRefFields = ['GPSLatitudeRef', 'latitudeRef', 'GPS_LatitudeRef', 'LatitudeRef'];
+        const lonRefFields = ['GPSLongitudeRef', 'longitudeRef', 'GPS_LongitudeRef', 'LongitudeRef'];
+        
+        let latData = null, lonData = null, latRef = null, lonRef = null;
+        
+        // Find latitude data
+        for (const field of latitudeFields) {
+          if (exifData[field] !== undefined) {
+            latData = exifData[field];
+            break;
+          }
         }
-        // Try iPhone/GPS array format
-        else if (exifData?.GPSLatitude && exifData?.GPSLongitude) {
-          latitude = convertGPSToDecimal(exifData.GPSLatitude, exifData.GPSLatitudeRef);
-          longitude = convertGPSToDecimal(exifData.GPSLongitude, exifData.GPSLongitudeRef);
+        
+        // Find longitude data
+        for (const field of longitudeFields) {
+          if (exifData[field] !== undefined) {
+            lonData = exifData[field];
+            break;
+          }
+        }
+        
+        // Find latitude reference
+        for (const field of latRefFields) {
+          if (exifData[field] !== undefined) {
+            latRef = exifData[field];
+            break;
+          }
+        }
+        
+        // Find longitude reference
+        for (const field of lonRefFields) {
+          if (exifData[field] !== undefined) {
+            lonRef = exifData[field];
+            break;
+          }
+        }
+        
+        console.log('Found GPS data:', { latData, lonData, latRef, lonRef });
+        
+        // Convert to decimal if we have data
+        if (latData !== null && lonData !== null) {
+          latitude = convertGPSToDecimal(latData, latRef || 'N');
+          longitude = convertGPSToDecimal(lonData, lonRef || 'E');
+          
+          console.log('Converted coordinates:', { latitude, longitude });
         }
       }
 
