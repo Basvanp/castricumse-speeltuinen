@@ -98,6 +98,7 @@ const SpeeltuinEditor = () => {
   const handleFileUpload = useCallback(async (file: File) => {
     setUploading(true);
     setGpsFromPhoto(false);
+    console.log('🖼️ Starting file upload for:', file.name, 'Size:', (file.size/1024/1024).toFixed(2) + 'MB', 'Type:', file.type);
     
     // Enhanced file validation
     const maxSizeInMB = 5;
@@ -126,13 +127,22 @@ const SpeeltuinEditor = () => {
     }
     
     try {
+      console.log('📱 Reading EXIF data...');
       // Extract EXIF data with explicit GPS parsing for iPhone photos
       const exifData = await exifr.parse(file, {
         gps: true,
         mergeOutput: false
       });
       
-      console.log('Full EXIF data:', exifData);
+      console.log('📊 Raw EXIF data:', exifData);
+      console.log('🗺️ GPS specific fields:', {
+        hasLatitude: !!exifData?.latitude,
+        hasLongitude: !!exifData?.longitude,
+        hasGPSLatitude: !!exifData?.GPSLatitude,
+        hasGPSLongitude: !!exifData?.GPSLongitude,
+        GPSLatitudeRef: exifData?.GPSLatitudeRef,
+        GPSLongitudeRef: exifData?.GPSLongitudeRef
+      });
       
       let latitude = null;
       let longitude = null;
@@ -371,9 +381,9 @@ const SpeeltuinEditor = () => {
         </div>
         <div className="space-y-2">
           {gpsFromPhoto && (
-            <div className="flex items-center gap-2 text-sm text-green-600">
-              <CheckCircle className="h-4 w-4" />
-              <span>GPS uit foto</span>
+            <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-md">
+              <CheckCircle className="h-5 w-5 text-green-600" />
+              <span className="text-sm font-medium text-green-700">GPS-coördinaten uit foto gehaald</span>
             </div>
           )}
           <div className="grid grid-cols-2 gap-2">
