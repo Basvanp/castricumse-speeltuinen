@@ -98,7 +98,6 @@ const SpeeltuinEditor = () => {
   const handleFileUpload = useCallback(async (file: File) => {
     setUploading(true);
     setGpsFromPhoto(false);
-    console.log('🖼️ Starting file upload for:', file.name, 'Size:', (file.size/1024/1024).toFixed(2) + 'MB', 'Type:', file.type);
     
     // Enhanced file validation
     const maxSizeInMB = 10;
@@ -130,68 +129,14 @@ const SpeeltuinEditor = () => {
     }
     
     try {
-      console.log('📱 Reading EXIF data...');
-      
-      // Try multiple parsing approaches for better compatibility
-      let exifData = null;
-      
-      // First attempt: Parse with GPS-specific options
-      try {
-        exifData = await exifr.parse(file, {
-          gps: true,
-          mergeOutput: false,
-          translateKeys: false,
-          translateValues: false,
-          reviveValues: false
-        });
-        console.log('📊 EXIF data (GPS method):', exifData);
-      } catch (error) {
-        console.log('❌ GPS parsing failed:', error);
-      }
-      
-      // Second attempt: Parse all available data
-      if (!exifData) {
-        try {
-          exifData = await exifr.parse(file);
-          console.log('📊 EXIF data (general method):', exifData);
-        } catch (error) {
-          console.log('❌ General parsing failed:', error);
-        }
-      }
-      
-      // Third attempt: Try with different options
-      if (!exifData) {
-        try {
-          exifData = await exifr.parse(file, ['gps', 'ifd0', 'exif']);
-          console.log('📊 EXIF data (selective method):', exifData);
-        } catch (error) {
-          console.log('❌ Selective parsing failed:', error);
-        }
-      }
-      
-      // Log detailed analysis
-      if (exifData) {
-        console.log('🗺️ GPS analysis:', {
-          hasLatitude: !!exifData?.latitude,
-          hasLongitude: !!exifData?.longitude,
-          hasGPSLatitude: !!exifData?.GPSLatitude,
-          hasGPSLongitude: !!exifData?.GPSLongitude,
-          GPSLatitudeRef: exifData?.GPSLatitudeRef,
-          GPSLongitudeRef: exifData?.GPSLongitudeRef,
-          allGPSKeys: Object.keys(exifData).filter(key => key.toLowerCase().includes('gps'))
-        });
-      } else {
-        console.log('❌ No EXIF data found. This could mean:');
-        console.log('   - Image has no EXIF data (screenshot, edited image, etc.)');
-        console.log('   - Image format doesn\'t support EXIF (some PNG files)');
-        console.log('   - EXIF data was stripped during processing');
-        
-        toast({
-          title: "Geen EXIF-data",
-          description: "Deze foto bevat geen EXIF-data. Dit kan gebeuren bij screenshots of bewerkte afbeeldingen. Voer handmatig de GPS-coördinaten in.",
-          variant: "default",
-        });
-      }
+      // Parse EXIF data
+      const exifData = await exifr.parse(file, {
+        gps: true,
+        mergeOutput: false,
+        translateKeys: false,
+        translateValues: false,
+        reviveValues: false
+      });
       
       let latitude = null;
       let longitude = null;
@@ -201,20 +146,11 @@ const SpeeltuinEditor = () => {
         if (exifData?.latitude && exifData?.longitude) {
           latitude = exifData.latitude;
           longitude = exifData.longitude;
-          console.log('✅ Found simple GPS format:', { latitude, longitude });
         }
         // Try iPhone/GPS array format
         else if (exifData?.GPSLatitude && exifData?.GPSLongitude) {
           latitude = convertGPSToDecimal(exifData.GPSLatitude, exifData.GPSLatitudeRef);
           longitude = convertGPSToDecimal(exifData.GPSLongitude, exifData.GPSLongitudeRef);
-          console.log('✅ Found iPhone GPS format:', {
-            GPSLatitude: exifData.GPSLatitude,
-            GPSLongitude: exifData.GPSLongitude,
-            GPSLatitudeRef: exifData.GPSLatitudeRef,
-            GPSLongitudeRef: exifData.GPSLongitudeRef,
-            convertedLat: latitude,
-            convertedLng: longitude
-          });
         }
       }
 
@@ -226,17 +162,21 @@ const SpeeltuinEditor = () => {
           longitude,
         }));
         setGpsFromPhoto(true);
-        console.log('🎯 GPS coordinates set successfully!');
         toast({
           title: "GPS-locatie gevonden!",
           description: `Coördinaten automatisch ingesteld: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
         });
       } else {
-        console.log('ℹ️ No GPS coordinates found in image');
         if (exifData) {
           toast({
             title: "Geen GPS in foto",
             description: "Deze foto bevat wel EXIF-data, maar geen GPS-coördinaten. Voer handmatig de locatie in.",
+            variant: "default",
+          });
+        } else {
+          toast({
+            title: "Geen EXIF-data",
+            description: "Deze foto bevat geen EXIF-data. Dit kan gebeuren bij screenshots of bewerkte afbeeldingen. Voer handmatig de GPS-coördinaten in.",
             variant: "default",
           });
         }
