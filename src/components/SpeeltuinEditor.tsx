@@ -77,6 +77,23 @@ const SpeeltuinEditor = () => {
     return `Bevat ${found.join(', ')} en ${last}.`;
   };
 
+  // Convert GPS coordinates from iPhone format (degrees/minutes/seconds arrays)
+  const convertGPSToDecimal = (gpsArray: number[], ref: string) => {
+    if (!gpsArray || !Array.isArray(gpsArray) || gpsArray.length < 3) {
+      return null;
+    }
+    
+    const [degrees, minutes, seconds] = gpsArray;
+    let decimal = degrees + minutes/60 + seconds/3600;
+    
+    // Make negative for South/West
+    if (ref === 'S' || ref === 'W') {
+      decimal = -decimal;
+    }
+    
+    return decimal;
+  };
+
   const handleFileUpload = useCallback(async (file: File) => {
     setUploading(true);
     
@@ -107,18 +124,54 @@ const SpeeltuinEditor = () => {
     }
     
     try {
-      // Extract EXIF data for GPS coordinates
-      const exifData = await exifr.parse(file);
+      // Extract EXIF data with explicit GPS parsing for iPhone photos
+      const exifData = await exifr.parse(file, {
+        gps: true,
+        mergeOutput: false
+      });
       
+      console.log('Full EXIF data:', exifData);
+      
+      let latitude = null;
+      let longitude = null;
+
+      // Try simple format first (some cameras)
       if (exifData?.latitude && exifData?.longitude) {
+        latitude = exifData.latitude;
+        longitude = exifData.longitude;
+        console.log('Found simple GPS format:', { latitude, longitude });
+      }
+      // Try iPhone/GPS array format
+      else if (exifData?.GPSLatitude && exifData?.GPSLongitude) {
+        latitude = convertGPSToDecimal(exifData.GPSLatitude, exifData.GPSLatitudeRef);
+        longitude = convertGPSToDecimal(exifData.GPSLongitude, exifData.GPSLongitudeRef);
+        console.log('Found iPhone GPS format:', {
+          GPSLatitude: exifData.GPSLatitude,
+          GPSLongitude: exifData.GPSLongitude,
+          GPSLatitudeRef: exifData.GPSLatitudeRef,
+          GPSLongitudeRef: exifData.GPSLongitudeRef,
+          convertedLat: latitude,
+          convertedLng: longitude
+        });
+      }
+
+      // Update form if GPS data was found
+      if (latitude !== null && longitude !== null) {
         setFormData(prev => ({
           ...prev,
-          latitude: exifData.latitude,
-          longitude: exifData.longitude,
+          latitude,
+          longitude,
         }));
         toast({
           title: "GPS-locatie gevonden!",
-          description: `Coördinaten automatisch ingesteld: ${exifData.latitude.toFixed(6)}, ${exifData.longitude.toFixed(6)}`,
+          description: `Coördinaten automatisch ingesteld: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
+        });
+      } else {
+        console.log('No GPS data found in EXIF');
+        toast({
+          title: "Geen GPS-data",
+          description: "Geen GPS-coördinaten gevonden in de foto. Voer handmatig de locatie in.",
+          variant: "default",
         });
       }
 
