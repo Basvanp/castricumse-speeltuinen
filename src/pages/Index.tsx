@@ -6,11 +6,12 @@ import SpeeltuinCard from '@/components/SpeeltuinCard';
 import SpeeltuinFiltersComponent from '@/components/SpeeltuinFilters';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { Settings } from 'lucide-react';
+import { Settings, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Index = () => {
   const { data: speeltuinen = [], isLoading, error } = useSpeeltuinen();
   const [selectedSpeeltuin, setSelectedSpeeltuin] = useState<Speeltuin | null>(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [filters, setFilters] = useState<SpeeltuinFilters>({
     leeftijd: {
       peuters: false,
@@ -128,14 +129,34 @@ const Index = () => {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="flex gap-8 relative">
           {/* Filters Sidebar */}
-          <div className="lg:col-span-1">
+          <div className={`transition-all duration-300 ease-in-out ${
+            sidebarCollapsed ? '-ml-80 opacity-0 pointer-events-none' : 'ml-0 opacity-100'
+          } w-80 flex-shrink-0`}>
             <SpeeltuinFiltersComponent filters={filters} onFiltersChange={setFilters} />
           </div>
 
+          {/* Toggle Button */}
+          <div className="absolute left-0 top-0 z-10">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              className={`transition-all duration-300 ease-in-out ${
+                sidebarCollapsed ? 'translate-x-0' : 'translate-x-80'
+              } bg-white shadow-md hover:shadow-lg`}
+            >
+              {sidebarCollapsed ? (
+                <ChevronRight className="h-4 w-4" />
+              ) : (
+                <ChevronLeft className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+
           {/* Main Content */}
-          <div className="lg:col-span-3 space-y-8">
+          <div className="flex-1 space-y-8">
             {/* Map */}
             <div>
               <h2 className="text-xl font-semibold mb-4">Kaart</h2>

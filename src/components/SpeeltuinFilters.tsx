@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown } from 'lucide-react';
 import { SpeeltuinFilters as FiltersType } from '@/types/speeltuin';
 
 interface SpeeltuinFiltersProps {
@@ -12,8 +10,6 @@ interface SpeeltuinFiltersProps {
 }
 
 const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({ filters, onFiltersChange }) => {
-  const [isOpen, setIsOpen] = useState(true);
-  
   const updateFilter = (
     category: keyof FiltersType,
     key: string,
@@ -29,16 +25,11 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({ filters, onFiltersC
   };
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <Card className="w-full">
-        <CardHeader className="pb-3">
-          <CollapsibleTrigger className="flex items-center justify-between w-full hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
-            <CardTitle className="text-lg">Filters</CardTitle>
-            <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isOpen ? 'transform rotate-180' : ''}`} />
-          </CollapsibleTrigger>
-        </CardHeader>
-        <CollapsibleContent>
-          <CardContent className="space-y-6 pt-0">
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle className="text-lg">Filters</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-6">
         <div>
           <h3 className="font-medium mb-3">Leeftijd</h3>
           <div className="space-y-2">
@@ -125,10 +116,8 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({ filters, onFiltersC
             })}
           </div>
         </div>
-          </CardContent>
-        </CollapsibleContent>
-      </Card>
-    </Collapsible>
+      </CardContent>
+    </Card>
   );
 };
 
