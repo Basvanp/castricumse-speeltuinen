@@ -260,10 +260,14 @@ const SpeeltuinEditor = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.naam || (!formData.latitude && !formData.longitude)) {
+    const hasValidGPS = gpsFromPhoto || (formData.latitude !== 0 || formData.longitude !== 0);
+    
+    if (!formData.naam || !hasValidGPS) {
       toast({
         title: "Verplichte velden",
-        description: "Vul minimaal naam en locatie in.",
+        description: gpsFromPhoto 
+          ? "Vul een naam in." 
+          : "Vul minimaal naam en GPS-coördinaten in (via foto of handmatig).",
         variant: "destructive",
       });
       return;
