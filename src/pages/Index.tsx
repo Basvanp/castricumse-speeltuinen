@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { Settings } from 'lucide-react';
 
 const Index = () => {
+  console.log('Index component rendering...');
   const { data: speeltuinen = [], isLoading, error } = useSpeeltuinen();
   const [selectedSpeeltuin, setSelectedSpeeltuin] = useState<Speeltuin | null>(null);
   const [filters, setFilters] = useState<SpeeltuinFilters>({

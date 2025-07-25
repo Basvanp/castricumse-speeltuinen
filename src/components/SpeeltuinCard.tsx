@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ExternalLink, Copy } from 'lucide-react';
 import { Speeltuin } from '@/types/speeltuin';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 
 interface SpeeltuinCardProps {
   speeltuin: Speeltuin;
