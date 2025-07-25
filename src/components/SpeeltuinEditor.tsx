@@ -122,6 +122,12 @@ const SpeeltuinEditor = () => {
     return decimal;
   };
 
+  // Validate GPS coordinates
+  const isValidGPS = (lat: number | null, lng: number | null): boolean => {
+    if (lat === null || lng === null) return false;
+    return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+  };
+
   const handleFileUpload = useCallback(async (file: File) => {
     setUploading(true);
     setGpsFromPhoto(false);
@@ -156,76 +162,87 @@ const SpeeltuinEditor = () => {
     }
     
     try {
-      // Parse EXIF data with enhanced configuration
-      const exifData = await exifr.parse(file, {
-        gps: true,
-        mergeOutput: false,
-        translateKeys: false,
-        translateValues: false,
-        reviveValues: false,
-        sanitize: false,
-        pick: ['GPSLatitude', 'GPSLongitude', 'GPSLatitudeRef', 'GPSLongitudeRef', 'latitude', 'longitude']
-      });
-      
-      console.log('Full EXIF data:', exifData);
-      
       let latitude = null;
       let longitude = null;
 
-      if (exifData) {
-        // Try multiple GPS field variations to support different camera formats
-        const latitudeFields = ['GPSLatitude', 'latitude', 'GPS_Latitude', 'Latitude'];
-        const longitudeFields = ['GPSLongitude', 'longitude', 'GPS_Longitude', 'Longitude'];
-        const latRefFields = ['GPSLatitudeRef', 'latitudeRef', 'GPS_LatitudeRef', 'LatitudeRef'];
-        const lonRefFields = ['GPSLongitudeRef', 'longitudeRef', 'GPS_LongitudeRef', 'LongitudeRef'];
+      // Method 1: Simple EXIF parsing (primary method)
+      try {
+        const exifData = await exifr.parse(file, { gps: true });
+        console.log('Method 1 - Simple EXIF:', exifData);
         
-        let latData = null, lonData = null, latRef = null, lonRef = null;
-        
-        // Find latitude data
-        for (const field of latitudeFields) {
-          if (exifData[field] !== undefined) {
-            latData = exifData[field];
-            break;
-          }
-        }
-        
-        // Find longitude data
-        for (const field of longitudeFields) {
-          if (exifData[field] !== undefined) {
-            lonData = exifData[field];
-            break;
-          }
-        }
-        
-        // Find latitude reference
-        for (const field of latRefFields) {
-          if (exifData[field] !== undefined) {
-            latRef = exifData[field];
-            break;
-          }
-        }
-        
-        // Find longitude reference
-        for (const field of lonRefFields) {
-          if (exifData[field] !== undefined) {
-            lonRef = exifData[field];
-            break;
-          }
-        }
-        
-        console.log('Found GPS data:', { latData, lonData, latRef, lonRef });
-        
-        // Convert to decimal if we have data
-        if (latData !== null && lonData !== null) {
-          latitude = convertGPSToDecimal(latData, latRef || 'N');
-          longitude = convertGPSToDecimal(lonData, lonRef || 'E');
+        if (exifData?.GPSLatitude && exifData?.GPSLongitude) {
+          latitude = convertGPSToDecimal(exifData.GPSLatitude, exifData.GPSLatitudeRef || 'N');
+          longitude = convertGPSToDecimal(exifData.GPSLongitude, exifData.GPSLongitudeRef || 'E');
           
-          console.log('Converted coordinates:', { latitude, longitude });
+          if (isValidGPS(latitude, longitude)) {
+            console.log('Method 1 success:', { latitude, longitude });
+          } else {
+            latitude = longitude = null;
+          }
+        }
+      } catch (error) {
+        console.log('Method 1 failed:', error);
+      }
+
+      // Method 2: Alternative field names (fallback)
+      if (!isValidGPS(latitude, longitude)) {
+        try {
+          const exifData = await exifr.parse(file, { 
+            gps: true,
+            pick: ['latitude', 'longitude', 'GPS_Latitude', 'GPS_Longitude']
+          });
+          console.log('Method 2 - Alternative fields:', exifData);
+          
+          const latData = exifData?.latitude || exifData?.GPS_Latitude;
+          const lonData = exifData?.longitude || exifData?.GPS_Longitude;
+          
+          if (latData && lonData) {
+            latitude = typeof latData === 'number' ? latData : convertGPSToDecimal(latData, 'N');
+            longitude = typeof lonData === 'number' ? lonData : convertGPSToDecimal(lonData, 'E');
+            
+            if (isValidGPS(latitude, longitude)) {
+              console.log('Method 2 success:', { latitude, longitude });
+            } else {
+              latitude = longitude = null;
+            }
+          }
+        } catch (error) {
+          console.log('Method 2 failed:', error);
+        }
+      }
+
+      // Method 3: Full EXIF scan (last resort)
+      if (!isValidGPS(latitude, longitude)) {
+        try {
+          const exifData = await exifr.parse(file);
+          console.log('Method 3 - Full scan:', exifData);
+          
+          // Look for any GPS-related fields
+          for (const [key, value] of Object.entries(exifData || {})) {
+            if (key.toLowerCase().includes('lat') && !latitude) {
+              const converted = convertGPSToDecimal(value, 'N');
+              if (converted && converted >= -90 && converted <= 90) {
+                latitude = converted;
+              }
+            }
+            if (key.toLowerCase().includes('lon') && !longitude) {
+              const converted = convertGPSToDecimal(value, 'E');
+              if (converted && converted >= -180 && converted <= 180) {
+                longitude = converted;
+              }
+            }
+          }
+          
+          if (isValidGPS(latitude, longitude)) {
+            console.log('Method 3 success:', { latitude, longitude });
+          }
+        } catch (error) {
+          console.log('Method 3 failed:', error);
         }
       }
 
       // Update form if GPS data was found
-      if (latitude !== null && longitude !== null) {
+      if (isValidGPS(latitude, longitude)) {
         setFormData(prev => ({
           ...prev,
           latitude,
@@ -234,22 +251,14 @@ const SpeeltuinEditor = () => {
         setGpsFromPhoto(true);
         toast({
           title: "GPS-locatie gevonden!",
-          description: `Coördinaten automatisch ingesteld: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
+          description: `Coördinaten automatisch ingesteld: ${latitude!.toFixed(6)}, ${longitude!.toFixed(6)}`,
         });
       } else {
-        if (exifData) {
-          toast({
-            title: "Geen GPS in foto",
-            description: "Deze foto bevat wel EXIF-data, maar geen GPS-coördinaten. Voer handmatig de locatie in.",
-            variant: "default",
-          });
-        } else {
-          toast({
-            title: "Geen EXIF-data",
-            description: "Deze foto bevat geen EXIF-data. Dit kan gebeuren bij screenshots of bewerkte afbeeldingen. Voer handmatig de GPS-coördinaten in.",
-            variant: "default",
-          });
-        }
+        toast({
+          title: "Geen GPS in foto",
+          description: "Deze foto bevat geen GPS-coördinaten. Voer handmatig de locatie in.",
+          variant: "default",
+        });
       }
 
       // Generate description from filename
