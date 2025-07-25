@@ -18,7 +18,7 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin }) => {
       navigator.clipboard.writeText(speeltuin.fixi_copy_tekst);
       toast({
         title: "Gekopieerd!",
-        description: "Meldingstekst is gekopieerd naar het klembord.",
+        description: "Locatie is gekopieerd naar het klembord.",
       });
     }
   };
@@ -178,7 +178,7 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin }) => {
               className="w-full flex items-center justify-center gap-2"
             >
               <Copy className="h-4 w-4" />
-              Kopieer meldingstekst
+              Kopieer locatie voor Fixi
             </Button>
           )}
           
