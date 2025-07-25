@@ -1,20 +1,73 @@
 import React, { useState } from 'react';
 import AdminLayout from '@/components/AdminLayout';
-import { useSpeeltuinen } from '@/hooks/useSpeeltuinen';
+import { useSpeeltuinen, useDeleteSpeeltuin } from '@/hooks/useSpeeltuinen';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
 import { MapPin, Search, Edit, Trash2, Eye } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 const AdminSpeeltuinen = () => {
   const { data: speeltuinen = [] } = useSpeeltuinen();
+  const deleteSpecltuin = useDeleteSpeeltuin();
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedSpeeltuin, setSelectedSpeeltuin] = useState(null);
 
   const filteredSpeeltuinen = speeltuinen.filter(speeltuin =>
     speeltuin.naam.toLowerCase().includes(searchTerm.toLowerCase()) ||
     speeltuin.omschrijving?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleView = (speeltuin) => {
+    setSelectedSpeeltuin(speeltuin);
+  };
+
+  const handleEdit = (speeltuin) => {
+    // Voor nu tonen we een toast, later kan een edit modal/pagina worden toegevoegd
+    toast({
+      title: "Edit functionaliteit",
+      description: "Edit functionaliteit wordt binnenkort toegevoegd.",
+    });
+  };
+
+  const handleDelete = (id) => {
+    deleteSpecltuin.mutate(id, {
+      onSuccess: () => {
+        toast({
+          title: "Speeltuin verwijderd",
+          description: "De speeltuin is succesvol verwijderd.",
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: "Fout bij verwijderen",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    });
+  };
 
   return (
     <AdminLayout 
@@ -77,15 +130,85 @@ const AdminSpeeltuinen = () => {
                         
                         {/* Actions */}
                         <div className="flex items-center gap-2 ml-4">
-                          <Button size="sm" variant="outline">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button size="sm" variant="outline">
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button size="sm" variant="outline" onClick={() => handleView(speeltuin)}>
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-2xl">
+                              <DialogHeader>
+                                <DialogTitle>{speeltuin.naam}</DialogTitle>
+                                <DialogDescription>
+                                  Bekijk alle details van deze speeltuin
+                                </DialogDescription>
+                              </DialogHeader>
+                              <div className="space-y-4">
+                                {speeltuin.afbeelding_url && (
+                                  <img
+                                    src={speeltuin.afbeelding_url}
+                                    alt={speeltuin.naam}
+                                    className="w-full h-48 object-cover rounded-lg"
+                                  />
+                                )}
+                                <div>
+                                  <h4 className="font-medium">Omschrijving</h4>
+                                  <p className="text-muted-foreground">{speeltuin.omschrijving || 'Geen omschrijving'}</p>
+                                </div>
+                                <div>
+                                  <h4 className="font-medium">Locatie</h4>
+                                  <p className="text-muted-foreground">
+                                    {speeltuin.latitude?.toFixed(6)}, {speeltuin.longitude?.toFixed(6)}
+                                  </p>
+                                </div>
+                                <div>
+                                  <h4 className="font-medium">Voorzieningen</h4>
+                                  <div className="flex flex-wrap gap-2 mt-2">
+                                    {speeltuin.heeft_glijbaan && <Badge variant="secondary">Glijbaan</Badge>}
+                                    {speeltuin.heeft_schommel && <Badge variant="secondary">Schommel</Badge>}
+                                    {speeltuin.heeft_zandbak && <Badge variant="secondary">Zandbak</Badge>}
+                                    {speeltuin.heeft_kabelbaan && <Badge variant="secondary">Kabelbaan</Badge>}
+                                    {speeltuin.heeft_bankjes && <Badge variant="secondary">Bankjes</Badge>}
+                                    {speeltuin.heeft_sportveld && <Badge variant="secondary">Sportveld</Badge>}
+                                    {!speeltuin.heeft_glijbaan && !speeltuin.heeft_schommel && !speeltuin.heeft_zandbak && 
+                                     !speeltuin.heeft_kabelbaan && !speeltuin.heeft_bankjes && !speeltuin.heeft_sportveld && (
+                                      <span className="text-muted-foreground">Geen voorzieningen opgegeven</span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                          
+                          <Button size="sm" variant="outline" onClick={() => handleEdit(speeltuin)}>
                             <Edit className="h-4 w-4" />
                           </Button>
-                          <Button size="sm" variant="outline" className="text-destructive hover:text-destructive">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button size="sm" variant="outline" className="text-destructive hover:text-destructive">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Speeltuin verwijderen</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Weet je zeker dat je "{speeltuin.naam}" wilt verwijderen? 
+                                  Deze actie kan niet ongedaan worden gemaakt.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Annuleren</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDelete(speeltuin.id)}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                  Verwijderen
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </div>
                       </div>
                       
