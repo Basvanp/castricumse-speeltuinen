@@ -101,7 +101,7 @@ const SpeeltuinEditor = () => {
     console.log('🖼️ Starting file upload for:', file.name, 'Size:', (file.size/1024/1024).toFixed(2) + 'MB', 'Type:', file.type);
     
     // Enhanced file validation
-    const maxSizeInMB = 5;
+    const maxSizeInMB = 10;
     const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
     
     if (file.size > maxSizeInBytes) {
@@ -114,12 +114,15 @@ const SpeeltuinEditor = () => {
       return;
     }
     
-    // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    // Validate file type - JPEG only for simplicity
+    const allowedTypes = ['image/jpeg', 'image/jpg'];
     if (!allowedTypes.includes(file.type)) {
+      const isHEIC = file.name.toLowerCase().includes('.heic');
       toast({
-        title: "Ongeldig bestandstype",
-        description: "Alleen JPEG, PNG en WebP afbeeldingen zijn toegestaan.",
+        title: "Alleen JPEG toegestaan",
+        description: isHEIC 
+          ? "HEIC-bestanden worden niet ondersteund. Maak JPEG-foto's in je camera-instellingen."
+          : "Alleen JPEG-afbeeldingen zijn toegestaan voor GPS-data extractie.",
         variant: "destructive",
       });
       setUploading(false);
