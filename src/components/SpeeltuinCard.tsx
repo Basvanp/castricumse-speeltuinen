@@ -87,7 +87,7 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin }) => {
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Playground image - always show (placeholder if no real image) */}
-        <div className="h-96 w-full rounded-lg overflow-hidden shadow-lg">
+        <div className="h-48 w-full rounded-lg overflow-hidden shadow-lg">
           <img
             src={speeltuin.afbeelding_url || getPlaceholderImage()}
             alt={speeltuin.naam}
