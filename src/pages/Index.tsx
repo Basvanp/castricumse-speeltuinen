@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useSpeeltuinen } from '@/hooks/useSpeeltuinen';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { Speeltuin, SpeeltuinFilters } from '@/types/speeltuin';
 import SpeeltuinKaart from '@/components/SpeeltuinKaart';
 import SpeeltuinCard from '@/components/SpeeltuinCard';
@@ -12,8 +13,9 @@ import { Settings, ChevronLeft, ChevronRight } from 'lucide-react';
 const Index = () => {
   const { data: speeltuinen = [], isLoading, error } = useSpeeltuinen();
   const { trackEvent } = useAnalytics();
+  const isMobile = useIsMobile();
   const [selectedSpeeltuin, setSelectedSpeeltuin] = useState<Speeltuin | null>(null);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => isMobile);
   const [filters, setFilters] = useState<SpeeltuinFilters>({
     leeftijd: {
       peuters: false,
@@ -159,19 +161,30 @@ const Index = () => {
         <div className="flex gap-8 relative">
           {/* Filters Sidebar */}
           <div className={`transition-all duration-300 ease-in-out ${
-            sidebarCollapsed ? '-ml-80 opacity-0 pointer-events-none' : 'ml-0 opacity-100'
-          } w-80 flex-shrink-0`}>
-            <SpeeltuinFiltersComponent filters={filters} onFiltersChange={setFilters} />
+            sidebarCollapsed 
+              ? isMobile 
+                ? 'fixed inset-0 -translate-x-full opacity-0 pointer-events-none z-20' 
+                : '-ml-80 opacity-0 pointer-events-none'
+              : isMobile
+                ? 'fixed inset-0 translate-x-0 opacity-100 z-20 bg-background'
+                : 'ml-0 opacity-100'
+          } ${isMobile ? 'w-full' : 'w-80'} flex-shrink-0`}>
+            {isMobile && !sidebarCollapsed && (
+              <div className="absolute inset-0 bg-black/20" onClick={() => setSidebarCollapsed(true)} />
+            )}
+            <div className={`${isMobile ? 'w-80 bg-background shadow-lg' : 'w-full'} relative`}>
+              <SpeeltuinFiltersComponent filters={filters} onFiltersChange={setFilters} />
+            </div>
           </div>
 
           {/* Toggle Button */}
-          <div className="absolute left-0 top-0 z-10">
+          <div className="absolute left-0 top-0 z-30">
             <Button
               variant="outline"
               size="icon"
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
               className={`transition-all duration-300 ease-in-out ${
-                sidebarCollapsed ? 'translate-x-0' : 'translate-x-80'
+                sidebarCollapsed ? 'translate-x-0' : isMobile ? 'translate-x-0' : 'translate-x-80'
               } bg-white shadow-md hover:shadow-lg`}
             >
               {sidebarCollapsed ? (
