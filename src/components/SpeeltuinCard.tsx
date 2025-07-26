@@ -2,16 +2,18 @@ import React, { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ExternalLink, Copy } from 'lucide-react';
+import { ExternalLink, Copy, MapPin } from 'lucide-react';
 import { Speeltuin } from '@/types/speeltuin';
 import { useToast } from '@/hooks/use-toast';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { calculateDistance } from '@/lib/utils';
 
 interface SpeeltuinCardProps {
   speeltuin: Speeltuin;
+  userLocation?: [number, number] | null;
 }
 
-const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin }) => {
+const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin, userLocation }) => {
   const { toast } = useToast();
   const { trackEvent } = useAnalytics();
 
@@ -66,6 +68,20 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin }) => {
     return overig;
   };
 
+  // Calculate distance from user location
+  const getDistance = () => {
+    if (!userLocation || !speeltuin.latitude || !speeltuin.longitude) return null;
+    
+    const distance = calculateDistance(
+      userLocation[0], userLocation[1],
+      speeltuin.latitude, speeltuin.longitude
+    );
+    
+    return distance < 1 
+      ? `${Math.round(distance * 1000)}m`
+      : `${distance.toFixed(1)}km`;
+  };
+
   // Get a consistent placeholder image based on speeltuin name
   const getPlaceholderImage = () => {
     const placeholders = [
@@ -87,10 +103,20 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin }) => {
     return `https://images.unsplash.com/${placeholders[index]}?auto=format&fit=crop&w=800&q=80`;
   };
 
+  const distance = getDistance();
+
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle className="text-xl">{speeltuin.naam}</CardTitle>
+        <div className="flex items-start justify-between">
+          <CardTitle className="text-xl">{speeltuin.naam}</CardTitle>
+          {distance && (
+            <Badge variant="outline" className="flex items-center gap-1 text-xs">
+              <MapPin className="h-3 w-3" />
+              {distance}
+            </Badge>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Playground image - always show (placeholder if no real image) */}

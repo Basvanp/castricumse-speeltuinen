@@ -9,6 +9,7 @@ import SpeeltuinFiltersComponent from '@/components/SpeeltuinFilters';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Settings, ChevronLeft, ChevronRight } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 const Index = () => {
   const { data: speeltuinen = [], isLoading, error } = useSpeeltuinen();
@@ -16,6 +17,8 @@ const Index = () => {
   const isMobile = useIsMobile();
   const [selectedSpeeltuin, setSelectedSpeeltuin] = useState<Speeltuin | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => isMobile);
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
   const [filters, setFilters] = useState<SpeeltuinFilters>({
     leeftijd: {
       peuters: false,
@@ -56,6 +59,50 @@ const Index = () => {
   useEffect(() => {
     trackEvent('page_view');
   }, [trackEvent]);
+
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      toast({
+        title: "Geolocatie niet ondersteund",
+        description: "Uw browser ondersteunt geen geolocatie.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const newLocation: [number, number] = [
+          position.coords.latitude,
+          position.coords.longitude
+        ];
+        setUserLocation(newLocation);
+        setIsLocating(false);
+        toast({
+          title: "Locatie gevonden",
+          description: "De kaart is gecentreerd op uw locatie.",
+        });
+      },
+      (error) => {
+        setIsLocating(false);
+        let message = "Er is een fout opgetreden bij het ophalen van uw locatie.";
+        if (error.code === error.PERMISSION_DENIED) {
+          message = "Locatietoegang geweigerd. U kunt dit wijzigen in uw browserinstellingen.";
+        }
+        toast({
+          title: "Locatie niet beschikbaar",
+          description: message,
+          variant: "destructive",
+        });
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 300000
+      }
+    );
+  };
 
   const filteredSpeeltuinen = useMemo(() => {
     return speeltuinen.filter((speeltuin) => {
@@ -203,6 +250,9 @@ const Index = () => {
               <SpeeltuinKaart 
                 speeltuinen={filteredSpeeltuinen} 
                 onSpeeltuinSelect={setSelectedSpeeltuin}
+                userLocation={userLocation}
+                isLocating={isLocating}
+                onLocationRequest={getCurrentLocation}
               />
             </div>
 
@@ -210,7 +260,7 @@ const Index = () => {
             {selectedSpeeltuin && (
               <div>
                 <h2 className="text-xl font-semibold mb-4">Geselecteerde speeltuin</h2>
-                <SpeeltuinCard speeltuin={selectedSpeeltuin} />
+                <SpeeltuinCard speeltuin={selectedSpeeltuin} userLocation={userLocation} />
               </div>
             )}
 
@@ -228,7 +278,7 @@ const Index = () => {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {filteredSpeeltuinen.map((speeltuin) => (
-                    <SpeeltuinCard key={speeltuin.id} speeltuin={speeltuin} />
+                    <SpeeltuinCard key={speeltuin.id} speeltuin={speeltuin} userLocation={userLocation} />
                   ))}
                 </div>
               )}
