@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import AdminLayout from '@/components/AdminLayout';
-import { useSpeeltuinen, useDeleteSpeeltuin } from '@/hooks/useSpeeltuinen';
+import { useSpeeltuinen, useDeleteSpeeltuin, useUpdateSpeeltuin } from '@/hooks/useSpeeltuinen';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { MapPin, Search, Edit, Trash2, Eye } from 'lucide-react';
+import EditSpeeltuinDialog from '@/components/EditSpeeltuinDialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,6 +34,7 @@ const AdminSpeeltuinen = () => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSpeeltuin, setSelectedSpeeltuin] = useState(null);
+  const [editingSpeeltuin, setEditingSpeeltuin] = useState(null);
 
   const filteredSpeeltuinen = speeltuinen.filter(speeltuin =>
     speeltuin.naam.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -44,11 +46,7 @@ const AdminSpeeltuinen = () => {
   };
 
   const handleEdit = (speeltuin) => {
-    // Voor nu tonen we een toast, later kan een edit modal/pagina worden toegevoegd
-    toast({
-      title: "Edit functionaliteit",
-      description: "Edit functionaliteit wordt binnenkort toegevoegd.",
-    });
+    setEditingSpeeltuin(speeltuin);
   };
 
   const handleDelete = (id) => {
@@ -245,6 +243,13 @@ const AdminSpeeltuinen = () => {
             ))
           )}
         </div>
+
+        {/* Edit Dialog */}
+        <EditSpeeltuinDialog
+          speeltuin={editingSpeeltuin}
+          open={!!editingSpeeltuin}
+          onOpenChange={(open) => !open && setEditingSpeeltuin(null)}
+        />
       </div>
     </AdminLayout>
   );
