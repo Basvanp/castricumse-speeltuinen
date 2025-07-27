@@ -85,6 +85,8 @@ const SpeeltuinEditor = () => {
     extra_educatief: false,
     extra_kunstwerk_thema: false,
     extra_buurtinitiatief: false,
+    // Badge selectie (vereenvoudigd)
+    selected_badge: '' as BadgeType | '',
   });
 
   const [dragOver, setDragOver] = useState(false);
@@ -687,6 +689,8 @@ const SpeeltuinEditor = () => {
           extra_educatief: false,
           extra_kunstwerk_thema: false,
           extra_buurtinitiatief: false,
+          // Badge selectie (vereenvoudigd)
+          selected_badge: '' as BadgeType | '',
         });
         setGpsFromPhoto(false);
         setGpsData(null);
@@ -1036,6 +1040,67 @@ const SpeeltuinEditor = () => {
                   <Label htmlFor={key}>{label}</Label>
                 </div>
               ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Badge Selectie (vereenvoudigd) */}
+        <Card>
+          <CardContent className="pt-6">
+            <h3 className="font-medium mb-4">Badge Selectie</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Selecteer welke badge getoond wordt op de speeltuinkaart. Kies er slechts één voor een clean design.
+            </p>
+            <div className="space-y-3">
+              {[
+                // Toegankelijkheid
+                { key: 'rolstoelvriendelijk', label: 'Rolstoelvriendelijk', description: 'Voor toegankelijke speeltuinen' },
+                { key: 'babytoegankelijk', label: 'Babytoegankelijk', description: 'Voor peuters en baby\'s' },
+                
+                // Type speeltuin
+                { key: 'natuurspeeltuin', label: 'Natuurspeeltuin', description: 'Voor speeltuinen met natuurlijke elementen' },
+                { key: 'waterspeeltuin', label: 'Waterspeeltuin', description: 'Voor speeltuinen met waterelementen' },
+                { key: 'avonturenspeeltuin', label: 'Avonturenspeeltuin', description: 'Voor avontuurlijke speeltuinen' },
+                
+                // Voorzieningen
+                { key: 'toiletten', label: 'Toiletten', description: 'Voor speeltuinen met toilet voorzieningen' },
+                { key: 'parkeren', label: 'Parkeren', description: 'Voor speeltuinen met parkeervoorzieningen' },
+                { key: 'horeca', label: 'Horeca', description: 'Voor speeltuinen met horeca voorzieningen' },
+              ].map(({ key, label, description }) => (
+                <div key={key} className="flex items-start space-x-3 p-2 border rounded-md hover:bg-muted/50">
+                  <input
+                    type="radio"
+                    id={`badge-${key}`}
+                    name="selected_badge"
+                    checked={formData.selected_badge === key}
+                    onChange={() => setFormData(prev => ({ ...prev, selected_badge: key as BadgeType }))}
+                    className="h-4 w-4 mt-0.5"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor={`badge-${key}`} className="font-medium">{label}</Label>
+                      {formData.selected_badge === key && (
+                        <SpeeltuinBadge type={key as BadgeType} />
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">{description}</p>
+                  </div>
+                </div>
+              ))}
+              <div className="flex items-start space-x-3 p-2 border rounded-md hover:bg-muted/50">
+                <input
+                  type="radio"
+                  id="badge-none"
+                  name="selected_badge"
+                  checked={formData.selected_badge === ''}
+                  onChange={() => setFormData(prev => ({ ...prev, selected_badge: '' }))}
+                  className="h-4 w-4 mt-0.5"
+                />
+                <div className="flex-1">
+                  <Label htmlFor="badge-none" className="font-medium">Geen badge</Label>
+                  <p className="text-xs text-muted-foreground mt-1">Geen badge tonen op de kaart</p>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
