@@ -24,12 +24,14 @@ export const useUserRole = () => {
       setLoading(true);
 
       try {
+        console.log('🔐 useUserRole: About to query user_roles table for user:', user.id);
+        
         const { data, error } = await supabase
           .from('user_roles')
           .select('role')
           .eq('user_id', user.id);
-
-        console.log('🔐 useUserRole: Database response:', { data, error });
+        
+        console.log('🔐 useUserRole: Raw query result:', { data, error, user_id: user.id });
 
         if (error) {
           console.error('Error fetching user role:', error);
