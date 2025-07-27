@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown } from 'lucide-react';
 import { useAnalytics } from '@/hooks/useAnalytics';
@@ -10,9 +11,11 @@ import { SpeeltuinFilters as FiltersType } from '@/types/speeltuin';
 interface SpeeltuinFiltersProps {
   filters: FiltersType;
   onFiltersChange: (filters: FiltersType) => void;
+  onApplyFilters?: () => void;
+  onClearFilters?: () => void;
 }
 
-const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({ filters, onFiltersChange }) => {
+const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({ filters, onFiltersChange, onApplyFilters, onClearFilters }) => {
   const { trackEvent } = useAnalytics();
 
   const updateFilter = (
@@ -359,6 +362,25 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({ filters, onFiltersC
           </CollapsibleContent>
         </Collapsible>
       </CardContent>
+      
+      <div className="flex-shrink-0 p-4 border-t border-border bg-card">
+        <div className="flex gap-3">
+          <Button
+            variant="default"
+            className="flex-1"
+            onClick={onApplyFilters}
+          >
+            Pas toe
+          </Button>
+          <Button
+            variant="outline"
+            className="flex-1"
+            onClick={onClearFilters}
+          >
+            Wis selectie
+          </Button>
+        </div>
+      </div>
     </Card>
   );
 };
