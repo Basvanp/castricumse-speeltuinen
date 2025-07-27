@@ -34,6 +34,12 @@ const Admin = () => {
         return;
       }
       
+      // Wait a bit more to ensure role is properly determined after login
+      if (user && isAdmin === null) {
+        console.log('🚀 Admin: User exists but role not yet determined, waiting...');
+        return;
+      }
+      
       // User exists, check admin status
       if (!isAdmin) {
         console.log('🚀 Admin: User exists but is not admin, redirecting to home');

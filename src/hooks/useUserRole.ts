@@ -14,9 +14,9 @@ export const useUserRole = () => {
       console.log('🔐 useUserRole: fetchUserRole called with user:', !!user);
       
       if (!user) {
-        console.log('🔐 useUserRole: No user found, setting role to null and loading to false');
+        console.log('🔐 useUserRole: No user found, setting role to null but keeping loading true until auth is stable');
         setRole(null);
-        setLoading(false);
+        // Don't set loading to false immediately - wait for auth to stabilize
         return;
       }
 
@@ -59,7 +59,17 @@ export const useUserRole = () => {
       }
     };
 
+    // Add a small delay to handle auth transitions properly
+    const timer = setTimeout(() => {
+      if (!user) {
+        console.log('🔐 useUserRole: Auth stabilized with no user, setting loading to false');
+        setLoading(false);
+      }
+    }, 100);
+
     fetchUserRole();
+
+    return () => clearTimeout(timer);
   }, [user]);
 
   const isAdmin = role === 'admin';
