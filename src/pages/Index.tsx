@@ -6,9 +6,9 @@ import { Speeltuin, SpeeltuinFilters } from '@/types/speeltuin';
 import SpeeltuinKaart from '@/components/SpeeltuinKaart';
 import SpeeltuinCard from '@/components/SpeeltuinCard';
 import SpeeltuinFiltersComponent from '@/components/SpeeltuinFilters';
+import AdminButton from '@/components/AdminButton';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
-import { Settings, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 const Index = () => {
@@ -194,12 +194,7 @@ const Index = () => {
                 Ontdek alle speeltuinen in Castricum en omgeving
               </p>
             </div>
-            <Button asChild variant="outline" size="sm">
-              <Link to="/admin" className="flex items-center gap-2">
-                <Settings className="h-4 w-4" />
-                Admin
-              </Link>
-            </Button>
+            <AdminButton />
           </div>
         </div>
       </header>
