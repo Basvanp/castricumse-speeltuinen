@@ -20,7 +20,7 @@ const Index = () => {
   const { trackEvent } = useAnalytics();
   const isMobile = useIsMobile();
   const [selectedSpeeltuin, setSelectedSpeeltuin] = useState<Speeltuin | null>(null);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => isMobile);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [isLocating, setIsLocating] = useState(false);
   const [filters, setFilters] = useState<SpeeltuinFilters>({
@@ -63,6 +63,16 @@ const Index = () => {
   useEffect(() => {
     trackEvent('page_view');
   }, [trackEvent]);
+
+  // Handle responsive sidebar behavior
+  useEffect(() => {
+    // On desktop, auto-expand sidebar; on mobile, keep collapsed
+    if (!isMobile && sidebarCollapsed) {
+      setSidebarCollapsed(false);
+    } else if (isMobile && !sidebarCollapsed) {
+      setSidebarCollapsed(true);
+    }
+  }, [isMobile]);
 
   // Generate structured data
   const structuredData = useMemo(() => {
