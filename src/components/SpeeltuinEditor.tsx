@@ -20,6 +20,7 @@ const SpeeltuinEditor = () => {
     longitude: null as number | null,
     omschrijving: '',
     afbeelding_url: '',
+    bouwjaar: null as number | null,
     // Voorzieningen
     heeft_glijbaan: false,
     heeft_schommel: false,
@@ -601,6 +602,7 @@ const SpeeltuinEditor = () => {
           longitude: null,
           omschrijving: '',
           afbeelding_url: '',
+          bouwjaar: null,
           heeft_glijbaan: false,
           heeft_schommel: false,
           heeft_zandbak: false,
@@ -827,6 +829,19 @@ const SpeeltuinEditor = () => {
         />
       </div>
 
+      <div>
+        <Label htmlFor="bouwjaar">Bouwjaar (optioneel)</Label>
+        <Input
+          id="bouwjaar"
+          type="number"
+          min="1900"
+          max={new Date().getFullYear()}
+          value={formData.bouwjaar || ''}
+          onChange={(e) => setFormData(prev => ({ ...prev, bouwjaar: e.target.value ? parseInt(e.target.value) : null }))}
+          placeholder="Bijv. 2020"
+        />
+      </div>
+
       {/* Checkboxes in Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Voorzieningen */}
@@ -972,13 +987,33 @@ const SpeeltuinEditor = () => {
             </p>
             <div className="space-y-3">
               {[
+                // Toegankelijkheid
+                { key: 'rolstoelvriendelijk', label: 'Rolstoelvriendelijk', description: 'Voor toegankelijke speeltuinen' },
+                { key: 'babytoegankelijk', label: 'Babytoegankelijk', description: 'Voor peuters en baby\'s' },
+                { key: 'sensory-friendly', label: 'Sensory-friendly', description: 'Voor kinderen met sensorische behoeften' },
+                
+                // Type speeltuin
                 { key: 'natuurspeeltuin', label: 'Natuurspeeltuin', description: 'Voor speeltuinen met natuurlijke elementen' },
                 { key: 'waterspeeltuin', label: 'Waterspeeltuin', description: 'Voor speeltuinen met waterelementen' },
-                { key: 'horeca', label: 'Horeca', description: 'Voor speeltuinen met horeca voorzieningen' },
-                { key: 'rolstoelvriendelijk', label: 'Rolstoelvriendelijk', description: 'Voor toegankelijke speeltuinen' },
-                { key: 'premium', label: 'Premium', description: 'Voor grote speelparken met extra voorzieningen' },
+                { key: 'avonturenspeeltuin', label: 'Avonturenspeeltuin', description: 'Voor avontuurlijke speeltuinen' },
+                { key: 'creatieve-speeltuin', label: 'Creatieve speeltuin', description: 'Voor creatieve en artistieke speeltuinen' },
+                { key: 'actieve-speeltuin', label: 'Actieve speeltuin', description: 'Voor sportieve en actieve speeltuinen' },
+                
+                // Leeftijdsgroepen
+                { key: '0-3-jaar', label: '0-3 jaar', description: 'Speciaal voor peuters en kleuters' },
+                { key: '4-8-jaar', label: '4-8 jaar', description: 'Voor lagere schoolkinderen' },
+                { key: '9-12-jaar', label: '9-12 jaar', description: 'Voor oudere kinderen' },
+                { key: 'alle-leeftijden', label: 'Alle leeftijden', description: 'Voor alle leeftijdsgroepen' },
+                
+                // Voorzieningen
                 { key: 'toiletten', label: 'Toiletten', description: 'Voor speeltuinen met toilet voorzieningen' },
                 { key: 'parkeren', label: 'Parkeren', description: 'Voor speeltuinen met parkeervoorzieningen' },
+                { key: 'horeca', label: 'Horeca', description: 'Voor speeltuinen met horeca voorzieningen' },
+                { key: 'honden-toegestaan', label: 'Honden toegestaan', description: 'Honden zijn welkom' },
+                { key: 'honden-verboden', label: 'Honden verboden', description: 'Honden niet toegestaan' },
+                
+                // Bijzondere kenmerken
+                { key: 'premium', label: 'Premium', description: 'Voor grote speelparken met extra voorzieningen' },
               ].map(({ key, label, description }) => (
                 <div key={key} className="flex items-start space-x-3 p-2 border rounded-md hover:bg-muted/50">
                   <input
