@@ -320,6 +320,13 @@ const SpeeltuinEditor = () => {
         setCompressing(false);
       }
 
+      // Generate description from filename first
+      const description = generateDescriptionFromFilename(file.name);
+      setFormData(prev => ({
+        ...prev,
+        omschrijving: description,
+      }));
+
       // Update form if GPS data was found
       if (isValidGPS(latitude, longitude)) {
         setFormData(prev => ({
@@ -336,13 +343,20 @@ const SpeeltuinEditor = () => {
         
         // Get location name and update the speeltuin name
         try {
+          console.log('Getting location name for:', latitude, longitude);
           const locationName = await getLocationName(latitude!, longitude!);
+          console.log('Location name received:', locationName);
           setFormData(prev => ({
             ...prev,
             naam: `Speeltuin ${locationName}`,
           }));
         } catch (error) {
           console.error('Failed to get location name:', error);
+          // Fallback to generic name
+          setFormData(prev => ({
+            ...prev,
+            naam: `Speeltuin GPS-locatie`,
+          }));
         }
         
         const dateInfo = photoDate ? ` (foto: ${new Date(photoDate).toLocaleString()})` : '';
@@ -373,47 +387,56 @@ const SpeeltuinEditor = () => {
             
             // Get location name and update the speeltuin name
             try {
+              console.log('Getting location name for current location:', currentLocation);
               const locationName = await getLocationName(currentLocation.lat, currentLocation.lng);
+              console.log('Current location name received:', locationName);
               setFormData(prev => ({
                 ...prev,
                 naam: `Speeltuin ${locationName}`,
               }));
             } catch (error) {
-              console.error('Failed to get location name:', error);
+              console.error('Failed to get location name for current location:', error);
+              // Fallback to generic name
+              setFormData(prev => ({
+                ...prev,
+                naam: `Speeltuin Huidige locatie`,
+              }));
             }
             
             toast({
               title: "📍 Huidige locatie gebruikt",
               description: `Coördinaten: ${currentLocation.lat.toFixed(6)}, ${currentLocation.lng.toFixed(6)}`,
             });
+          } else {
+            // No GPS available, use filename-based name
+            const suggestedName = file.name
+              .replace(/\.(jpg|jpeg|png|gif)$/i, '')
+              .replace(/[_-]/g, ' ')
+              .replace(/\b\w/g, l => l.toUpperCase());
+            
+            setFormData(prev => ({
+              ...prev,
+              naam: `Speeltuin ${suggestedName}`,
+            }));
           }
         } else {
+          // Drag & drop without GPS - use filename
+          const suggestedName = file.name
+            .replace(/\.(jpg|jpeg|png|gif)$/i, '')
+            .replace(/[_-]/g, ' ')
+            .replace(/\b\w/g, l => l.toUpperCase());
+          
+          setFormData(prev => ({
+            ...prev,
+            naam: `Speeltuin ${suggestedName}`,
+          }));
+          
           toast({
             title: "Geen GPS in foto",
             description: "Deze foto bevat geen GPS-coördinaten. Voer handmatig de locatie in.",
             variant: "default",
           });
         }
-      }
-
-      // Generate description from filename
-      const description = generateDescriptionFromFilename(file.name);
-      setFormData(prev => ({
-        ...prev,
-        omschrijving: description,
-      }));
-
-      // Only set name from filename if no GPS location was found
-      if (!isValidGPS(latitude, longitude)) {
-        const suggestedName = file.name
-          .replace(/\.(jpg|jpeg|png|gif)$/i, '')
-          .replace(/[_-]/g, ' ')
-          .replace(/\b\w/g, l => l.toUpperCase());
-        
-        setFormData(prev => ({
-          ...prev,
-          naam: `Speeltuin ${suggestedName}`,
-        }));
       }
 
       // Upload file to Supabase Storage
