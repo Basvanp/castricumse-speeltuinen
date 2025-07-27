@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { useCreateSpeeltuin } from '@/hooks/useSpeeltuinen';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,8 +8,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Upload, CheckCircle } from 'lucide-react';
+import { Upload, CheckCircle, Camera, MapPin, AlertTriangle } from 'lucide-react';
 import exifr from 'exifr';
+import { compressImage, validateJPEGFile } from '@/utils/imageCompression';
 
 const SpeeltuinEditor = () => {
   const [formData, setFormData] = useState({
@@ -48,9 +49,12 @@ const SpeeltuinEditor = () => {
 
   const [dragOver, setDragOver] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [compressing, setCompressing] = useState(false);
   const [gpsFromPhoto, setGpsFromPhoto] = useState(false);
+  const [gpsData, setGpsData] = useState<{ lat: number; lng: number; date?: string } | null>(null);
   const { mutate: createSpeeltuin, isPending } = useCreateSpeeltuin();
   const { toast } = useToast();
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const generateDescriptionFromFilename = (filename: string) => {
     const name = filename.toLowerCase().replace(/\.(jpg|jpeg|png|gif)$/i, '');
@@ -134,117 +138,110 @@ const SpeeltuinEditor = () => {
     return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
   };
 
-  const handleFileUpload = useCallback(async (file: File) => {
+  const handleFileUpload = useCallback(async (file: File, fromCamera = false) => {
     setUploading(true);
     setGpsFromPhoto(false);
+    setGpsData(null);
     
-    // Enhanced file validation
-    const maxSizeInMB = 10;
-    const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
-    
-    if (file.size > maxSizeInBytes) {
-      toast({
-        title: "Bestand te groot",
-        description: `Het bestand mag niet groter zijn dan ${maxSizeInMB}MB.`,
-        variant: "destructive",
-      });
-      setUploading(false);
-      return;
-    }
-    
-    // Validate file type - JPEG only for simplicity
-    const allowedTypes = ['image/jpeg', 'image/jpg'];
-    if (!allowedTypes.includes(file.type)) {
-      const isHEIC = file.name.toLowerCase().includes('.heic');
-      toast({
-        title: "Alleen JPEG toegestaan",
-        description: isHEIC 
-          ? "HEIC-bestanden worden niet ondersteund. Maak JPEG-foto's in je camera-instellingen."
-          : "Alleen JPEG-afbeeldingen zijn toegestaan voor GPS-data extractie.",
-        variant: "destructive",
-      });
-      setUploading(false);
-      return;
+    // Validate JPEG for camera uploads
+    if (fromCamera) {
+      const validation = validateJPEGFile(file);
+      if (!validation.isValid) {
+        toast({
+          title: "Ongeldig bestandstype",
+          description: validation.errorMessage,
+          variant: "destructive",
+        });
+        setUploading(false);
+        return;
+      }
+    } else {
+      // Original validation for drag & drop
+      const maxSizeInMB = 10;
+      const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
+      
+      if (file.size > maxSizeInBytes) {
+        toast({
+          title: "Bestand te groot",
+          description: `Het bestand mag niet groter zijn dan ${maxSizeInMB}MB.`,
+          variant: "destructive",
+        });
+        setUploading(false);
+        return;
+      }
+      
+      // Validate file type - JPEG only for simplicity
+      const allowedTypes = ['image/jpeg', 'image/jpg'];
+      if (!allowedTypes.includes(file.type)) {
+        const isHEIC = file.name.toLowerCase().includes('.heic');
+        toast({
+          title: "Alleen JPEG toegestaan",
+          description: isHEIC 
+            ? "HEIC-bestanden worden niet ondersteund. Maak JPEG-foto's in je camera-instellingen."
+            : "Alleen JPEG-afbeeldingen zijn toegestaan voor GPS-data extractie.",
+          variant: "destructive",
+        });
+        setUploading(false);
+        return;
+      }
     }
     
     try {
       let latitude = null;
       let longitude = null;
+      let photoDate = null;
 
-      // Method 1: Simple EXIF parsing (primary method)
+      // Extract EXIF data including GPS and date
       try {
-        const exifData = await exifr.parse(file, { gps: true });
-        console.log('Method 1 - Simple EXIF:', exifData);
+        const exifData = await exifr.parse(file, { 
+          gps: true, 
+          pick: ['GPSLatitude', 'GPSLongitude', 'GPSLatitudeRef', 'GPSLongitudeRef', 'DateTimeOriginal', 'DateTime']
+        });
+        console.log('EXIF data:', exifData);
         
+        // Extract GPS coordinates
         if (exifData?.GPSLatitude && exifData?.GPSLongitude) {
           latitude = convertGPSToDecimal(exifData.GPSLatitude, exifData.GPSLatitudeRef || 'N');
           longitude = convertGPSToDecimal(exifData.GPSLongitude, exifData.GPSLongitudeRef || 'E');
           
           if (isValidGPS(latitude, longitude)) {
-            console.log('Method 1 success:', { latitude, longitude });
+            console.log('GPS extraction success:', { latitude, longitude });
           } else {
             latitude = longitude = null;
           }
         }
+
+        // Extract photo date
+        photoDate = exifData?.DateTimeOriginal || exifData?.DateTime;
+        if (photoDate) {
+          console.log('Photo date:', photoDate);
+        }
       } catch (error) {
-        console.log('Method 1 failed:', error);
+        console.log('EXIF extraction failed:', error);
       }
 
-      // Method 2: Alternative field names (fallback)
-      if (!isValidGPS(latitude, longitude)) {
+      // Compress image if from camera
+      let fileToUpload = file;
+      if (fromCamera) {
+        setCompressing(true);
         try {
-          const exifData = await exifr.parse(file, { 
-            gps: true,
-            pick: ['latitude', 'longitude', 'GPS_Latitude', 'GPS_Longitude']
+          console.log(`Original file size: ${(file.size / 1024).toFixed(1)}KB`);
+          fileToUpload = await compressImage(file);
+          console.log(`Compressed file size: ${(fileToUpload.size / 1024).toFixed(1)}KB`);
+          
+          toast({
+            title: "Foto gecomprimeerd",
+            description: `Grootte gereduceerd van ${(file.size / 1024).toFixed(0)}KB naar ${(fileToUpload.size / 1024).toFixed(0)}KB`,
           });
-          console.log('Method 2 - Alternative fields:', exifData);
-          
-          const latData = exifData?.latitude || exifData?.GPS_Latitude;
-          const lonData = exifData?.longitude || exifData?.GPS_Longitude;
-          
-          if (latData && lonData) {
-            latitude = typeof latData === 'number' ? latData : convertGPSToDecimal(latData, 'N');
-            longitude = typeof lonData === 'number' ? lonData : convertGPSToDecimal(lonData, 'E');
-            
-            if (isValidGPS(latitude, longitude)) {
-              console.log('Method 2 success:', { latitude, longitude });
-            } else {
-              latitude = longitude = null;
-            }
-          }
         } catch (error) {
-          console.log('Method 2 failed:', error);
+          console.error('Compression failed:', error);
+          toast({
+            title: "Compressie mislukt",
+            description: "Originele foto wordt gebruikt.",
+            variant: "default",
+          });
         }
-      }
-
-      // Method 3: Full EXIF scan (last resort)
-      if (!isValidGPS(latitude, longitude)) {
-        try {
-          const exifData = await exifr.parse(file);
-          console.log('Method 3 - Full scan:', exifData);
-          
-          // Look for any GPS-related fields
-          for (const [key, value] of Object.entries(exifData || {})) {
-            if (key.toLowerCase().includes('lat') && !latitude) {
-              const converted = convertGPSToDecimal(value, 'N');
-              if (converted && converted >= -90 && converted <= 90) {
-                latitude = converted;
-              }
-            }
-            if (key.toLowerCase().includes('lon') && !longitude) {
-              const converted = convertGPSToDecimal(value, 'E');
-              if (converted && converted >= -180 && converted <= 180) {
-                longitude = converted;
-              }
-            }
-          }
-          
-          if (isValidGPS(latitude, longitude)) {
-            console.log('Method 3 success:', { latitude, longitude });
-          }
-        } catch (error) {
-          console.log('Method 3 failed:', error);
-        }
+        setCompressing(false);
       }
 
       // Update form if GPS data was found
@@ -255,14 +252,23 @@ const SpeeltuinEditor = () => {
           longitude,
         }));
         setGpsFromPhoto(true);
+        setGpsData({ 
+          lat: latitude!, 
+          lng: longitude!, 
+          date: photoDate ? new Date(photoDate).toLocaleString() : undefined 
+        });
+        
+        const dateInfo = photoDate ? ` (foto: ${new Date(photoDate).toLocaleString()})` : '';
         toast({
-          title: "GPS-locatie gevonden!",
-          description: `Coördinaten automatisch ingesteld: ${latitude!.toFixed(6)}, ${longitude!.toFixed(6)}`,
+          title: "📍 GPS-locatie gevonden!",
+          description: `Coördinaten: ${latitude!.toFixed(6)}, ${longitude!.toFixed(6)}${dateInfo}`,
         });
       } else {
         toast({
           title: "Geen GPS in foto",
-          description: "Deze foto bevat geen GPS-coördinaten. Voer handmatig de locatie in.",
+          description: fromCamera 
+            ? "Zorg dat locatieservices aan staan bij het maken van foto's."
+            : "Deze foto bevat geen GPS-coördinaten. Voer handmatig de locatie in.",
           variant: "default",
         });
       }
@@ -286,12 +292,12 @@ const SpeeltuinEditor = () => {
       }));
 
       // Upload file to Supabase Storage
-      const fileExt = file.name.split('.').pop();
+      const fileExt = fileToUpload.name.split('.').pop();
       const fileName = `${Date.now()}.${fileExt}`;
       
       const { data, error } = await supabase.storage
         .from('speeltuin-fotos')
-        .upload(fileName, file);
+        .upload(fileName, fileToUpload);
 
       if (error) {
         throw error;
@@ -344,6 +350,22 @@ const SpeeltuinEditor = () => {
   const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setDragOver(false);
+  }, []);
+
+  // Camera upload handler
+  const handleCameraCapture = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleFileUpload(file, true);
+    }
+    // Reset input value to allow same file selection
+    if (cameraInputRef.current) {
+      cameraInputRef.current.value = '';
+    }
+  }, [handleFileUpload]);
+
+  const openCamera = useCallback(() => {
+    cameraInputRef.current?.click();
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -402,6 +424,7 @@ const SpeeltuinEditor = () => {
           heeft_parkeerplaats: false,
         });
         setGpsFromPhoto(false);
+        setGpsData(null);
       },
       onError: (error) => {
         toast({
@@ -416,35 +439,89 @@ const SpeeltuinEditor = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Image Upload */}
-      <div
-        className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-          dragOver ? 'border-primary bg-primary/5' : 'border-muted-foreground/25'
-        }`}
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-      >
-        {uploading ? (
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-        ) : formData.afbeelding_url ? (
-          <div className="space-y-4">
-            <img
-              src={formData.afbeelding_url}
-              alt="Preview"
-              className="w-full h-32 object-cover rounded mx-auto"
-            />
-            <p className="text-sm text-muted-foreground">
-              Afbeelding geüpload! Sleep een nieuwe afbeelding om te vervangen.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
-            <div>
-              <p className="text-lg font-medium">Sleep afbeelding hier</p>
+      <div className="space-y-4">
+        <div
+          className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+            dragOver ? 'border-primary bg-primary/5' : 'border-muted-foreground/25'
+          }`}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+        >
+          {uploading || compressing ? (
+            <div className="space-y-2">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
               <p className="text-sm text-muted-foreground">
-                EXIF GPS-data wordt automatisch uitgelezen (optioneel)
+                {compressing ? 'Foto wordt gecomprimeerd...' : 'Uploaden...'}
               </p>
+            </div>
+          ) : formData.afbeelding_url ? (
+            <div className="space-y-4">
+              <div className="relative">
+                <img
+                  src={formData.afbeelding_url}
+                  alt="Preview"
+                  className="w-full h-32 object-cover rounded mx-auto"
+                />
+                {gpsFromPhoto && (
+                  <div className="absolute top-2 left-2 bg-green-500 text-white rounded-full p-1">
+                    <MapPin className="h-3 w-3" />
+                  </div>
+                )}
+              </div>
+              {gpsData && (
+                <div className="text-xs text-muted-foreground bg-muted p-2 rounded">
+                  📍 GPS: {gpsData.lat.toFixed(6)}, {gpsData.lng.toFixed(6)}
+                  {gpsData.date && <><br />📅 {gpsData.date}</>}
+                </div>
+              )}
+              <p className="text-sm text-muted-foreground">
+                Afbeelding geüpload! Sleep een nieuwe afbeelding om te vervangen.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
+              <div>
+                <p className="text-lg font-medium">Sleep afbeelding hier</p>
+                <p className="text-sm text-muted-foreground">
+                  EXIF GPS-data wordt automatisch uitgelezen (optioneel)
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Camera Upload Button */}
+        <div className="flex justify-center">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={openCamera}
+            disabled={uploading || compressing}
+            className="gap-2"
+          >
+            <Camera className="h-4 w-4" />
+            📷 Maak foto
+          </Button>
+          <input
+            ref={cameraInputRef}
+            type="file"
+            accept="image/jpeg"
+            capture="environment"
+            onChange={handleCameraCapture}
+            className="hidden"
+          />
+        </div>
+
+        {/* GPS Warning for photos without location */}
+        {formData.afbeelding_url && !gpsFromPhoto && (
+          <div className="flex items-center gap-2 p-3 bg-orange-50 border border-orange-200 rounded-md">
+            <AlertTriangle className="h-4 w-4 text-orange-600 flex-shrink-0" />
+            <div className="text-sm">
+              <p className="font-medium text-orange-700">Geen GPS-locatie gevonden</p>
+              <p className="text-orange-600">Voer handmatig de coördinaten in of maak een nieuwe foto met locatieservices aan.</p>
             </div>
           </div>
         )}
