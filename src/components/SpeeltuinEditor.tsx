@@ -52,6 +52,7 @@ const SpeeltuinEditor = () => {
   const [compressing, setCompressing] = useState(false);
   const [gpsFromPhoto, setGpsFromPhoto] = useState(false);
   const [gpsData, setGpsData] = useState<{ lat: number; lng: number; date?: string } | null>(null);
+  const [gettingLocation, setGettingLocation] = useState(false);
   const { mutate: createSpeeltuin, isPending } = useCreateSpeeltuin();
   const { toast } = useToast();
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -138,6 +139,80 @@ const SpeeltuinEditor = () => {
     if (lat === null || lng === null) return false;
     return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
   };
+
+  // Get location name from coordinates using reverse geocoding
+  const getLocationName = async (lat: number, lng: number): Promise<string> => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`,
+        {
+          headers: {
+            'User-Agent': 'CastriumSpeeltuinen/1.0'
+          }
+        }
+      );
+      
+      if (!response.ok) throw new Error('Geocoding failed');
+      
+      const data = await response.json();
+      const address = data.address;
+      
+      // Try to get street name, fallback to neighbourhood or suburb
+      const streetName = address?.road || 
+                        address?.pedestrian || 
+                        address?.footway || 
+                        address?.neighbourhood || 
+                        address?.suburb || 
+                        address?.hamlet || 
+                        address?.village || 
+                        address?.town || 
+                        'Onbekende locatie';
+      
+      return streetName;
+    } catch (error) {
+      console.error('Reverse geocoding failed:', error);
+      return 'Onbekende locatie';
+    }
+  };
+
+  // Get current device location
+  const getCurrentLocation = useCallback(async (): Promise<{ lat: number; lng: number } | null> => {
+    if (!navigator.geolocation) {
+      toast({
+        title: "Geen GPS ondersteuning",
+        description: "Je apparaat ondersteunt geen GPS-locatie.",
+        variant: "destructive",
+      });
+      return null;
+    }
+
+    setGettingLocation(true);
+    
+    return new Promise((resolve) => {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          setGettingLocation(false);
+          resolve({ lat: latitude, lng: longitude });
+        },
+        (error) => {
+          setGettingLocation(false);
+          console.error('GPS error:', error);
+          toast({
+            title: "GPS-locatie mislukt",
+            description: "Kon huidige locatie niet verkrijgen. Controleer je locatie-instellingen.",
+            variant: "destructive",
+          });
+          resolve(null);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 300000 // 5 minutes cache
+        }
+      );
+    });
+  }, [toast]);
 
   const handleFileUpload = useCallback(async (file: File, fromCamera = false) => {
     setUploading(true);
@@ -259,19 +334,66 @@ const SpeeltuinEditor = () => {
           date: photoDate ? new Date(photoDate).toLocaleString() : undefined 
         });
         
+        // Get location name and update the speeltuin name
+        try {
+          const locationName = await getLocationName(latitude!, longitude!);
+          setFormData(prev => ({
+            ...prev,
+            naam: `Speeltuin ${locationName}`,
+          }));
+        } catch (error) {
+          console.error('Failed to get location name:', error);
+        }
+        
         const dateInfo = photoDate ? ` (foto: ${new Date(photoDate).toLocaleString()})` : '';
         toast({
           title: "📍 GPS-locatie gevonden!",
           description: `Coördinaten: ${latitude!.toFixed(6)}, ${longitude!.toFixed(6)}${dateInfo}`,
         });
       } else {
-        toast({
-          title: "Geen GPS in foto",
-          description: fromCamera 
-            ? "Zorg dat locatieservices aan staan bij het maken van foto's."
-            : "Deze foto bevat geen GPS-coördinaten. Voer handmatig de locatie in.",
-          variant: "default",
-        });
+        // If no GPS in photo but it's from camera, try to get current location
+        if (fromCamera) {
+          toast({
+            title: "Geen GPS in foto",
+            description: "Proberen huidige locatie te verkrijgen...",
+            variant: "default",
+          });
+          
+          const currentLocation = await getCurrentLocation();
+          if (currentLocation) {
+            setFormData(prev => ({
+              ...prev,
+              latitude: currentLocation.lat,
+              longitude: currentLocation.lng,
+            }));
+            setGpsData({ 
+              lat: currentLocation.lat, 
+              lng: currentLocation.lng 
+            });
+            
+            // Get location name and update the speeltuin name
+            try {
+              const locationName = await getLocationName(currentLocation.lat, currentLocation.lng);
+              setFormData(prev => ({
+                ...prev,
+                naam: `Speeltuin ${locationName}`,
+              }));
+            } catch (error) {
+              console.error('Failed to get location name:', error);
+            }
+            
+            toast({
+              title: "📍 Huidige locatie gebruikt",
+              description: `Coördinaten: ${currentLocation.lat.toFixed(6)}, ${currentLocation.lng.toFixed(6)}`,
+            });
+          }
+        } else {
+          toast({
+            title: "Geen GPS in foto",
+            description: "Deze foto bevat geen GPS-coördinaten. Voer handmatig de locatie in.",
+            variant: "default",
+          });
+        }
       }
 
       // Generate description from filename
@@ -281,16 +403,18 @@ const SpeeltuinEditor = () => {
         omschrijving: description,
       }));
 
-      // Generate suggested name from filename
-      const suggestedName = file.name
-        .replace(/\.(jpg|jpeg|png|gif)$/i, '')
-        .replace(/[_-]/g, ' ')
-        .replace(/\b\w/g, l => l.toUpperCase());
-      
-      setFormData(prev => ({
-        ...prev,
-        naam: `Speeltuin ${suggestedName}`,
-      }));
+      // Only set name from filename if no GPS location was found
+      if (!isValidGPS(latitude, longitude)) {
+        const suggestedName = file.name
+          .replace(/\.(jpg|jpeg|png|gif)$/i, '')
+          .replace(/[_-]/g, ' ')
+          .replace(/\b\w/g, l => l.toUpperCase());
+        
+        setFormData(prev => ({
+          ...prev,
+          naam: `Speeltuin ${suggestedName}`,
+        }));
+      }
 
       // Upload file to Supabase Storage
       const fileExt = fileToUpload.name.split('.').pop();
@@ -461,11 +585,11 @@ const SpeeltuinEditor = () => {
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
         >
-          {uploading || compressing ? (
+          {uploading || compressing || gettingLocation ? (
             <div className="space-y-2">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
               <p className="text-sm text-muted-foreground">
-                {compressing ? 'Foto wordt gecomprimeerd...' : 'Uploaden...'}
+                {gettingLocation ? 'GPS-locatie verkrijgen...' : compressing ? 'Foto wordt gecomprimeerd...' : 'Uploaden...'}
               </p>
             </div>
           ) : formData.afbeelding_url ? (
@@ -512,7 +636,7 @@ const SpeeltuinEditor = () => {
             variant="outline"
             size="sm"
             onClick={openCamera}
-            disabled={uploading || compressing}
+            disabled={uploading || compressing || gettingLocation}
             className="gap-2"
           >
             <Camera className="h-4 w-4" />
@@ -523,7 +647,7 @@ const SpeeltuinEditor = () => {
             variant="outline"
             size="sm"
             onClick={() => galleryInputRef.current?.click()}
-            disabled={uploading || compressing}
+            disabled={uploading || compressing || gettingLocation}
             className="gap-2"
           >
             📁 Kies uit gallery
