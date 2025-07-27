@@ -5,26 +5,14 @@ export type BadgeType =
   // Toegankelijkheid
   | 'rolstoelvriendelijk'
   | 'babytoegankelijk' 
-  | 'sensory-friendly'
   // Type speeltuin
   | 'natuurspeeltuin'
   | 'waterspeeltuin'
   | 'avonturenspeeltuin'
-  | 'creatieve-speeltuin'
-  | 'actieve-speeltuin'
-  // Leeftijdsgroepen
-  | '0-3-jaar'
-  | '4-8-jaar'
-  | '9-12-jaar'
-  | 'alle-leeftijden'
   // Voorzieningen
   | 'toiletten'
   | 'parkeren'
-  | 'horeca'
-  | 'honden-toegestaan'
-  | 'honden-verboden'
-  // Bijzondere kenmerken
-  | 'premium';
+  | 'horeca';
 
 interface SpeeltuinBadgeProps {
   type: BadgeType;
@@ -63,17 +51,6 @@ const badgeConfig: Record<BadgeType, {
       </svg>
     ),
   },
-  'sensory-friendly': {
-    label: 'Sensory-friendly',
-    bgColor: 'bg-indigo-100',
-    textColor: 'text-indigo-800',
-    icon: (
-      <svg className="w-3 h-3" stroke="currentColor" strokeWidth="2" fill="none" viewBox="0 0 24 24">
-        <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44L2 14.5z"/>
-        <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44L22 14.5z"/>
-      </svg>
-    ),
-  },
   // Type speeltuin
   'natuurspeeltuin': {
     label: 'Natuurspeeltuin',
@@ -104,76 +81,6 @@ const badgeConfig: Record<BadgeType, {
       <svg className="w-3 h-3" stroke="currentColor" strokeWidth="2" fill="none" viewBox="0 0 24 24">
         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
         <polyline points="9,22 9,12 15,12 15,22"/>
-      </svg>
-    ),
-  },
-  'creatieve-speeltuin': {
-    label: 'Creatieve speeltuin',
-    bgColor: 'bg-yellow-100',
-    textColor: 'text-yellow-800',
-    icon: (
-      <svg className="w-3 h-3" stroke="currentColor" strokeWidth="2" fill="none" viewBox="0 0 24 24">
-        <path d="M18.37 2.63L14 7l-1.59-1.59a2 2 0 0 0-2.82 0L8 7l9 9 1.59-1.59a2 2 0 0 0 0-2.82L17 10l4.37-4.37a2.12 2.12 0 1 0-3-3z"/>
-        <path d="M9 8c-2 3-4 3.5-7 4l8 10c2-1 6-5 6-7"/>
-      </svg>
-    ),
-  },
-  'actieve-speeltuin': {
-    label: 'Actieve speeltuin',
-    bgColor: 'bg-red-100',
-    textColor: 'text-red-800',
-    icon: (
-      <svg className="w-3 h-3" stroke="currentColor" strokeWidth="2" fill="none" viewBox="0 0 24 24">
-        <path d="M8 3a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1l1 2h4a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-1l-1 1v4a2 2 0 0 1-2 2h-1l-1 2H9l-1-2H7a2 2 0 0 1-2-2v-4l-1-1H3a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h4l1-2V3z"/>
-      </svg>
-    ),
-  },
-  // Leeftijdsgroepen
-  '0-3-jaar': {
-    label: '0-3 jaar',
-    bgColor: 'bg-pink-100',
-    textColor: 'text-pink-800',
-    icon: (
-      <svg className="w-3 h-3" stroke="currentColor" strokeWidth="2" fill="none" viewBox="0 0 24 24">
-        <circle cx="12" cy="8" r="5"/>
-        <path d="M20 21a8 8 0 1 0-16 0"/>
-      </svg>
-    ),
-  },
-  '4-8-jaar': {
-    label: '4-8 jaar',
-    bgColor: 'bg-blue-100',
-    textColor: 'text-blue-800',
-    icon: (
-      <svg className="w-3 h-3" stroke="currentColor" strokeWidth="2" fill="none" viewBox="0 0 24 24">
-        <circle cx="12" cy="8" r="5"/>
-        <path d="M20 21a8 8 0 1 0-16 0"/>
-        <path d="M12 14v7"/>
-      </svg>
-    ),
-  },
-  '9-12-jaar': {
-    label: '9-12 jaar',
-    bgColor: 'bg-green-100',
-    textColor: 'text-green-800',
-    icon: (
-      <svg className="w-3 h-3" stroke="currentColor" strokeWidth="2" fill="none" viewBox="0 0 24 24">
-        <circle cx="12" cy="8" r="5"/>
-        <path d="M20 21a8 8 0 1 0-16 0"/>
-        <path d="M8 14l4 4 4-4"/>
-      </svg>
-    ),
-  },
-  'alle-leeftijden': {
-    label: 'Alle leeftijden',
-    bgColor: 'bg-gray-100',
-    textColor: 'text-gray-800',
-    icon: (
-      <svg className="w-3 h-3" stroke="currentColor" strokeWidth="2" fill="none" viewBox="0 0 24 24">
-        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-        <circle cx="9" cy="7" r="4"/>
-        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
       </svg>
     ),
   },
@@ -213,41 +120,6 @@ const badgeConfig: Record<BadgeType, {
         <line x1="6" y1="1" x2="6" y2="4"/>
         <line x1="10" y1="1" x2="10" y2="4"/>
         <line x1="14" y1="1" x2="14" y2="4"/>
-      </svg>
-    ),
-  },
-  'honden-toegestaan': {
-    label: 'Honden toegestaan',
-    bgColor: 'bg-emerald-100',
-    textColor: 'text-emerald-800',
-    icon: (
-      <svg className="w-3 h-3" stroke="currentColor" strokeWidth="2" fill="none" viewBox="0 0 24 24">
-        <path d="M8 5v8.5a2.5 2.5 0 0 0 2.5 2.5h3a2.5 2.5 0 0 0 2.5-2.5V5a3 3 0 0 0-3-3h-2a3 3 0 0 0-3 3z"/>
-        <path d="M6 5a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h1"/>
-        <path d="M18 5a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1"/>
-      </svg>
-    ),
-  },
-  'honden-verboden': {
-    label: 'Honden verboden',
-    bgColor: 'bg-red-100',
-    textColor: 'text-red-800',
-    icon: (
-      <svg className="w-3 h-3" stroke="currentColor" strokeWidth="2" fill="none" viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="10"/>
-        <path d="M4.93 4.93l14.14 14.14"/>
-        <path d="M8 5v8.5a2.5 2.5 0 0 0 2.5 2.5h3a2.5 2.5 0 0 0 2.5-2.5V5"/>
-      </svg>
-    ),
-  },
-  // Bijzondere kenmerken
-  'premium': {
-    label: 'Premium',
-    bgColor: 'bg-yellow-100',
-    textColor: 'text-yellow-800',
-    icon: (
-      <svg className="w-3 h-3" stroke="currentColor" strokeWidth="2" fill="none" viewBox="0 0 24 24">
-        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
       </svg>
     ),
   },

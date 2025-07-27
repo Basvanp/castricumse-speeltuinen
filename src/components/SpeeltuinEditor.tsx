@@ -85,8 +85,6 @@ const SpeeltuinEditor = () => {
     extra_educatief: false,
     extra_kunstwerk_thema: false,
     extra_buurtinitiatief: false,
-    // Badge selectie
-    badge_type: '' as BadgeType | '',
   });
 
   const [dragOver, setDragOver] = useState(false);
@@ -570,7 +568,7 @@ const SpeeltuinEditor = () => {
     }
   }, [handleFileUpload]);
 
-  // Generate badges based on form data
+  // Generate badges based on form data (simplified)
   const getActiveBadges = (): BadgeType[] => {
     const badges: BadgeType[] = [];
     
@@ -579,29 +577,13 @@ const SpeeltuinEditor = () => {
     if (formData.geschikt_peuters) badges.push('babytoegankelijk');
     
     // Type speeltuin
-    if (formData.ondergrond_zand || formData.ondergrond_gras) badges.push('natuurspeeltuin');
-    if (formData.heeft_sportveld) badges.push('actieve-speeltuin');
-    
-    // Leeftijdsgroepen
-    if (formData.geschikt_peuters && !formData.geschikt_kleuters && !formData.geschikt_kinderen) {
-      badges.push('0-3-jaar');
-    } else if (formData.geschikt_kleuters && !formData.geschikt_peuters && !formData.geschikt_kinderen) {
-      badges.push('4-8-jaar');
-    } else if (formData.geschikt_kinderen && !formData.geschikt_peuters && !formData.geschikt_kleuters) {
-      badges.push('9-12-jaar');
-    } else if ((formData.geschikt_peuters && formData.geschikt_kleuters) || 
-               (formData.geschikt_peuters && formData.geschikt_kinderen) || 
-               (formData.geschikt_kleuters && formData.geschikt_kinderen)) {
-      badges.push('alle-leeftijden');
-    }
+    if (formData.type_natuurspeeltuin) badges.push('natuurspeeltuin');
+    if (formData.heeft_water_pomp) badges.push('waterspeeltuin');
     
     // Voorzieningen
     if (formData.heeft_toilet) badges.push('toiletten');
     if (formData.heeft_parkeerplaats) badges.push('parkeren');
     if (formData.heeft_horeca) badges.push('horeca');
-    
-    // Grootte indicator als premium
-    if (formData.grootte === 'groot') badges.push('premium');
     
     // Return only the first badge for clean design
     return badges.slice(0, 1);
@@ -705,8 +687,6 @@ const SpeeltuinEditor = () => {
           extra_educatief: false,
           extra_kunstwerk_thema: false,
           extra_buurtinitiatief: false,
-          // Badge selectie
-          badge_type: '' as BadgeType | '',
         });
         setGpsFromPhoto(false);
         setGpsData(null);
@@ -1060,80 +1040,6 @@ const SpeeltuinEditor = () => {
           </CardContent>
         </Card>
 
-        {/* Badge Selectie */}
-        <Card>
-          <CardContent className="pt-6">
-            <h3 className="font-medium mb-4">Badge Selectie</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Selecteer welke badge getoond wordt op de speeltuinkaart. Kies er slechts één voor een clean design.
-            </p>
-            <div className="space-y-3">
-              {[
-                // Toegankelijkheid
-                { key: 'rolstoelvriendelijk', label: 'Rolstoelvriendelijk', description: 'Voor toegankelijke speeltuinen' },
-                { key: 'babytoegankelijk', label: 'Babytoegankelijk', description: 'Voor peuters en baby\'s' },
-                { key: 'sensory-friendly', label: 'Sensory-friendly', description: 'Voor kinderen met sensorische behoeften' },
-                
-                // Type speeltuin
-                { key: 'natuurspeeltuin', label: 'Natuurspeeltuin', description: 'Voor speeltuinen met natuurlijke elementen' },
-                { key: 'waterspeeltuin', label: 'Waterspeeltuin', description: 'Voor speeltuinen met waterelementen' },
-                { key: 'avonturenspeeltuin', label: 'Avonturenspeeltuin', description: 'Voor avontuurlijke speeltuinen' },
-                { key: 'creatieve-speeltuin', label: 'Creatieve speeltuin', description: 'Voor creatieve en artistieke speeltuinen' },
-                { key: 'actieve-speeltuin', label: 'Actieve speeltuin', description: 'Voor sportieve en actieve speeltuinen' },
-                
-                // Leeftijdsgroepen
-                { key: '0-3-jaar', label: '0-3 jaar', description: 'Speciaal voor peuters en kleuters' },
-                { key: '4-8-jaar', label: '4-8 jaar', description: 'Voor lagere schoolkinderen' },
-                { key: '9-12-jaar', label: '9-12 jaar', description: 'Voor oudere kinderen' },
-                { key: 'alle-leeftijden', label: 'Alle leeftijden', description: 'Voor alle leeftijdsgroepen' },
-                
-                // Voorzieningen
-                { key: 'toiletten', label: 'Toiletten', description: 'Voor speeltuinen met toilet voorzieningen' },
-                { key: 'parkeren', label: 'Parkeren', description: 'Voor speeltuinen met parkeervoorzieningen' },
-                { key: 'horeca', label: 'Horeca', description: 'Voor speeltuinen met horeca voorzieningen' },
-                { key: 'honden-toegestaan', label: 'Honden toegestaan', description: 'Honden zijn welkom' },
-                { key: 'honden-verboden', label: 'Honden verboden', description: 'Honden niet toegestaan' },
-                
-                // Bijzondere kenmerken
-                { key: 'premium', label: 'Premium', description: 'Voor grote speelparken met extra voorzieningen' },
-              ].map(({ key, label, description }) => (
-                <div key={key} className="flex items-start space-x-3 p-2 border rounded-md hover:bg-muted/50">
-                  <input
-                    type="radio"
-                    id={`badge-${key}`}
-                    name="badge_type"
-                    checked={formData.badge_type === key}
-                    onChange={() => setFormData(prev => ({ ...prev, badge_type: key as BadgeType }))}
-                    className="h-4 w-4 mt-0.5"
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor={`badge-${key}`} className="font-medium">{label}</Label>
-                      {formData.badge_type === key && (
-                        <SpeeltuinBadge type={key as BadgeType} />
-                      )}
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">{description}</p>
-                  </div>
-                </div>
-              ))}
-              <div className="flex items-start space-x-3 p-2 border rounded-md hover:bg-muted/50">
-                <input
-                  type="radio"
-                  id="badge-none"
-                  name="badge_type"
-                  checked={formData.badge_type === ''}
-                  onChange={() => setFormData(prev => ({ ...prev, badge_type: '' }))}
-                  className="h-4 w-4 mt-0.5"
-                />
-                <div className="flex-1">
-                  <Label htmlFor="badge-none" className="font-medium">Geen badge</Label>
-                  <p className="text-xs text-muted-foreground mt-1">Geen badge tonen op de kaart</p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       <Button 
