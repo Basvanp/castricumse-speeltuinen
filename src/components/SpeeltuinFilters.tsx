@@ -35,11 +35,11 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({ filters, onFiltersC
   };
 
   return (
-    <Card className="w-full">
-      <CardHeader>
+    <Card className="w-full max-h-[80vh] flex flex-col">
+      <CardHeader className="flex-shrink-0">
         <CardTitle className="text-lg">Filters</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 overflow-y-auto overscroll-contain touch-pan-y flex-1 min-h-0">
         {/* Type Speeltuin */}
         <Collapsible>
           <CollapsibleTrigger className="flex w-full items-center justify-between">
