@@ -1,14 +1,22 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
 User-agent: *
 Allow: /
+
+# Sitemap
+Sitemap: https://castricum-speeltuinen.lovable.app/sitemap.xml
+
+# Allow crawling of all public content
+Allow: /
+
+# Block admin areas (optional security measure)
+Disallow: /admin/
+Disallow: /auth/
+
+# Allow common crawl paths
+Allow: /*.css
+Allow: /*.js
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.jpeg
+Allow: /*.gif
+Allow: /*.svg
+Allow: /*.webp

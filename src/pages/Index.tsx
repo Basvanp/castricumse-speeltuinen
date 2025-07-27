@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useSpeeltuinen } from '@/hooks/useSpeeltuinen';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Speeltuin, SpeeltuinFilters } from '@/types/speeltuin';
@@ -10,9 +11,12 @@ import AdminButton from '@/components/AdminButton';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import SEOHead from '@/components/SEOHead';
+import { generateOrganizationSchema, generateLocalBusinessSchema, generateWebsiteSchema } from '@/utils/structuredData';
 
 const Index = () => {
   const { data: speeltuinen = [], isLoading, error } = useSpeeltuinen();
+  const { data: settings = {} } = useSiteSettings();
   const { trackEvent } = useAnalytics();
   const isMobile = useIsMobile();
   const [selectedSpeeltuin, setSelectedSpeeltuin] = useState<Speeltuin | null>(null);
@@ -59,6 +63,16 @@ const Index = () => {
   useEffect(() => {
     trackEvent('page_view');
   }, [trackEvent]);
+
+  // Generate structured data
+  const structuredData = useMemo(() => {
+    const schemas = [
+      generateWebsiteSchema(settings),
+      generateOrganizationSchema(settings),
+      generateLocalBusinessSchema(settings)
+    ];
+    return schemas;
+  }, [settings]);
 
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
@@ -184,14 +198,23 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead 
+        title={settings.meta_title}
+        description={settings.meta_description}
+        keywords={settings.meta_keywords}
+        structuredData={structuredData}
+      />
+      
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div>
-              <h1 className="text-3xl font-bold text-primary">Speeltuinen in Castricum</h1>
+              <h1 className="text-3xl font-bold text-primary">
+                {settings.site_name || 'Speeltuinen in Castricum'}
+              </h1>
               <p className="text-muted-foreground mt-1">
-                Ontdek alle speeltuinen in Castricum en omgeving
+                {settings.site_description || 'Ontdek alle speeltuinen in Castricum en omgeving'}
               </p>
             </div>
             <AdminButton />
