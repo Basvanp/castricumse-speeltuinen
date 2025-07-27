@@ -1,37 +1,68 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useNavigate } from 'react-router-dom';
 import { AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent } from '@/components/ui/card';
+import { supabase } from '@/integrations/supabase/client';
 import AdminLayout from '@/components/AdminLayout';
 import AdminDashboard from '@/components/AdminDashboard';
+import AdminSetup from '@/components/AdminSetup';
 
 const Admin = () => {
   const { user, loading } = useAuth();
   const { isAdmin, loading: roleLoading } = useUserRole();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [adminExists, setAdminExists] = useState<boolean | null>(null);
+  const [checkingAdminExists, setCheckingAdminExists] = useState(true);
+
+  // Check if any admin exists in the system
+  useEffect(() => {
+    const checkAdminExists = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('user_roles')
+          .select('*')
+          .eq('role', 'admin')
+          .limit(1);
+
+        if (error) {
+          console.error('Error checking admin existence:', error);
+          setAdminExists(true); // Assume admin exists on error to be safe
+        } else {
+          setAdminExists(data && data.length > 0);
+        }
+      } catch (error) {
+        console.error('Error checking admin existence:', error);
+        setAdminExists(true); // Assume admin exists on error to be safe
+      } finally {
+        setCheckingAdminExists(false);
+      }
+    };
+
+    checkAdminExists();
+  }, []);
 
   useEffect(() => {
-    console.log('🚀 Admin: Auth state check:', { user: !!user, loading, roleLoading, isAdmin });
+    console.log('🚀 Admin: Auth state check:', { user: !!user, loading, roleLoading, isAdmin, adminExists });
     
     // Add timeout to prevent infinite waiting
     const timeout = setTimeout(() => {
-      if (loading || roleLoading) {
+      if (loading || roleLoading || checkingAdminExists) {
         console.log('🚀 Admin: Auth timeout, redirecting to auth');
         navigate('/auth');
       }
     }, 10000); // 10 second timeout
     
-    if (!loading && !roleLoading) {
+    if (!loading && !roleLoading && !checkingAdminExists) {
       clearTimeout(timeout);
       if (!user) {
         console.log('🚀 Admin: No user, redirecting to auth');
         navigate('/auth');
-      } else if (!isAdmin) {
-        console.log('🚀 Admin: User is not admin, redirecting to home');
+      } else if (!isAdmin && adminExists) {
+        console.log('🚀 Admin: User is not admin and admin exists, redirecting to home');
         navigate('/');
         toast({
           title: "Access Denied",
@@ -39,15 +70,15 @@ const Admin = () => {
           variant: "destructive",
         });
       } else {
-        console.log('🚀 Admin: User is admin, staying on admin page');
+        console.log('🚀 Admin: User access granted or admin setup needed');
       }
     }
     
     return () => clearTimeout(timeout);
-  }, [user, loading, roleLoading, isAdmin, navigate, toast]);
+  }, [user, loading, roleLoading, isAdmin, adminExists, checkingAdminExists, navigate, toast]);
 
 
-  if (loading || roleLoading) {
+  if (loading || roleLoading || checkingAdminExists) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -58,7 +89,13 @@ const Admin = () => {
     );
   }
 
-  if (!user || !isAdmin) {
+  // If no user, redirect happens in useEffect
+  if (!user) {
+    return null;
+  }
+
+  // If user is not admin but admin exists, show access denied
+  if (!isAdmin && adminExists) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="w-full max-w-md">
@@ -74,6 +111,11 @@ const Admin = () => {
         </Card>
       </div>
     );
+  }
+
+  // If user is not admin and no admin exists, show admin setup
+  if (!isAdmin && !adminExists) {
+    return <AdminSetup />;
   }
 
   return (
