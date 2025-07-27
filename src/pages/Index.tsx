@@ -405,17 +405,19 @@ const Index = () => {
 
           {/* Main Content */}
           <div className="flex-1 space-y-8">
-            {/* Map */}
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Kaart</h2>
-              <SpeeltuinKaart 
-                speeltuinen={filteredSpeeltuinen} 
-                onSpeeltuinSelect={setSelectedSpeeltuin}
-                userLocation={userLocation}
-                isLocating={isLocating}
-                onLocationRequest={getCurrentLocation}
-              />
-            </div>
+            {/* Map - Only show when sidebar is collapsed or on desktop */}
+            {(sidebarCollapsed || !isMobile) && (
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Kaart</h2>
+                <SpeeltuinKaart 
+                  speeltuinen={filteredSpeeltuinen} 
+                  onSpeeltuinSelect={setSelectedSpeeltuin}
+                  userLocation={userLocation}
+                  isLocating={isLocating}
+                  onLocationRequest={getCurrentLocation}
+                />
+              </div>
+            )}
 
             {/* Selected Speeltuin */}
             {selectedSpeeltuin && (
