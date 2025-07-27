@@ -82,7 +82,12 @@ export type Database = {
       speeltuinen: {
         Row: {
           afbeelding_url: string | null
+          bouwjaar: number | null
           created_at: string
+          extra_buurtinitiatief: boolean | null
+          extra_educatief: boolean | null
+          extra_kunstwerk_thema: boolean | null
+          extra_waterpomp: boolean | null
           fixi_copy_tekst: string | null
           geschikt_kinderen: boolean | null
           geschikt_kleuters: boolean | null
@@ -92,16 +97,29 @@ export type Database = {
           heeft_glijbaan: boolean | null
           heeft_horeca: boolean | null
           heeft_kabelbaan: boolean | null
+          heeft_klimtoestel: boolean | null
           heeft_parkeerplaats: boolean | null
           heeft_schaduw: boolean | null
           heeft_schommel: boolean | null
+          heeft_skatebaan: boolean | null
           heeft_sportveld: boolean | null
           heeft_toilet: boolean | null
+          heeft_trapveld: boolean | null
+          heeft_water_pomp: boolean | null
           heeft_zandbak: boolean | null
           id: string
           is_omheind: boolean | null
           is_rolstoeltoegankelijk: boolean | null
           latitude: number | null
+          leeftijd_0_2_jaar: boolean | null
+          leeftijd_12_plus_jaar: boolean | null
+          leeftijd_2_6_jaar: boolean | null
+          leeftijd_6_12_jaar: boolean | null
+          ligging_bij_school: boolean | null
+          ligging_bos_natuur: boolean | null
+          ligging_fietspad: boolean | null
+          ligging_parkeerplaats: boolean | null
+          ligging_woonwijk: boolean | null
           longitude: number | null
           naam: string
           omschrijving: string | null
@@ -110,12 +128,30 @@ export type Database = {
           ondergrond_rubber: boolean | null
           ondergrond_tegels: boolean | null
           ondergrond_zand: boolean | null
+          ouders_horeca_buurt: boolean | null
+          ouders_picknicktafels: boolean | null
+          ouders_wc_buurt: boolean | null
+          speeltoestellen_voor_beperking: boolean | null
+          toegang_zichtbaar_omheind: boolean | null
+          toegang_zonder_drempel: boolean | null
           toegevoegd_door: string | null
+          type_buurtspeeltuin: boolean | null
+          type_natuurspeeltuin: boolean | null
+          type_schoolplein: boolean | null
+          type_speelbos: boolean | null
           updated_at: string
+          veiligheid_in_zicht_huizen: boolean | null
+          veiligheid_rustige_ligging: boolean | null
+          veiligheid_verkeersluw: boolean | null
         }
         Insert: {
           afbeelding_url?: string | null
+          bouwjaar?: number | null
           created_at?: string
+          extra_buurtinitiatief?: boolean | null
+          extra_educatief?: boolean | null
+          extra_kunstwerk_thema?: boolean | null
+          extra_waterpomp?: boolean | null
           fixi_copy_tekst?: string | null
           geschikt_kinderen?: boolean | null
           geschikt_kleuters?: boolean | null
@@ -125,16 +161,29 @@ export type Database = {
           heeft_glijbaan?: boolean | null
           heeft_horeca?: boolean | null
           heeft_kabelbaan?: boolean | null
+          heeft_klimtoestel?: boolean | null
           heeft_parkeerplaats?: boolean | null
           heeft_schaduw?: boolean | null
           heeft_schommel?: boolean | null
+          heeft_skatebaan?: boolean | null
           heeft_sportveld?: boolean | null
           heeft_toilet?: boolean | null
+          heeft_trapveld?: boolean | null
+          heeft_water_pomp?: boolean | null
           heeft_zandbak?: boolean | null
           id?: string
           is_omheind?: boolean | null
           is_rolstoeltoegankelijk?: boolean | null
           latitude?: number | null
+          leeftijd_0_2_jaar?: boolean | null
+          leeftijd_12_plus_jaar?: boolean | null
+          leeftijd_2_6_jaar?: boolean | null
+          leeftijd_6_12_jaar?: boolean | null
+          ligging_bij_school?: boolean | null
+          ligging_bos_natuur?: boolean | null
+          ligging_fietspad?: boolean | null
+          ligging_parkeerplaats?: boolean | null
+          ligging_woonwijk?: boolean | null
           longitude?: number | null
           naam: string
           omschrijving?: string | null
@@ -143,12 +192,30 @@ export type Database = {
           ondergrond_rubber?: boolean | null
           ondergrond_tegels?: boolean | null
           ondergrond_zand?: boolean | null
+          ouders_horeca_buurt?: boolean | null
+          ouders_picknicktafels?: boolean | null
+          ouders_wc_buurt?: boolean | null
+          speeltoestellen_voor_beperking?: boolean | null
+          toegang_zichtbaar_omheind?: boolean | null
+          toegang_zonder_drempel?: boolean | null
           toegevoegd_door?: string | null
+          type_buurtspeeltuin?: boolean | null
+          type_natuurspeeltuin?: boolean | null
+          type_schoolplein?: boolean | null
+          type_speelbos?: boolean | null
           updated_at?: string
+          veiligheid_in_zicht_huizen?: boolean | null
+          veiligheid_rustige_ligging?: boolean | null
+          veiligheid_verkeersluw?: boolean | null
         }
         Update: {
           afbeelding_url?: string | null
+          bouwjaar?: number | null
           created_at?: string
+          extra_buurtinitiatief?: boolean | null
+          extra_educatief?: boolean | null
+          extra_kunstwerk_thema?: boolean | null
+          extra_waterpomp?: boolean | null
           fixi_copy_tekst?: string | null
           geschikt_kinderen?: boolean | null
           geschikt_kleuters?: boolean | null
@@ -158,16 +225,29 @@ export type Database = {
           heeft_glijbaan?: boolean | null
           heeft_horeca?: boolean | null
           heeft_kabelbaan?: boolean | null
+          heeft_klimtoestel?: boolean | null
           heeft_parkeerplaats?: boolean | null
           heeft_schaduw?: boolean | null
           heeft_schommel?: boolean | null
+          heeft_skatebaan?: boolean | null
           heeft_sportveld?: boolean | null
           heeft_toilet?: boolean | null
+          heeft_trapveld?: boolean | null
+          heeft_water_pomp?: boolean | null
           heeft_zandbak?: boolean | null
           id?: string
           is_omheind?: boolean | null
           is_rolstoeltoegankelijk?: boolean | null
           latitude?: number | null
+          leeftijd_0_2_jaar?: boolean | null
+          leeftijd_12_plus_jaar?: boolean | null
+          leeftijd_2_6_jaar?: boolean | null
+          leeftijd_6_12_jaar?: boolean | null
+          ligging_bij_school?: boolean | null
+          ligging_bos_natuur?: boolean | null
+          ligging_fietspad?: boolean | null
+          ligging_parkeerplaats?: boolean | null
+          ligging_woonwijk?: boolean | null
           longitude?: number | null
           naam?: string
           omschrijving?: string | null
@@ -176,8 +256,21 @@ export type Database = {
           ondergrond_rubber?: boolean | null
           ondergrond_tegels?: boolean | null
           ondergrond_zand?: boolean | null
+          ouders_horeca_buurt?: boolean | null
+          ouders_picknicktafels?: boolean | null
+          ouders_wc_buurt?: boolean | null
+          speeltoestellen_voor_beperking?: boolean | null
+          toegang_zichtbaar_omheind?: boolean | null
+          toegang_zonder_drempel?: boolean | null
           toegevoegd_door?: string | null
+          type_buurtspeeltuin?: boolean | null
+          type_natuurspeeltuin?: boolean | null
+          type_schoolplein?: boolean | null
+          type_speelbos?: boolean | null
           updated_at?: string
+          veiligheid_in_zicht_huizen?: boolean | null
+          veiligheid_rustige_ligging?: boolean | null
+          veiligheid_verkeersluw?: boolean | null
         }
         Relationships: []
       }

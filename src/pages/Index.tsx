@@ -24,10 +24,22 @@ const Index = () => {
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [isLocating, setIsLocating] = useState(false);
   const [filters, setFilters] = useState<SpeeltuinFilters>({
+    typeSpeeltuin: {
+      natuurspeeltuin: false,
+      buurtspeeltuin: false,
+      schoolplein: false,
+      speelbos: false,
+    },
     leeftijd: {
       peuters: false,
       kleuters: false,
       kinderen: false,
+    },
+    leeftijdSpecifiek: {
+      '0_2_jaar': false,
+      '2_6_jaar': false,
+      '6_12_jaar': false,
+      '12_plus_jaar': false,
     },
     voorzieningen: {
       glijbaan: false,
@@ -36,6 +48,10 @@ const Index = () => {
       kabelbaan: false,
       bankjes: false,
       sportveld: false,
+      klimtoestel: false,
+      water_pomp: false,
+      trapveld: false,
+      skatebaan: false,
     },
     ondergrond: {
       zand: false,
@@ -49,13 +65,41 @@ const Index = () => {
       middel: false,
       groot: false,
     },
-    overig: {
-      omheind: false,
-      schaduw: false,
+    toegankelijkheid: {
       rolstoeltoegankelijk: false,
+      zichtbaar_omheind: false,
+      zonder_drempel: false,
+      speeltoestellen_beperking: false,
+    },
+    veiligheid: {
+      omheind: false,
+      in_zicht_huizen: false,
+      rustige_ligging: false,
+      verkeersluw: false,
+    },
+    voorzieningen_ouders: {
+      bankjes: false,
+      schaduw: false,
+      picknicktafels: false,
+      horeca_buurt: false,
+      wc_buurt: false,
+    },
+    ligging: {
+      woonwijk: false,
+      bos_natuur: false,
+      bij_school: false,
+      fietspad: false,
+      parkeerplaats: false,
+    },
+    extras: {
+      waterpomp: false,
+      educatief: false,
+      kunstwerk_thema: false,
+      buurtinitiatief: false,
+    },
+    overig: {
       horeca: false,
       toilet: false,
-      parkeerplaats: false,
     },
   });
 
@@ -170,15 +214,11 @@ const Index = () => {
         (filters.grootte.middel && speeltuin.grootte === 'middel') ||
         (filters.grootte.groot && speeltuin.grootte === 'groot');
 
-      // Overig filter
+      // Overig filter (simplified for now)
       const overigMatch = 
         (!Object.values(filters.overig).some(v => v)) ||
-        (filters.overig.omheind && speeltuin.is_omheind) ||
-        (filters.overig.schaduw && speeltuin.heeft_schaduw) ||
-        (filters.overig.rolstoeltoegankelijk && speeltuin.is_rolstoeltoegankelijk) ||
         (filters.overig.horeca && speeltuin.heeft_horeca) ||
-        (filters.overig.toilet && speeltuin.heeft_toilet) ||
-        (filters.overig.parkeerplaats && speeltuin.heeft_parkeerplaats);
+        (filters.overig.toilet && speeltuin.heeft_toilet);
 
       return leeftijdMatch && voorzieningenMatch && ondergrondMatch && grootteMatch && overigMatch;
     });

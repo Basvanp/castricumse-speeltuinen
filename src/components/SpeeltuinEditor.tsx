@@ -21,13 +21,23 @@ const SpeeltuinEditor = () => {
     omschrijving: '',
     afbeelding_url: '',
     bouwjaar: null as number | null,
-    // Voorzieningen
+    // Type speeltuin
+    type_natuurspeeltuin: false,
+    type_buurtspeeltuin: false,
+    type_schoolplein: false,
+    type_speelbos: false,
+    // Voorzieningen - existing
     heeft_glijbaan: false,
     heeft_schommel: false,
     heeft_zandbak: false,
     heeft_kabelbaan: false,
     heeft_bankjes: false,
     heeft_sportveld: false,
+    // Voorzieningen - new
+    heeft_klimtoestel: false,
+    heeft_water_pomp: false,
+    heeft_trapveld: false,
+    heeft_skatebaan: false,
     // Ondergrond
     ondergrond_zand: false,
     ondergrond_gras: false,
@@ -36,17 +46,45 @@ const SpeeltuinEditor = () => {
     ondergrond_kunstgras: false,
     // Grootte
     grootte: 'middel' as 'klein' | 'middel' | 'groot',
-    // Leeftijd
+    // Leeftijd - existing
     geschikt_peuters: false,
     geschikt_kleuters: false,
     geschikt_kinderen: false,
-    // Overig
+    // Leeftijd - new specific
+    leeftijd_0_2_jaar: false,
+    leeftijd_2_6_jaar: false,
+    leeftijd_6_12_jaar: false,
+    leeftijd_12_plus_jaar: false,
+    // Overig - existing
     is_omheind: false,
     heeft_schaduw: false,
     is_rolstoeltoegankelijk: false,
     heeft_horeca: false,
     heeft_toilet: false,
     heeft_parkeerplaats: false,
+    // Toegankelijkheid
+    toegang_zichtbaar_omheind: false,
+    toegang_zonder_drempel: false,
+    speeltoestellen_voor_beperking: false,
+    // Veiligheid & toezicht
+    veiligheid_in_zicht_huizen: false,
+    veiligheid_rustige_ligging: false,
+    veiligheid_verkeersluw: false,
+    // Voorzieningen voor ouders
+    ouders_picknicktafels: false,
+    ouders_horeca_buurt: false,
+    ouders_wc_buurt: false,
+    // Ligging / omgeving
+    ligging_woonwijk: false,
+    ligging_bos_natuur: false,
+    ligging_bij_school: false,
+    ligging_fietspad: false,
+    ligging_parkeerplaats: false,
+    // Extra's
+    extra_waterpomp: false,
+    extra_educatief: false,
+    extra_kunstwerk_thema: false,
+    extra_buurtinitiatief: false,
     // Badge selectie
     badge_type: '' as BadgeType | '',
   });
@@ -603,27 +641,71 @@ const SpeeltuinEditor = () => {
           omschrijving: '',
           afbeelding_url: '',
           bouwjaar: null,
+          // Type speeltuin
+          type_natuurspeeltuin: false,
+          type_buurtspeeltuin: false,
+          type_schoolplein: false,
+          type_speelbos: false,
+          // Voorzieningen - existing
           heeft_glijbaan: false,
           heeft_schommel: false,
           heeft_zandbak: false,
           heeft_kabelbaan: false,
           heeft_bankjes: false,
           heeft_sportveld: false,
+          // Voorzieningen - new
+          heeft_klimtoestel: false,
+          heeft_water_pomp: false,
+          heeft_trapveld: false,
+          heeft_skatebaan: false,
+          // Ondergrond
           ondergrond_zand: false,
           ondergrond_gras: false,
           ondergrond_rubber: false,
           ondergrond_tegels: false,
           ondergrond_kunstgras: false,
+          // Grootte
           grootte: 'middel' as 'klein' | 'middel' | 'groot',
+          // Leeftijd - existing
           geschikt_peuters: false,
           geschikt_kleuters: false,
           geschikt_kinderen: false,
+          // Leeftijd - new specific
+          leeftijd_0_2_jaar: false,
+          leeftijd_2_6_jaar: false,
+          leeftijd_6_12_jaar: false,
+          leeftijd_12_plus_jaar: false,
+          // Overig - existing
           is_omheind: false,
           heeft_schaduw: false,
           is_rolstoeltoegankelijk: false,
           heeft_horeca: false,
           heeft_toilet: false,
           heeft_parkeerplaats: false,
+          // Toegankelijkheid
+          toegang_zichtbaar_omheind: false,
+          toegang_zonder_drempel: false,
+          speeltoestellen_voor_beperking: false,
+          // Veiligheid & toezicht
+          veiligheid_in_zicht_huizen: false,
+          veiligheid_rustige_ligging: false,
+          veiligheid_verkeersluw: false,
+          // Voorzieningen voor ouders
+          ouders_picknicktafels: false,
+          ouders_horeca_buurt: false,
+          ouders_wc_buurt: false,
+          // Ligging / omgeving
+          ligging_woonwijk: false,
+          ligging_bos_natuur: false,
+          ligging_bij_school: false,
+          ligging_fietspad: false,
+          ligging_parkeerplaats: false,
+          // Extra's
+          extra_waterpomp: false,
+          extra_educatief: false,
+          extra_kunstwerk_thema: false,
+          extra_buurtinitiatief: false,
+          // Badge selectie
           badge_type: '' as BadgeType | '',
         });
         setGpsFromPhoto(false);
