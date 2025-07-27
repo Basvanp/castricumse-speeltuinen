@@ -103,6 +103,94 @@ const Index = () => {
     },
   });
 
+  const clearAllFilters = () => {
+    setFilters({
+      typeSpeeltuin: {
+        natuurspeeltuin: false,
+        buurtspeeltuin: false,
+        schoolplein: false,
+        speelbos: false,
+      },
+      leeftijd: {
+        peuters: false,
+        kleuters: false,
+        kinderen: false,
+      },
+      leeftijdSpecifiek: {
+        '0_2_jaar': false,
+        '2_6_jaar': false,
+        '6_12_jaar': false,
+        '12_plus_jaar': false,
+      },
+      voorzieningen: {
+        glijbaan: false,
+        schommel: false,
+        zandbak: false,
+        kabelbaan: false,
+        bankjes: false,
+        sportveld: false,
+        klimtoestel: false,
+        water_pomp: false,
+        trapveld: false,
+        skatebaan: false,
+      },
+      ondergrond: {
+        zand: false,
+        gras: false,
+        rubber: false,
+        tegels: false,
+        kunstgras: false,
+      },
+      grootte: {
+        klein: false,
+        middel: false,
+        groot: false,
+      },
+      toegankelijkheid: {
+        rolstoeltoegankelijk: false,
+        zichtbaar_omheind: false,
+        zonder_drempel: false,
+        speeltoestellen_beperking: false,
+      },
+      veiligheid: {
+        omheind: false,
+        in_zicht_huizen: false,
+        rustige_ligging: false,
+        verkeersluw: false,
+      },
+      voorzieningen_ouders: {
+        bankjes: false,
+        schaduw: false,
+        picknicktafels: false,
+        horeca_buurt: false,
+        wc_buurt: false,
+      },
+      ligging: {
+        woonwijk: false,
+        bos_natuur: false,
+        bij_school: false,
+        fietspad: false,
+        parkeerplaats: false,
+      },
+      extras: {
+        waterpomp: false,
+        educatief: false,
+        kunstwerk_thema: false,
+        buurtinitiatief: false,
+      },
+      overig: {
+        horeca: false,
+        toilet: false,
+      },
+    });
+  };
+
+  const handleApplyFilters = () => {
+    if (isMobile) {
+      setSidebarCollapsed(true);
+    }
+  };
+
   // Track page view on mount
   useEffect(() => {
     trackEvent('page_view');
@@ -288,7 +376,12 @@ const Index = () => {
               <div className="absolute inset-0 bg-black/20" onClick={() => setSidebarCollapsed(true)} />
             )}
             <div className={`${isMobile ? 'w-80 bg-background shadow-lg' : 'w-full'} relative`}>
-              <SpeeltuinFiltersComponent filters={filters} onFiltersChange={setFilters} />
+              <SpeeltuinFiltersComponent 
+                filters={filters} 
+                onFiltersChange={setFilters}
+                onApplyFilters={handleApplyFilters}
+                onClearFilters={clearAllFilters}
+              />
             </div>
           </div>
 
