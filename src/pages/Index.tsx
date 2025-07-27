@@ -21,6 +21,11 @@ const Index = () => {
   const isMobile = useIsMobile();
   const [selectedSpeeltuin, setSelectedSpeeltuin] = useState<Speeltuin | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => isMobile);
+
+  // Update sidebar collapsed state when mobile detection changes
+  useEffect(() => {
+    setSidebarCollapsed(isMobile);
+  }, [isMobile]);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [isLocating, setIsLocating] = useState(false);
   const [filters, setFilters] = useState<SpeeltuinFilters>({
