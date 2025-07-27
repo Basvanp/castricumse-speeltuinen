@@ -5,12 +5,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Upload, CheckCircle, Camera, MapPin, AlertTriangle } from 'lucide-react';
+import { Upload, CheckCircle, Camera, MapPin, AlertTriangle, Eye } from 'lucide-react';
 import exifr from 'exifr';
 import { compressImage, validateJPEGFile } from '@/utils/imageCompression';
+import SpeeltuinBadge, { BadgeType } from '@/components/SpeeltuinBadge';
 
 const SpeeltuinEditor = () => {
   const [formData, setFormData] = useState({
@@ -528,6 +529,43 @@ const SpeeltuinEditor = () => {
     }
   }, [handleFileUpload]);
 
+  // Generate badges based on form data
+  const getActiveBadges = (): BadgeType[] => {
+    const badges: BadgeType[] = [];
+    
+    // Toegankelijkheid
+    if (formData.is_rolstoeltoegankelijk) badges.push('rolstoelvriendelijk');
+    if (formData.geschikt_peuters) badges.push('babytoegankelijk');
+    
+    // Type speeltuin
+    if (formData.ondergrond_zand || formData.ondergrond_gras) badges.push('natuurspeeltuin');
+    if (formData.heeft_sportveld) badges.push('actieve-speeltuin');
+    
+    // Leeftijdsgroepen
+    if (formData.geschikt_peuters && !formData.geschikt_kleuters && !formData.geschikt_kinderen) {
+      badges.push('0-3-jaar');
+    } else if (formData.geschikt_kleuters && !formData.geschikt_peuters && !formData.geschikt_kinderen) {
+      badges.push('4-8-jaar');
+    } else if (formData.geschikt_kinderen && !formData.geschikt_peuters && !formData.geschikt_kleuters) {
+      badges.push('9-12-jaar');
+    } else if ((formData.geschikt_peuters && formData.geschikt_kleuters) || 
+               (formData.geschikt_peuters && formData.geschikt_kinderen) || 
+               (formData.geschikt_kleuters && formData.geschikt_kinderen)) {
+      badges.push('alle-leeftijden');
+    }
+    
+    // Voorzieningen
+    if (formData.heeft_toilet) badges.push('toiletten');
+    if (formData.heeft_parkeerplaats) badges.push('parkeren');
+    if (formData.heeft_horeca) badges.push('horeca');
+    
+    // Grootte indicator als premium
+    if (formData.grootte === 'groot') badges.push('premium');
+    
+    // Return only the first badge for clean design
+    return badges.slice(0, 1);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -596,7 +634,32 @@ const SpeeltuinEditor = () => {
     });
   };
 
+  const activeBadges = getActiveBadges();
+
   return (
+    <div className="space-y-6">
+      {/* Badge Preview */}
+      {activeBadges.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Eye className="h-5 w-5" />
+              Badge Preview
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {activeBadges.map((badgeType, index) => (
+                <SpeeltuinBadge key={index} type={badgeType} />
+              ))}
+            </div>
+            <p className="text-sm text-muted-foreground mt-2">
+              Deze badge zal zichtbaar zijn op de speeltuinkaart (alleen de eerste badge wordt getoond voor een clean design).
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Image Upload */}
       <div className="space-y-4">
@@ -913,6 +976,7 @@ const SpeeltuinEditor = () => {
         )}
       </Button>
     </form>
+    </div>
   );
 };
 
