@@ -9,6 +9,7 @@ import AdminStats from "./pages/AdminStats";
 import AdminUsers from "./pages/AdminUsers";
 import AdminSettings from "./pages/AdminSettings";
 import NotFound from "./pages/NotFound";
+import SitemapGenerator from "./components/SitemapGenerator";
 import { Toaster } from "@/components/ui/toaster";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
         <Route path="/admin/stats" element={<AdminStats />} />
         <Route path="/admin/users" element={<AdminUsers />} />
         <Route path="/admin/settings" element={<AdminSettings />} />
+        <Route path="/sitemap.xml" element={<SitemapGenerator />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Toaster />
