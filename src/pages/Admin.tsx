@@ -15,35 +15,41 @@ const Admin = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    console.log('🚀 Admin: Auth state check:', { user: !!user, loading, roleLoading, isAdmin });
+    console.log('🚀 Admin: Auth state check:', { 
+      user: !!user, 
+      loading, 
+      roleLoading, 
+      isAdmin,
+      userExists: !!user,
+      loadingComplete: !loading && !roleLoading 
+    });
     
-    // Add timeout to prevent infinite waiting
-    const timeout = setTimeout(() => {
-      if (loading || roleLoading) {
-        console.log('🚀 Admin: Auth timeout, redirecting to auth');
-        navigate('/auth');
-      }
-    }, 10000); // 10 second timeout
-    
+    // Only proceed with navigation decisions when both auth and role loading are complete
     if (!loading && !roleLoading) {
-      clearTimeout(timeout);
+      console.log('🚀 Admin: Both loading states complete, making navigation decision');
+      
       if (!user) {
         console.log('🚀 Admin: No user, redirecting to auth');
         navigate('/auth');
-      } else if (!isAdmin) {
-        console.log('🚀 Admin: User is not admin, redirecting to home');
+        return;
+      }
+      
+      // User exists, check admin status
+      if (!isAdmin) {
+        console.log('🚀 Admin: User exists but is not admin, redirecting to home');
         navigate('/');
         toast({
           title: "Access Denied",
           description: "You don't have permission to access the admin panel.",
           variant: "destructive",
         });
-      } else {
-        console.log('🚀 Admin: User is admin, staying on admin page');
+        return;
       }
+      
+      console.log('🚀 Admin: User is admin, staying on admin page');
+    } else {
+      console.log('🚀 Admin: Still loading, waiting for completion');
     }
-    
-    return () => clearTimeout(timeout);
   }, [user, loading, roleLoading, isAdmin, navigate, toast]);
 
 

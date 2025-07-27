@@ -11,12 +11,14 @@ export const useUserRole = () => {
 
   useEffect(() => {
     const fetchUserRole = async () => {
-    if (!user) {
-      console.log('🔐 useUserRole: No user found, setting loading to false');
-      setRole(null);
-      setLoading(false); // No user means role check is complete
-      return;
-    }
+      console.log('🔐 useUserRole: fetchUserRole called with user:', !!user);
+      
+      if (!user) {
+        console.log('🔐 useUserRole: No user found, setting role to null and loading to false');
+        setRole(null);
+        setLoading(false);
+        return;
+      }
 
       console.log('🔐 useUserRole: Fetching role for user:', user.id);
       setLoading(true);
