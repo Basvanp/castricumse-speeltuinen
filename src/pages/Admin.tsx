@@ -17,7 +17,16 @@ const Admin = () => {
   useEffect(() => {
     console.log('🚀 Admin: Auth state check:', { user: !!user, loading, roleLoading, isAdmin });
     
+    // Add timeout to prevent infinite waiting
+    const timeout = setTimeout(() => {
+      if (loading || roleLoading) {
+        console.log('🚀 Admin: Auth timeout, redirecting to auth');
+        navigate('/auth');
+      }
+    }, 10000); // 10 second timeout
+    
     if (!loading && !roleLoading) {
+      clearTimeout(timeout);
       if (!user) {
         console.log('🚀 Admin: No user, redirecting to auth');
         navigate('/auth');
@@ -33,6 +42,8 @@ const Admin = () => {
         console.log('🚀 Admin: User is admin, staying on admin page');
       }
     }
+    
+    return () => clearTimeout(timeout);
   }, [user, loading, roleLoading, isAdmin, navigate, toast]);
 
 

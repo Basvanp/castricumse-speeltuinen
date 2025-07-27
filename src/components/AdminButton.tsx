@@ -14,27 +14,43 @@ const AdminButton = () => {
   const handleAdminClick = async () => {
     setIsNavigating(true);
     
-    // Wait a bit for loading states to resolve if needed
-    if (authLoading || roleLoading) {
-      setTimeout(() => {
-        handleAdminClick();
-      }, 100);
-      return;
-    }
+    // Add timeout to prevent infinite loading
+    const timeout = setTimeout(() => {
+      setIsNavigating(false);
+      // If still loading after 5 seconds, navigate to auth
+      if (authLoading || roleLoading) {
+        navigate('/auth');
+      }
+    }, 5000);
 
-    if (!user) {
-      // Not authenticated, go to auth page
-      navigate('/auth');
-    } else if (isAdmin) {
-      // Authenticated and admin, go to admin dashboard
-      navigate('/admin');
-    } else {
-      // Authenticated but not admin, go to auth page anyway
-      // (the auth page will redirect authenticated users to admin if they become admin)
-      navigate('/auth');
+    try {
+      // Wait a bit for loading states to resolve if needed
+      if (authLoading || roleLoading) {
+        // Wait maximum 2 seconds for auth to resolve
+        await new Promise(resolve => setTimeout(resolve, 100));
+        if (authLoading || roleLoading) {
+          clearTimeout(timeout);
+          setIsNavigating(false);
+          navigate('/auth');
+          return;
+        }
+      }
+
+      clearTimeout(timeout);
+
+      if (!user) {
+        // Not authenticated, go to auth page
+        navigate('/auth');
+      } else if (isAdmin) {
+        // Authenticated and admin, go to admin dashboard
+        navigate('/admin');
+      } else {
+        // Authenticated but not admin, go to auth page anyway
+        navigate('/auth');
+      }
+    } finally {
+      setIsNavigating(false);
     }
-    
-    setIsNavigating(false);
   };
 
   const isLoading = authLoading || roleLoading || isNavigating;

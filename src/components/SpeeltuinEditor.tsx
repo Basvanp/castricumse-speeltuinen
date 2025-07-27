@@ -55,6 +55,7 @@ const SpeeltuinEditor = () => {
   const { mutate: createSpeeltuin, isPending } = useCreateSpeeltuin();
   const { toast } = useToast();
   const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
 
   const generateDescriptionFromFilename = (filename: string) => {
     const name = filename.toLowerCase().replace(/\.(jpg|jpeg|png|gif)$/i, '');
@@ -368,6 +369,18 @@ const SpeeltuinEditor = () => {
     cameraInputRef.current?.click();
   }, []);
 
+  // Gallery upload handler
+  const handleGallerySelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleFileUpload(file, false);
+    }
+    // Reset input value to allow same file selection
+    if (galleryInputRef.current) {
+      galleryInputRef.current.value = '';
+    }
+  }, [handleFileUpload]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -492,8 +505,8 @@ const SpeeltuinEditor = () => {
           )}
         </div>
 
-        {/* Camera Upload Button */}
-        <div className="flex justify-center">
+        {/* Photo Upload Buttons */}
+        <div className="flex justify-center gap-2">
           <Button
             type="button"
             variant="outline"
@@ -505,12 +518,29 @@ const SpeeltuinEditor = () => {
             <Camera className="h-4 w-4" />
             📷 Maak foto
           </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => galleryInputRef.current?.click()}
+            disabled={uploading || compressing}
+            className="gap-2"
+          >
+            📁 Kies uit gallery
+          </Button>
           <input
             ref={cameraInputRef}
             type="file"
             accept="image/jpeg"
             capture="environment"
             onChange={handleCameraCapture}
+            className="hidden"
+          />
+          <input
+            ref={galleryInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleGallerySelect}
             className="hidden"
           />
         </div>
