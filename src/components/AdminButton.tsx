@@ -12,32 +12,26 @@ const AdminButton = () => {
   const [isNavigating, setIsNavigating] = useState(false);
 
   const handleAdminClick = async () => {
+    // Prevent multiple simultaneous clicks
+    if (isNavigating) {
+      return;
+    }
+    
     setIsNavigating(true);
     
-    // Add timeout to prevent infinite loading
-    const timeout = setTimeout(() => {
-      setIsNavigating(false);
-      // If still loading after 5 seconds, navigate to auth
-      if (authLoading || roleLoading) {
-        navigate('/auth');
-      }
-    }, 5000);
-
     try {
-      // Wait a bit for loading states to resolve if needed
+      // Wait for loading states to resolve with a reasonable timeout
       if (authLoading || roleLoading) {
-        // Wait maximum 2 seconds for auth to resolve
-        await new Promise(resolve => setTimeout(resolve, 100));
-        if (authLoading || roleLoading) {
-          clearTimeout(timeout);
-          setIsNavigating(false);
-          navigate('/auth');
-          return;
+        // Wait up to 2 seconds for auth/role loading to complete
+        const maxWaitTime = 2000;
+        const startTime = Date.now();
+        
+        while ((authLoading || roleLoading) && (Date.now() - startTime) < maxWaitTime) {
+          await new Promise(resolve => setTimeout(resolve, 50));
         }
       }
 
-      clearTimeout(timeout);
-
+      // Determine navigation target based on current state
       if (!user) {
         // Not authenticated, go to auth page
         navigate('/auth');
@@ -48,6 +42,10 @@ const AdminButton = () => {
         // Authenticated but not admin, go to auth page anyway
         navigate('/auth');
       }
+    } catch (error) {
+      console.error('Navigation error:', error);
+      // Fallback to auth page on error
+      navigate('/auth');
     } finally {
       setIsNavigating(false);
     }

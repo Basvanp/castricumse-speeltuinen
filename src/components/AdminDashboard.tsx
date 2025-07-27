@@ -59,7 +59,7 @@ const AdminDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {Math.round((stats.withImages / stats.total) * 100) || 0}%
+              {stats.total > 0 ? Math.round((stats.withImages / stats.total) * 100) : 0}%
             </div>
             <p className="text-xs text-muted-foreground">
               Met volledige gegevens

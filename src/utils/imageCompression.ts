@@ -30,13 +30,19 @@ export const compressImage = async (
     const img = new Image();
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
+    let blobUrl: string | null = null;
 
     if (!ctx) {
       reject(new Error('Could not get canvas context'));
       return;
     }
 
-    img.onload = () => {
+    const handleImageLoad = () => {
+      // Clean up blob URL
+      if (blobUrl) {
+        URL.revokeObjectURL(blobUrl);
+      }
+      
       // Calculate new dimensions while maintaining aspect ratio
       let { width, height } = img;
       
@@ -93,12 +99,19 @@ export const compressImage = async (
       attemptCompression(opts.quality);
     };
 
+    img.onload = handleImageLoad;
+
     img.onerror = () => {
+      // Clean up blob URL on error too
+      if (blobUrl) {
+        URL.revokeObjectURL(blobUrl);
+      }
       reject(new Error('Failed to load image'));
     };
 
     // Load the image
-    img.src = URL.createObjectURL(file);
+    blobUrl = URL.createObjectURL(file);
+    img.src = blobUrl;
   });
 };
 
