@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ExternalLink, Copy, MapPin } from 'lucide-react';
+import { ExternalLink, Copy, MapPin, Map } from 'lucide-react';
 import { Speeltuin } from '@/types/speeltuin';
 import { useToast } from '@/hooks/use-toast';
 import { useAnalytics } from '@/hooks/useAnalytics';
@@ -29,6 +29,14 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin, userLocation }
         title: "Gekopieerd!",
         description: "Locatie is gekopieerd naar het klembord.",
       });
+    }
+  };
+
+  const openInGoogleMaps = () => {
+    if (speeltuin.latitude && speeltuin.longitude) {
+      const url = `https://www.google.com/maps/search/?api=1&query=${speeltuin.latitude},${speeltuin.longitude}`;
+      window.open(url, '_blank');
+      trackEvent('google_maps_opened', speeltuin.id);
     }
   };
 
@@ -188,32 +196,47 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin, userLocation }
         </div>
 
         <div className="flex flex-col gap-2 pt-4">
-          <Button 
-            asChild 
-            variant="default" 
-            className="w-full"
-          >
-            <a 
-              href="https://www.fixi.nl/#/issue/new+map" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2"
-            >
-              <ExternalLink className="h-4 w-4" />
-              Meld een probleem via Fixi
-            </a>
-          </Button>
-          
-          {speeltuin.fixi_copy_tekst && (
+          {/* Google Maps button */}
+          {speeltuin.latitude && speeltuin.longitude && (
             <Button 
-              variant="outline" 
-              onClick={copyToClipboard}
-              className="w-full flex items-center justify-center gap-2"
+              variant="default" 
+              onClick={openInGoogleMaps}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 font-semibold"
             >
-              <Copy className="h-4 w-4" />
-              Kopieer locatie voor Fixi
+              <Map size={18} />
+              Open in Google Maps
             </Button>
           )}
+          
+          {/* Fixi buttons side by side */}
+          <div className="flex gap-3 mb-3">
+            <Button 
+              asChild 
+              variant="default" 
+              className="flex-1 px-2 py-2"
+            >
+              <a 
+                href="https://www.fixi.nl/#/issue/new+map" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-1 text-sm"
+              >
+                <ExternalLink size={12} />
+                Fixi
+              </a>
+            </Button>
+            
+            {speeltuin.fixi_copy_tekst && (
+              <Button 
+                variant="default" 
+                onClick={copyToClipboard}
+                className="flex-1 flex items-center justify-center gap-1 px-2 py-2 text-sm"
+              >
+                <Copy size={12} />
+                Locatie voor fixi melding
+              </Button>
+            )}
+          </div>
           
           <p className="text-xs text-muted-foreground text-center mt-2">
             💡 Geef toestemming voor je locatie in Fixi voor automatisch inzoomen
