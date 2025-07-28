@@ -30,7 +30,7 @@ import {
 
 const AdminSpeeltuinen = () => {
   const { data: speeltuinen = [] } = useSpeeltuinen();
-  const deleteSpecltuin = useDeleteSpeeltuin();
+  const deleteSpeeltuin = useDeleteSpeeltuin();
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSpeeltuin, setSelectedSpeeltuin] = useState(null);
@@ -50,7 +50,7 @@ const AdminSpeeltuinen = () => {
   };
 
   const handleDelete = (id) => {
-    deleteSpecltuin.mutate(id, {
+    deleteSpeeltuin.mutate(id, {
       onSuccess: () => {
         toast({
           title: "Speeltuin verwijderd",
