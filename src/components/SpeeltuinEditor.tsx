@@ -608,8 +608,11 @@ const SpeeltuinEditor = () => {
       ? `Kapot speeltoestel bij ${formData.naam}, ${formData.latitude}, ${formData.longitude}`
       : `Kapot speeltoestel bij ${formData.naam} (geen GPS-coördinaten beschikbaar)`;
 
+    // Remove selected_badge from submission since it's not in the database
+    const { selected_badge, ...speeltuinData } = formData;
+    
     createSpeeltuin({
-      ...formData,
+      ...speeltuinData,
       fixi_copy_tekst: fixiText,
     }, {
       onSuccess: () => {
