@@ -459,6 +459,7 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
       ...speeltuinData,
       afbeelding_url,
       fotos: fotosUrls,
+      badge,
       fixi_copy_tekst: fixiText,
     }, {
       onSuccess: () => {
