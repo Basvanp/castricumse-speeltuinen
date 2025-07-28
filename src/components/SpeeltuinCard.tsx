@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ExternalLink, Copy, MapPin, Map, Lightbulb } from 'lucide-react';
+import { ExternalLink, Copy, MapPin, Map, Lightbulb, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Speeltuin } from '@/types/speeltuin';
 import { useToast } from '@/hooks/use-toast';
 import { useAnalytics } from '@/hooks/useAnalytics';
@@ -16,11 +16,63 @@ interface SpeeltuinCardProps {
 const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin, userLocation }) => {
   const { toast } = useToast();
   const { trackEvent } = useAnalytics();
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+
+  // Get photos array from speeltuin data (backwards compatible)
+  const getPhotos = useCallback(() => {
+    // Check if speeltuin has a fotos property (new format)
+    if (speeltuin.fotos && Array.isArray(speeltuin.fotos) && speeltuin.fotos.length > 0) {
+      return speeltuin.fotos.map(foto => foto.url || foto);
+    }
+    // Fall back to single afbeelding_url (old format)
+    if (speeltuin.afbeelding_url) {
+      return [speeltuin.afbeelding_url];
+    }
+    // No photos available
+    return [];
+  }, [speeltuin]);
+
+  const photos = getPhotos();
+  const hasMultiplePhotos = photos.length > 1;
 
   // Track speeltuin view when card is rendered
   useEffect(() => {
     trackEvent('speeltuin_view', speeltuin.id);
   }, [trackEvent, speeltuin.id]);
+
+  // Reset photo index when speeltuin changes
+  useEffect(() => {
+    setCurrentPhotoIndex(0);
+  }, [speeltuin.id]);
+
+  // Carousel navigation functions
+  const goToPrevious = useCallback(() => {
+    setCurrentPhotoIndex((prev) => (prev === 0 ? photos.length - 1 : prev - 1));
+  }, [photos.length]);
+
+  const goToNext = useCallback(() => {
+    setCurrentPhotoIndex((prev) => (prev === photos.length - 1 ? 0 : prev + 1));
+  }, [photos.length]);
+
+  const goToPhoto = useCallback((index: number) => {
+    setCurrentPhotoIndex(index);
+  }, []);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (hasMultiplePhotos) {
+        if (e.key === 'ArrowLeft') {
+          goToPrevious();
+        } else if (e.key === 'ArrowRight') {
+          goToNext();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [hasMultiplePhotos, goToPrevious, goToNext]);
 
   const copyToClipboard = () => {
     if (speeltuin.latitude && speeltuin.longitude) {
@@ -128,15 +180,71 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin, userLocation }
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Playground image - always show (placeholder if no real image) */}
-        <div className="h-48 w-full rounded-lg overflow-hidden shadow-lg">
-          <img
-            src={speeltuin.afbeelding_url || getPlaceholderImage()}
-            alt={speeltuin.naam}
-            className="w-full h-full object-cover"
-            loading="lazy"
-          />
+        {/* Photo Carousel */}
+        <div className="relative h-48 w-full rounded-lg overflow-hidden shadow-lg">
+          {photos.length > 0 ? (
+            <>
+              <img
+                src={photos[currentPhotoIndex]}
+                alt={`${speeltuin.naam} - foto ${currentPhotoIndex + 1}`}
+                className="w-full h-full object-cover transition-opacity duration-300"
+                loading="lazy"
+              />
+              
+              {/* Navigation arrows - only show if multiple photos */}
+              {hasMultiplePhotos && (
+                <>
+                  <button
+                    onClick={goToPrevious}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-1 rounded-full transition-all duration-200"
+                    aria-label="Vorige foto"
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+                  <button
+                    onClick={goToNext}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-1 rounded-full transition-all duration-200"
+                    aria-label="Volgende foto"
+                  >
+                    <ChevronRight size={20} />
+                  </button>
+                </>
+              )}
+              
+              {/* Photo counter - only show if multiple photos */}
+              {hasMultiplePhotos && (
+                <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
+                  {currentPhotoIndex + 1} / {photos.length}
+                </div>
+              )}
+            </>
+          ) : (
+            <img
+              src={getPlaceholderImage()}
+              alt={speeltuin.naam}
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
+          )}
         </div>
+        
+        {/* Dot indicators - only show if multiple photos */}
+        {hasMultiplePhotos && (
+          <div className="flex justify-center space-x-1 mt-2">
+            {photos.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => goToPhoto(index)}
+                className={`w-2 h-2 rounded-full transition-colors duration-200 ${
+                  index === currentPhotoIndex 
+                    ? 'bg-blue-500' 
+                    : 'bg-gray-300 hover:bg-gray-400'
+                }`}
+                aria-label={`Ga naar foto ${index + 1}`}
+              />
+            ))}
+          </div>
+        )}
         
         {speeltuin.omschrijving && (
           <p className="text-muted-foreground">{speeltuin.omschrijving}</p>

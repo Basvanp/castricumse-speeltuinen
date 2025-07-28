@@ -5,6 +5,7 @@ export interface Speeltuin {
   longitude: number;
   omschrijving?: string;
   afbeelding_url?: string;
+  fotos?: string[] | { id?: number; url: string; naam?: string }[]; // Support both formats
   bouwjaar?: number;
   
   // Type speeltuin
