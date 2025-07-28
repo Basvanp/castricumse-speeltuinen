@@ -37,6 +37,7 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
     longitude: null as number | null,
     omschrijving: '',
     afbeelding_url: '',
+    fotos: [] as string[],
     // Voorzieningen
     heeft_glijbaan: false,
     heeft_schommel: false,
@@ -74,12 +75,23 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
   // Initialize form when speeltuin changes
   useEffect(() => {
     if (speeltuin) {
+      // Convert fotos to string array
+      let fotosArray: string[] = [];
+      if (speeltuin.fotos) {
+        if (Array.isArray(speeltuin.fotos)) {
+          fotosArray = speeltuin.fotos.map(foto => 
+            typeof foto === 'string' ? foto : foto.url
+          );
+        }
+      }
+      
       setFormData({
         naam: speeltuin.naam || '',
         latitude: speeltuin.latitude || null,
         longitude: speeltuin.longitude || null,
         omschrijving: speeltuin.omschrijving || '',
         afbeelding_url: speeltuin.afbeelding_url || '',
+        fotos: fotosArray,
         heeft_glijbaan: speeltuin.heeft_glijbaan || false,
         heeft_schommel: speeltuin.heeft_schommel || false,
         heeft_zandbak: speeltuin.heeft_zandbak || false,
@@ -247,9 +259,11 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
         .from('speeltuin-fotos')
         .getPublicUrl(fileName);
 
+      // Add to fotos array
       setFormData(prev => ({
         ...prev,
-        afbeelding_url: publicUrl,
+        fotos: [...prev.fotos, publicUrl],
+        afbeelding_url: prev.fotos.length === 0 ? publicUrl : prev.afbeelding_url, // Keep first photo as main image
       }));
 
       toast({

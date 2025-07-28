@@ -15,7 +15,11 @@ export const useSpeeltuinen = () => {
         throw error;
       }
       
-      return data || [];
+      // Convert the database response to match our Speeltuin type
+      return (data || []).map(speeltuin => ({
+        ...speeltuin,
+        fotos: speeltuin.fotos || []
+      })) as Speeltuin[];
     },
   });
 };
