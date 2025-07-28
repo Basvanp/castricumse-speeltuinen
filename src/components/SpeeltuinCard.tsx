@@ -171,14 +171,7 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin, userLocation }
     <Card className="w-full">
       <CardHeader>
         <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <CardTitle className="text-xl">{speeltuin.naam}</CardTitle>
-            {speeltuin.badge && (
-              <div className="mt-2">
-                <SpeeltuinBadge type={speeltuin.badge as BadgeType} />
-              </div>
-            )}
-          </div>
+          <CardTitle className="text-xl">{speeltuin.naam}</CardTitle>
           {distance && (
             <Badge variant="outline" className="flex items-center gap-1 text-xs">
               <MapPin className="h-3 w-3" />
@@ -190,6 +183,13 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin, userLocation }
       <CardContent className="space-y-4">
         {/* Photo Carousel */}
         <div className="relative h-48 w-full rounded-lg overflow-hidden shadow-lg">
+          {/* Badge overlay - positioned over the photo */}
+          {speeltuin.badge && (
+            <div className="absolute top-2 left-2 z-10">
+              <SpeeltuinBadge type={speeltuin.badge as BadgeType} />
+            </div>
+          )}
+          
           {photos.length > 0 ? (
             <>
               <img
