@@ -155,7 +155,7 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
     return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
   };
 
-  const handleFileUpload = useCallback(async (file: File) => {
+  const handleFileUpload = useCallback(async (file: File, replaceMain: boolean = false) => {
     setUploading(true);
     setGpsFromPhoto(false);
     
@@ -259,16 +259,29 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
         .from('speeltuin-fotos')
         .getPublicUrl(fileName);
 
-      // Add to fotos array
-      setFormData(prev => ({
-        ...prev,
-        fotos: [...prev.fotos, publicUrl],
-        afbeelding_url: prev.fotos.length === 0 ? publicUrl : prev.afbeelding_url, // Keep first photo as main image
-      }));
+      // Update form data based on whether this is a replacement or addition
+      setFormData(prev => {
+        if (replaceMain || prev.fotos.length === 0) {
+          // Replace main image
+          const newFotos = prev.fotos.length === 0 ? [publicUrl] : [publicUrl, ...prev.fotos.slice(1)];
+          return {
+            ...prev,
+            fotos: newFotos,
+            afbeelding_url: publicUrl, // Set as main image
+          };
+        } else {
+          // Add as additional image
+          return {
+            ...prev,
+            fotos: [...prev.fotos, publicUrl],
+          };
+        }
+      });
 
+      const actionText = replaceMain ? "vervangen" : "toegevoegd";
       toast({
-        title: "Afbeelding geüpload!",
-        description: "Afbeelding is succesvol geüpload.",
+        title: `Afbeelding ${actionText}!`,
+        description: `Afbeelding is succesvol ${actionText}.`,
       });
 
     } catch (error) {
@@ -291,9 +304,11 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
     const imageFile = files.find(file => file.type.startsWith('image/'));
     
     if (imageFile) {
-      handleFileUpload(imageFile);
+      // If there's already an image, replace it by default
+      const replaceMain = formData.afbeelding_url !== '';
+      handleFileUpload(imageFile, replaceMain);
     }
-  }, [handleFileUpload]);
+  }, [handleFileUpload, formData.afbeelding_url]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -407,7 +422,7 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
                                 title: "Afbeelding wordt vervangen",
                                 description: "De nieuwe afbeelding wordt geüpload...",
                               });
-                              handleFileUpload(file);
+                              handleFileUpload(file, true); // replaceMain = true
                             }
                           };
                           input.click();
@@ -428,7 +443,7 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
                           input.onchange = (e) => {
                             const file = (e.target as HTMLInputElement).files?.[0];
                             if (file) {
-                              handleFileUpload(file);
+                              handleFileUpload(file, false); // replaceMain = false
                             }
                           };
                           input.click();
