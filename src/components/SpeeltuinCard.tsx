@@ -228,9 +228,9 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin, userLocation }
             {speeltuin.latitude && speeltuin.longitude && (
               <Button 
                 onClick={copyToClipboard}
-                className="flex-1 h-12 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg px-4 flex items-center justify-center gap-2"
+                className="flex-1 h-12 bg-white hover:bg-gray-100 text-black border border-gray-300 font-medium rounded-xl px-4 flex items-center justify-center gap-2"
               >
-                <Copy className="text-white" />
+                <Copy className="text-black" />
                 Locatie voor fixi melding
               </Button>
             )}
