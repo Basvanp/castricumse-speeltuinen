@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ExternalLink, Copy, MapPin, Map } from 'lucide-react';
+import { ExternalLink, Copy, MapPin, Map, Lightbulb } from 'lucide-react';
 import { Speeltuin } from '@/types/speeltuin';
 import { useToast } from '@/hooks/use-toast';
 import { useAnalytics } from '@/hooks/useAnalytics';
@@ -23,8 +23,9 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin, userLocation }
   }, [trackEvent, speeltuin.id]);
 
   const copyToClipboard = () => {
-    if (speeltuin.fixi_copy_tekst) {
-      navigator.clipboard.writeText(speeltuin.fixi_copy_tekst);
+    if (speeltuin.latitude && speeltuin.longitude) {
+      const coordinates = `${speeltuin.latitude},${speeltuin.longitude}`;
+      navigator.clipboard.writeText(coordinates);
       toast({
         title: "Gekopieerd!",
         description: "Locatie is gekopieerd naar het klembord.",
@@ -199,48 +200,46 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin, userLocation }
           {/* Google Maps button */}
           {speeltuin.latitude && speeltuin.longitude && (
             <Button 
-              variant="default" 
               onClick={openInGoogleMaps}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2 font-semibold"
+              className="w-full h-12 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg py-3 px-4 flex items-center justify-center gap-2"
             >
-              <Map size={18} />
+              <Map className="text-white" />
               Open in Google Maps
             </Button>
           )}
           
           {/* Fixi buttons side by side */}
-          <div className="flex gap-3 mb-3">
+          <div className="flex gap-3 mt-3">
             <Button 
               asChild 
-              variant="default" 
-              className="flex-1 px-2 py-2"
+              className="flex-1 h-12 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg px-4 flex items-center justify-center"
             >
               <a 
-                href="https://www.fixi.nl/#/issue/new+map" 
+                href="https://www.fixi.nl" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-1 text-sm"
+                className="flex items-center justify-center gap-2"
               >
-                <ExternalLink size={12} />
+                <ExternalLink className="text-white" />
                 Fixi
               </a>
             </Button>
             
-            {speeltuin.fixi_copy_tekst && (
+            {speeltuin.latitude && speeltuin.longitude && (
               <Button 
-                variant="default" 
                 onClick={copyToClipboard}
-                className="flex-1 flex items-center justify-center gap-1 px-2 py-2 text-sm"
+                className="flex-1 h-12 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg px-4 flex items-center justify-center gap-2"
               >
-                <Copy size={12} />
+                <Copy className="text-white" />
                 Locatie voor fixi melding
               </Button>
             )}
           </div>
           
-          <p className="text-xs text-muted-foreground text-center mt-2">
-            💡 Geef toestemming voor je locatie in Fixi voor automatisch inzoomen
-          </p>
+          <div className="flex items-start gap-1 mt-3 text-sm text-gray-500">
+            <Lightbulb className="h-4 w-4 mt-0.5 flex-shrink-0" />
+            <span>Geef toestemming voor je locatie in Fixi voor automatisch inzoomen</span>
+          </div>
         </div>
       </CardContent>
     </Card>
