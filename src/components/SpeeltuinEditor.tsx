@@ -8,10 +8,16 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Upload, CheckCircle, Camera, MapPin, AlertTriangle, Eye } from 'lucide-react';
+import { Upload, CheckCircle, Camera, MapPin, AlertTriangle, Eye, X, Image, GripVertical, Plus } from 'lucide-react';
 import exifr from 'exifr';
 import { compressImage, validateJPEGFile } from '@/utils/imageCompression';
 import SpeeltuinBadge, { BadgeType } from '@/components/SpeeltuinBadge';
+
+interface FotoItem {
+  id: number;
+  url: string;
+  naam: string;
+}
 
 const SpeeltuinEditor = () => {
   const [formData, setFormData] = useState({
@@ -19,7 +25,7 @@ const SpeeltuinEditor = () => {
     latitude: null as number | null,
     longitude: null as number | null,
     omschrijving: '',
-    afbeelding_url: '',
+    fotos: [] as FotoItem[],
     bouwjaar: null as number | null,
     // Type speeltuin
     type_natuurspeeltuin: false,
@@ -95,6 +101,8 @@ const SpeeltuinEditor = () => {
   const [gpsFromPhoto, setGpsFromPhoto] = useState(false);
   const [gpsData, setGpsData] = useState<{ lat: number; lng: number; date?: string } | null>(null);
   const [gettingLocation, setGettingLocation] = useState(false);
+  const [draggedPhoto, setDraggedPhoto] = useState<number | null>(null);
+  const [dragOverPhoto, setDragOverPhoto] = useState<number | null>(null);
   const { mutate: createSpeeltuin, isPending } = useCreateSpeeltuin();
   const { toast } = useToast();
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -258,8 +266,11 @@ const SpeeltuinEditor = () => {
 
   const handleFileUpload = useCallback(async (file: File, fromCamera = false) => {
     setUploading(true);
-    setGpsFromPhoto(false);
-    setGpsData(null);
+    const isFirstPhoto = formData.fotos.length === 0;
+    if (isFirstPhoto) {
+      setGpsFromPhoto(false);
+      setGpsData(null);
+    }
     
     // Validate JPEG for camera uploads
     if (fromCamera) {
@@ -362,15 +373,17 @@ const SpeeltuinEditor = () => {
         setCompressing(false);
       }
 
-      // Generate description from filename first
-      const description = generateDescriptionFromFilename(file.name);
-      setFormData(prev => ({
-        ...prev,
-        omschrijving: description,
-      }));
+      // Generate description from filename for first photo
+      if (isFirstPhoto) {
+        const description = generateDescriptionFromFilename(file.name);
+        setFormData(prev => ({
+          ...prev,
+          omschrijving: description,
+        }));
+      }
 
-      // Update form if GPS data was found
-      if (isValidGPS(latitude, longitude)) {
+      // Update form if GPS data was found and it's the first photo
+      if (isValidGPS(latitude, longitude) && isFirstPhoto) {
         setFormData(prev => ({
           ...prev,
           latitude,
@@ -406,8 +419,8 @@ const SpeeltuinEditor = () => {
           title: "📍 GPS-locatie gevonden!",
           description: `Coördinaten: ${latitude!.toFixed(6)}, ${longitude!.toFixed(6)}${dateInfo}`,
         });
-      } else {
-        // If no GPS in photo but it's from camera, try to get current location
+      } else if (isFirstPhoto) {
+        // Handle cases for first photo without GPS
         if (fromCamera) {
           toast({
             title: "Geen GPS in foto",
@@ -473,11 +486,13 @@ const SpeeltuinEditor = () => {
             naam: `Speeltuin ${suggestedName}`,
           }));
           
-          toast({
-            title: "Geen GPS in foto",
-            description: "Deze foto bevat geen GPS-coördinaten. Voer handmatig de locatie in.",
-            variant: "default",
-          });
+          if (isFirstPhoto) {
+            toast({
+              title: "Geen GPS in foto",
+              description: "Deze foto bevat geen GPS-coördinaten. Voer handmatig de locatie in.",
+              variant: "default",
+            });
+          }
         }
       }
 
@@ -498,14 +513,21 @@ const SpeeltuinEditor = () => {
         .from('speeltuin-fotos')
         .getPublicUrl(fileName);
 
+      // Add photo to fotos array
+      const newFoto: FotoItem = {
+        id: Date.now() + Math.random(),
+        url: publicUrl,
+        naam: file.name,
+      };
+
       setFormData(prev => ({
         ...prev,
-        afbeelding_url: publicUrl,
+        fotos: [...prev.fotos, newFoto],
       }));
 
       toast({
-        title: "Afbeelding geüpload!",
-        description: "Afbeelding is succesvol geüpload en omschrijving gegenereerd.",
+        title: "Foto toegevoegd!",
+        description: `Foto ${formData.fotos.length + 1} is succesvol geüpload.`,
       });
 
     } catch (error) {
@@ -525,11 +547,12 @@ const SpeeltuinEditor = () => {
     setDragOver(false);
     
     const files = Array.from(e.dataTransfer.files);
-    const imageFile = files.find(file => file.type.startsWith('image/'));
+    const imageFiles = files.filter(file => file.type.startsWith('image/'));
     
-    if (imageFile) {
-      handleFileUpload(imageFile);
-    }
+    // Upload all image files
+    imageFiles.forEach(file => {
+      handleFileUpload(file);
+    });
   }, [handleFileUpload]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -560,15 +583,77 @@ const SpeeltuinEditor = () => {
 
   // Gallery upload handler
   const handleGallerySelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      handleFileUpload(file, false);
+    const files = e.target.files;
+    if (files) {
+      Array.from(files).forEach(file => {
+        handleFileUpload(file, false);
+      });
     }
     // Reset input value to allow same file selection
     if (galleryInputRef.current) {
       galleryInputRef.current.value = '';
     }
   }, [handleFileUpload]);
+
+  // Photo management functions
+  const removeFoto = useCallback((id: number) => {
+    setFormData(prev => ({
+      ...prev,
+      fotos: prev.fotos.filter(foto => foto.id !== id),
+    }));
+    toast({
+      title: "Foto verwijderd",
+      description: "De foto is verwijderd van de lijst.",
+    });
+  }, [toast]);
+
+  // Drag and drop reordering for photos
+  const handlePhototDragStart = useCallback((e: React.DragEvent, photoId: number) => {
+    setDraggedPhoto(photoId);
+    e.dataTransfer.effectAllowed = 'move';
+  }, []);
+
+  const handlePhotoDragOver = useCallback((e: React.DragEvent, photoId: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverPhoto(photoId);
+  }, []);
+
+  const handlePhotoDragLeave = useCallback(() => {
+    setDragOverPhoto(null);
+  }, []);
+
+  const handlePhotoDrop = useCallback((e: React.DragEvent, targetPhotoId: number) => {
+    e.preventDefault();
+    
+    if (draggedPhoto === null || draggedPhoto === targetPhotoId) {
+      setDraggedPhoto(null);
+      setDragOverPhoto(null);
+      return;
+    }
+
+    setFormData(prev => {
+      const newFotos = [...prev.fotos];
+      const draggedIndex = newFotos.findIndex(foto => foto.id === draggedPhoto);
+      const targetIndex = newFotos.findIndex(foto => foto.id === targetPhotoId);
+      
+      if (draggedIndex !== -1 && targetIndex !== -1) {
+        const draggedItem = newFotos[draggedIndex];
+        newFotos.splice(draggedIndex, 1);
+        newFotos.splice(targetIndex, 0, draggedItem);
+      }
+      
+      return { ...prev, fotos: newFotos };
+    });
+
+    setDraggedPhoto(null);
+    setDragOverPhoto(null);
+    
+    toast({
+      title: "Foto volgorde gewijzigd",
+      description: "De volgorde van de foto's is aangepast.",
+    });
+  }, [draggedPhoto, toast]);
 
   // Generate badges based on form data (simplified)
   const getActiveBadges = (): BadgeType[] => {
@@ -609,10 +694,14 @@ const SpeeltuinEditor = () => {
       : `Kapot speeltoestel bij ${formData.naam} (geen GPS-coördinaten beschikbaar)`;
 
     // Remove selected_badge from submission since it's not in the database
-    const { selected_badge, ...speeltuinData } = formData;
+    const { selected_badge, fotos, ...speeltuinData } = formData;
+    
+    // Use first photo as main image, or empty string if no photos
+    const afbeelding_url = fotos.length > 0 ? fotos[0].url : '';
     
     createSpeeltuin({
       ...speeltuinData,
+      afbeelding_url,
       fixi_copy_tekst: fixiText,
     }, {
       onSuccess: () => {
@@ -626,7 +715,7 @@ const SpeeltuinEditor = () => {
           latitude: null,
           longitude: null,
           omschrijving: '',
-          afbeelding_url: '',
+          fotos: [],
           bouwjaar: null,
           // Type speeltuin
           type_natuurspeeltuin: false,
@@ -735,11 +824,11 @@ const SpeeltuinEditor = () => {
       )}
 
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Image Upload */}
+      {/* Multi-Photo Upload */}
       <div className="space-y-4">
         <div
           className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-            dragOver ? 'border-primary bg-primary/5' : 'border-muted-foreground/25'
+            dragOver ? 'border-primary bg-primary/5' : 'border-gray-200'
           }`}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
@@ -750,30 +839,6 @@ const SpeeltuinEditor = () => {
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
               <p className="text-sm text-muted-foreground">
                 {gettingLocation ? 'GPS-locatie verkrijgen...' : compressing ? 'Foto wordt gecomprimeerd...' : 'Uploaden...'}
-              </p>
-            </div>
-          ) : formData.afbeelding_url ? (
-            <div className="space-y-4">
-              <div className="relative">
-                <img
-                  src={formData.afbeelding_url}
-                  alt="Preview"
-                  className="w-full h-32 object-cover rounded mx-auto"
-                />
-                {gpsFromPhoto && (
-                  <div className="absolute top-2 left-2 bg-green-500 text-white rounded-full p-1">
-                    <MapPin className="h-3 w-3" />
-                  </div>
-                )}
-              </div>
-              {gpsData && (
-                <div className="text-xs text-muted-foreground bg-muted p-2 rounded">
-                  📍 GPS: {gpsData.lat.toFixed(6)}, {gpsData.lng.toFixed(6)}
-                  {gpsData.date && <><br />📅 {gpsData.date}</>}
-                </div>
-              )}
-              <p className="text-sm text-muted-foreground">
-                Afbeelding geüpload! Sleep een nieuwe afbeelding om te vervangen.
               </p>
             </div>
           ) : (
@@ -793,24 +858,21 @@ const SpeeltuinEditor = () => {
         <div className="flex justify-center gap-2">
           <Button
             type="button"
-            variant="outline"
-            size="sm"
+            className="bg-gray-100 hover:bg-gray-200 text-black px-4 py-2 rounded-lg gap-2"
             onClick={openCamera}
             disabled={uploading || compressing || gettingLocation}
-            className="gap-2"
           >
             <Camera className="h-4 w-4" />
-            📷 Maak foto
+            Maak foto
           </Button>
           <Button
             type="button"
-            variant="outline"
-            size="sm"
+            className="bg-gray-100 hover:bg-gray-200 text-black px-4 py-2 rounded-lg gap-2"
             onClick={() => galleryInputRef.current?.click()}
             disabled={uploading || compressing || gettingLocation}
-            className="gap-2"
           >
-            📁 Kies uit gallery
+            <Image className="h-4 w-4" />
+            Kies uit gallery
           </Button>
           <input
             ref={cameraInputRef}
@@ -824,13 +886,104 @@ const SpeeltuinEditor = () => {
             ref={galleryInputRef}
             type="file"
             accept="image/*"
+            multiple
             onChange={handleGallerySelect}
             className="hidden"
           />
         </div>
 
+        {/* Photo Thumbnails Grid */}
+        {formData.fotos.length > 0 && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="font-medium">Toegevoegde foto's ({formData.fotos.length})</h3>
+              {gpsFromPhoto && formData.fotos.length > 0 && (
+                <div className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded">
+                  📍 GPS uit eerste foto gebruikt
+                </div>
+              )}
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Sleep foto's om de volgorde te wijzigen. De eerste foto wordt gebruikt als hoofdfoto.
+            </p>
+            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+              {formData.fotos.map((foto, index) => (
+                <div
+                  key={foto.id}
+                  draggable
+                  onDragStart={(e) => handlePhototDragStart(e, foto.id)}
+                  onDragOver={(e) => handlePhotoDragOver(e, foto.id)}
+                  onDragLeave={handlePhotoDragLeave}
+                  onDrop={(e) => handlePhotoDrop(e, foto.id)}
+                  className={`relative h-20 aspect-square rounded-lg overflow-hidden border-2 transition-all cursor-move hover:border-primary/50 ${
+                    dragOverPhoto === foto.id ? 'border-primary bg-primary/5' : 'border-gray-200'
+                  } ${draggedPhoto === foto.id ? 'opacity-50' : ''}`}
+                >
+                  <img
+                    src={foto.url}
+                    alt={`Foto ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                  
+                  {/* Grip Handle */}
+                  <div className="absolute top-1 left-1 bg-black/50 text-white rounded p-1">
+                    <GripVertical className="h-3 w-3" />
+                  </div>
+                  
+                  {/* Remove Button */}
+                  <button
+                    type="button"
+                    onClick={() => removeFoto(foto.id)}
+                    className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 transition-colors"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                  
+                  {/* Photo Number */}
+                  <div className="absolute bottom-1 left-1 bg-black/70 text-white text-xs px-1 rounded">
+                    {index + 1}
+                  </div>
+                  
+                  {/* Main Photo Indicator */}
+                  {index === 0 && (
+                    <div className="absolute bottom-1 right-1 bg-green-500 text-white text-xs px-1 rounded">
+                      Hoofd
+                    </div>
+                  )}
+                  
+                  {/* GPS Indicator for first photo */}
+                  {index === 0 && gpsFromPhoto && (
+                    <div className="absolute top-1 right-8 bg-green-500 text-white rounded-full p-1">
+                      <MapPin className="h-2 w-2" />
+                    </div>
+                  )}
+                </div>
+              ))}
+              
+              {/* Add More Button */}
+              <button
+                type="button"
+                onClick={() => galleryInputRef.current?.click()}
+                disabled={uploading || compressing || gettingLocation}
+                className="h-20 aspect-square border-2 border-dashed border-gray-300 hover:border-gray-400 rounded-lg flex flex-col items-center justify-center text-gray-500 hover:text-gray-700 transition-colors"
+              >
+                <Plus className="h-6 w-6" />
+                <span className="text-xs mt-1">Voeg toe</span>
+              </button>
+            </div>
+            
+            {/* GPS Data Display */}
+            {gpsData && (
+              <div className="text-xs text-muted-foreground bg-muted p-2 rounded">
+                📍 GPS: {gpsData.lat.toFixed(6)}, {gpsData.lng.toFixed(6)}
+                {gpsData.date && <><br />📅 {gpsData.date}</>}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* GPS Warning for photos without location */}
-        {formData.afbeelding_url && !gpsFromPhoto && (
+        {formData.fotos.length > 0 && !gpsFromPhoto && (
           <div className="flex items-center gap-2 p-3 bg-orange-50 border border-orange-200 rounded-md">
             <AlertTriangle className="h-4 w-4 text-orange-600 flex-shrink-0" />
             <div className="text-sm">
