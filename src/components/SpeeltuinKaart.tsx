@@ -3,6 +3,7 @@ import { Speeltuin } from '@/types/speeltuin';
 import { Button } from '@/components/ui/button';
 import { Target } from 'lucide-react';
 import { calculateDistance } from '@/lib/utils';
+import { BadgeType } from '@/components/SpeeltuinBadge';
 
 interface SpeeltuinKaartProps {
   speeltuinen: Speeltuin[];
@@ -135,10 +136,28 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
 
           playgroundMarkersRef.current.push(marker);
 
+          // Generate badge HTML if badge exists
+          const getBadgeHTML = (badgeType: BadgeType) => {
+            const badgeConfig: Record<BadgeType, { label: string; bgColor: string; textColor: string; icon: string }> = {
+              'rolstoelvriendelijk': { label: 'Rolstoelvriendelijk', bgColor: 'bg-purple-100', textColor: 'text-purple-800', icon: '♿' },
+              'babytoegankelijk': { label: 'Babytoegankelijk', bgColor: 'bg-pink-100', textColor: 'text-pink-800', icon: '👶' },
+              'natuurspeeltuin': { label: 'Natuurspeeltuin', bgColor: 'bg-green-100', textColor: 'text-green-800', icon: '🌿' },
+              'waterspeeltuin': { label: 'Waterspeeltuin', bgColor: 'bg-blue-100', textColor: 'text-blue-800', icon: '💧' },
+              'avonturenspeeltuin': { label: 'Avonturenspeeltuin', bgColor: 'bg-orange-100', textColor: 'text-orange-800', icon: '🏠' },
+              'toiletten': { label: 'Toiletten', bgColor: 'bg-slate-100', textColor: 'text-slate-800', icon: '🚻' },
+              'parkeren': { label: 'Parkeren', bgColor: 'bg-gray-100', textColor: 'text-gray-800', icon: '🅿️' },
+              'horeca': { label: 'Horeca', bgColor: 'bg-amber-100', textColor: 'text-amber-800', icon: '🍽️' },
+            };
+            
+            const config = badgeConfig[badgeType];
+            return config ? `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium" style="background-color: #f3e8ff; color: #7c3aed;">${config.icon} ${config.label}</span>` : '';
+          };
+
           // Add popup
           const popupContent = `
             <div class="p-2">
               <h3 class="font-semibold text-lg">${speeltuin.naam}</h3>
+              ${speeltuin.badge ? `<div class="mt-1">${getBadgeHTML(speeltuin.badge as BadgeType)}</div>` : ''}
               ${speeltuin.omschrijving ? `<p class="text-sm text-gray-600 mt-1">${speeltuin.omschrijving}</p>` : ''}
               ${distanceText}
               <div class="flex flex-wrap gap-1 mt-2">

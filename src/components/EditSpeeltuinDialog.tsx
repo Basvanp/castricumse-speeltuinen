@@ -106,7 +106,7 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
         omschrijving: speeltuin.omschrijving || '',
         afbeelding_url: speeltuin.afbeelding_url || '',
         fotos: fotosArray,
-        selected_badge: '' as BadgeType | '',
+        selected_badge: (speeltuin.badge as BadgeType) || '',
         heeft_glijbaan: speeltuin.heeft_glijbaan || false,
         heeft_schommel: speeltuin.heeft_schommel || false,
         heeft_zandbak: speeltuin.heeft_zandbak || false,
@@ -448,10 +448,11 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
       ? `Kapot speeltoestel bij ${formData.naam}, ${formData.latitude}, ${formData.longitude}`
       : `Kapot speeltoestel bij ${formData.naam} (geen GPS-coördinaten beschikbaar)`;
 
-    // Remove selected_badge from submission and convert fotos to URL array
+    // Convert fotos to URL array and save badge to database
     const { selected_badge, fotos, ...speeltuinData } = formData;
     const fotosUrls = fotos.map(foto => foto.url);
     const afbeelding_url = fotos.length > 0 ? fotos[0].url : '';
+    const badge = selected_badge || undefined;
 
     updateSpeeltuin({
       id: speeltuin.id,

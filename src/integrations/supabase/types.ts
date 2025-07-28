@@ -82,6 +82,7 @@ export type Database = {
       speeltuinen: {
         Row: {
           afbeelding_url: string | null
+          badge: string | null
           bouwjaar: number | null
           created_at: string
           extra_buurtinitiatief: boolean | null
@@ -147,6 +148,7 @@ export type Database = {
         }
         Insert: {
           afbeelding_url?: string | null
+          badge?: string | null
           bouwjaar?: number | null
           created_at?: string
           extra_buurtinitiatief?: boolean | null
@@ -212,6 +214,7 @@ export type Database = {
         }
         Update: {
           afbeelding_url?: string | null
+          badge?: string | null
           bouwjaar?: number | null
           created_at?: string
           extra_buurtinitiatief?: boolean | null

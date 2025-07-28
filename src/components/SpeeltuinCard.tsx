@@ -7,6 +7,7 @@ import { Speeltuin } from '@/types/speeltuin';
 import { useToast } from '@/hooks/use-toast';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { calculateDistance } from '@/lib/utils';
+import SpeeltuinBadge, { BadgeType } from '@/components/SpeeltuinBadge';
 
 interface SpeeltuinCardProps {
   speeltuin: Speeltuin;
@@ -170,7 +171,14 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin, userLocation }
     <Card className="w-full">
       <CardHeader>
         <div className="flex items-start justify-between">
-          <CardTitle className="text-xl">{speeltuin.naam}</CardTitle>
+          <div className="flex-1">
+            <CardTitle className="text-xl">{speeltuin.naam}</CardTitle>
+            {speeltuin.badge && (
+              <div className="mt-2">
+                <SpeeltuinBadge type={speeltuin.badge as BadgeType} />
+              </div>
+            )}
+          </div>
           {distance && (
             <Badge variant="outline" className="flex items-center gap-1 text-xs">
               <MapPin className="h-3 w-3" />

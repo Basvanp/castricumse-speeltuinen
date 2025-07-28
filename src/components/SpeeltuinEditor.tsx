@@ -701,11 +701,12 @@ const SpeeltuinEditor = () => {
       ? `Kapot speeltoestel bij ${formData.naam}, ${formData.latitude}, ${formData.longitude}`
       : `Kapot speeltoestel bij ${formData.naam} (geen GPS-coördinaten beschikbaar)`;
 
-    // Remove selected_badge from submission since it's not in the database
+    // Save selected_badge to database
     const { selected_badge, fotos, ...speeltuinData } = formData;
     
     // Use first photo as main image, or empty string if no photos
     const afbeelding_url = fotos.length > 0 ? fotos[0].url : '';
+    const badge = selected_badge || undefined;
     
     createSpeeltuin({
       ...speeltuinData,

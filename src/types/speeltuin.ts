@@ -88,6 +88,9 @@ export interface Speeltuin {
   // Fixi integration
   fixi_copy_tekst?: string;
   
+  // Badge
+  badge?: string;
+  
   // Metadata
   toegevoegd_door?: string;
   created_at: string;
