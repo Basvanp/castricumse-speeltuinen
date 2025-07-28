@@ -89,6 +89,7 @@ export type Database = {
           extra_kunstwerk_thema: boolean | null
           extra_waterpomp: boolean | null
           fixi_copy_tekst: string | null
+          fotos: Json | null
           geschikt_kinderen: boolean | null
           geschikt_kleuters: boolean | null
           geschikt_peuters: boolean | null
@@ -153,6 +154,7 @@ export type Database = {
           extra_kunstwerk_thema?: boolean | null
           extra_waterpomp?: boolean | null
           fixi_copy_tekst?: string | null
+          fotos?: Json | null
           geschikt_kinderen?: boolean | null
           geschikt_kleuters?: boolean | null
           geschikt_peuters?: boolean | null
@@ -217,6 +219,7 @@ export type Database = {
           extra_kunstwerk_thema?: boolean | null
           extra_waterpomp?: boolean | null
           fixi_copy_tekst?: string | null
+          fotos?: Json | null
           geschikt_kinderen?: boolean | null
           geschikt_kleuters?: boolean | null
           geschikt_peuters?: boolean | null
