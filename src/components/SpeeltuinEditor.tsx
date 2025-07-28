@@ -925,6 +925,13 @@ const SpeeltuinEditor = () => {
                 { key: 'heeft_kabelbaan', label: 'Kabelbaan' },
                 { key: 'heeft_bankjes', label: 'Bankjes' },
                 { key: 'heeft_sportveld', label: 'Sportveld' },
+                { key: 'heeft_klimtoestel', label: 'Klimtoestel' },
+                { key: 'heeft_water_pomp', label: 'Water / pomp' },
+                { key: 'heeft_trapveld', label: 'Trapveld' },
+                { key: 'heeft_skatebaan', label: 'Skatebaan' },
+                { key: 'heeft_toilet', label: 'Toilet' },
+                { key: 'heeft_parkeerplaats', label: 'Parkeerplaats' },
+                { key: 'heeft_horeca', label: 'Horeca' },
               ].map(({ key, label }) => (
                 <div key={key} className="flex items-center space-x-2">
                   <Checkbox
