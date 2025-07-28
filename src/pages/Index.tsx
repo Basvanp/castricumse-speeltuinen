@@ -52,6 +52,9 @@ const Index = () => {
       water_pomp: false,
       trapveld: false,
       skatebaan: false,
+      toilet: false,
+      parkeerplaats: false,
+      horeca: false,
     },
     ondergrond: {
       zand: false,
@@ -97,10 +100,6 @@ const Index = () => {
       kunstwerk_thema: false,
       buurtinitiatief: false,
     },
-    overig: {
-      horeca: false,
-      toilet: false,
-    },
   });
 
   const clearAllFilters = () => {
@@ -133,6 +132,9 @@ const Index = () => {
         water_pomp: false,
         trapveld: false,
         skatebaan: false,
+        toilet: false,
+        parkeerplaats: false,
+        horeca: false,
       },
       ondergrond: {
         zand: false,
@@ -177,10 +179,6 @@ const Index = () => {
         educatief: false,
         kunstwerk_thema: false,
         buurtinitiatief: false,
-      },
-      overig: {
-        horeca: false,
-        toilet: false,
       },
     });
   };
@@ -284,7 +282,14 @@ const Index = () => {
         (filters.voorzieningen.zandbak && speeltuin.heeft_zandbak) ||
         (filters.voorzieningen.kabelbaan && speeltuin.heeft_kabelbaan) ||
         (filters.voorzieningen.bankjes && speeltuin.heeft_bankjes) ||
-        (filters.voorzieningen.sportveld && speeltuin.heeft_sportveld);
+        (filters.voorzieningen.sportveld && speeltuin.heeft_sportveld) ||
+        (filters.voorzieningen.klimtoestel && speeltuin.heeft_klimtoestel) ||
+        (filters.voorzieningen.water_pomp && speeltuin.heeft_water_pomp) ||
+        (filters.voorzieningen.trapveld && speeltuin.heeft_trapveld) ||
+        (filters.voorzieningen.skatebaan && speeltuin.heeft_skatebaan) ||
+        (filters.voorzieningen.toilet && speeltuin.heeft_toilet) ||
+        (filters.voorzieningen.parkeerplaats && speeltuin.heeft_parkeerplaats) ||
+        (filters.voorzieningen.horeca && speeltuin.heeft_horeca);
 
       // Ondergrond filter
       const ondergrondMatch = 
@@ -302,13 +307,7 @@ const Index = () => {
         (filters.grootte.middel && speeltuin.grootte === 'middel') ||
         (filters.grootte.groot && speeltuin.grootte === 'groot');
 
-      // Overig filter (simplified for now)
-      const overigMatch = 
-        (!Object.values(filters.overig).some(v => v)) ||
-        (filters.overig.horeca && speeltuin.heeft_horeca) ||
-        (filters.overig.toilet && speeltuin.heeft_toilet);
-
-      return leeftijdMatch && voorzieningenMatch && ondergrondMatch && grootteMatch && overigMatch;
+      return leeftijdMatch && voorzieningenMatch && ondergrondMatch && grootteMatch;
     });
   }, [speeltuinen, filters]);
 

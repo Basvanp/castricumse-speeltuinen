@@ -126,6 +126,9 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({ filters, onFiltersC
                 water_pomp: 'Water / pomp',
                 trapveld: 'Trapveld',
                 skatebaan: 'Skatebaan',
+                toilet: 'Toilet',
+                parkeerplaats: 'Parkeerplaats',
+                horeca: 'Horeca',
               };
               return (
                 <div key={key} className="flex items-center space-x-2">

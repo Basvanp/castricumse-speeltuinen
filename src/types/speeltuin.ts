@@ -122,6 +122,9 @@ export interface SpeeltuinFilters {
     water_pomp: boolean;
     trapveld: boolean;
     skatebaan: boolean;
+    toilet: boolean;
+    parkeerplaats: boolean;
+    horeca: boolean;
   };
   ondergrond: {
     zand: boolean;
@@ -166,9 +169,5 @@ export interface SpeeltuinFilters {
     educatief: boolean;
     kunstwerk_thema: boolean;
     buurtinitiatief: boolean;
-  };
-  overig: {
-    horeca: boolean;
-    toilet: boolean;
   };
 }
