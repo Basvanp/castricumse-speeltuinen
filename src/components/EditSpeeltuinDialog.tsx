@@ -8,7 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Upload, CheckCircle } from 'lucide-react';
+import { Upload, CheckCircle, Camera, RefreshCw } from 'lucide-react';
 import exifr from 'exifr';
 import { Speeltuin } from '@/types/speeltuin';
 import { compressImage, shouldCompress, getCompressionStats } from '@/utils/imageCompression';
@@ -360,38 +360,123 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Image Upload */}
-          <div
-            className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-              dragOver ? 'border-primary bg-primary/5' : 'border-muted-foreground/25'
-            }`}
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-          >
-            {uploading ? (
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            ) : formData.afbeelding_url ? (
-              <div className="space-y-4">
-                <img
-                  src={formData.afbeelding_url}
-                  alt="Preview"
-                  className="w-full h-32 object-cover rounded mx-auto"
-                />
-                <p className="text-sm text-muted-foreground">
-                  Afbeelding geüpload! Sleep een nieuwe afbeelding om te vervangen.
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
-                <div>
-                  <p className="text-lg font-medium">Sleep afbeelding hier</p>
-                  <p className="text-sm text-muted-foreground">
-                    EXIF GPS-data wordt automatisch uitgelezen (optioneel)
-                  </p>
+          <div className="space-y-4">
+            <Label className="text-lg font-semibold">Afbeelding</Label>
+            <div
+              className={`border-2 border-dashed rounded-lg p-6 text-center transition-all duration-300 ${
+                dragOver 
+                  ? 'border-primary bg-primary/5 scale-105' 
+                  : 'border-muted-foreground/25 hover:border-muted-foreground/40'
+              }`}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+            >
+              {uploading ? (
+                <div className="space-y-3">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                  <p className="text-sm text-muted-foreground">Uploaden...</p>
                 </div>
-              </div>
-            )}
+              ) : formData.afbeelding_url ? (
+                <div className="space-y-4">
+                  <div className="relative">
+                    <img
+                      src={formData.afbeelding_url}
+                      alt="Preview"
+                      className="w-full h-48 object-cover rounded-lg mx-auto shadow-sm"
+                    />
+                    <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition-colors rounded-lg"></div>
+                  </div>
+                  <div className="space-y-3">
+                    <p className="text-sm text-muted-foreground">
+                      Huidige afbeelding
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const input = document.createElement('input');
+                          input.type = 'file';
+                          input.accept = 'image/jpeg,image/jpg';
+                          input.onchange = (e) => {
+                            const file = (e.target as HTMLInputElement).files?.[0];
+                            if (file) {
+                              toast({
+                                title: "Afbeelding wordt vervangen",
+                                description: "De nieuwe afbeelding wordt geüpload...",
+                              });
+                              handleFileUpload(file);
+                            }
+                          };
+                          input.click();
+                        }}
+                        className="transition-all duration-200 hover:scale-105"
+                      >
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        Vervang afbeelding
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const input = document.createElement('input');
+                          input.type = 'file';
+                          input.accept = 'image/jpeg,image/jpg';
+                          input.onchange = (e) => {
+                            const file = (e.target as HTMLInputElement).files?.[0];
+                            if (file) {
+                              handleFileUpload(file);
+                            }
+                          };
+                          input.click();
+                        }}
+                        className="transition-all duration-200 hover:scale-105"
+                      >
+                        <Camera className="h-4 w-4 mr-2" />
+                        Nieuwe foto
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Of sleep een nieuwe afbeelding hiernaartoe
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <Upload className="h-12 w-12 mx-auto text-muted-foreground/50" />
+                  <div className="space-y-2">
+                    <p className="text-lg font-medium">Sleep afbeelding hier</p>
+                    <p className="text-sm text-muted-foreground">
+                      EXIF GPS-data wordt automatisch uitgelezen (optioneel)
+                    </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const input = document.createElement('input');
+                        input.type = 'file';
+                        input.accept = 'image/jpeg,image/jpg';
+                        input.onchange = (e) => {
+                          const file = (e.target as HTMLInputElement).files?.[0];
+                          if (file) {
+                            handleFileUpload(file);
+                          }
+                        };
+                        input.click();
+                      }}
+                      className="mt-2"
+                    >
+                      <Camera className="h-4 w-4 mr-2" />
+                      Selecteer afbeelding
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Basic Info */}
