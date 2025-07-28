@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Upload, CheckCircle } from 'lucide-react';
 import exifr from 'exifr';
 import { Speeltuin } from '@/types/speeltuin';
+import { compressImage, shouldCompress, getCompressionStats } from '@/utils/imageCompression';
 import {
   Dialog,
   DialogContent,
@@ -146,19 +147,6 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
     setUploading(true);
     setGpsFromPhoto(false);
     
-    const maxSizeInMB = 10;
-    const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
-    
-    if (file.size > maxSizeInBytes) {
-      toast({
-        title: "Bestand te groot",
-        description: `Het bestand mag niet groter zijn dan ${maxSizeInMB}MB.`,
-        variant: "destructive",
-      });
-      setUploading(false);
-      return;
-    }
-    
     const allowedTypes = ['image/jpeg', 'image/jpg'];
     if (!allowedTypes.includes(file.type)) {
       toast({
@@ -198,13 +186,57 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
         console.log('GPS extraction failed:', error);
       }
 
+      // Compress large images automatically (>2MB)
+      let fileToUpload = file;
+      if (shouldCompress(file)) {
+        try {
+          console.log(`Original file size: ${(file.size / 1024).toFixed(1)}KB`);
+          fileToUpload = await compressImage(file);
+          console.log(`Compressed file size: ${(fileToUpload.size / 1024).toFixed(1)}KB`);
+          
+          const stats = getCompressionStats(file, fileToUpload);
+          toast({
+            title: "Foto gecomprimeerd",
+            description: `Grootte gereduceerd van ${stats.originalSize} naar ${stats.compressedSize} (-${stats.compressionRatio})`,
+          });
+        } catch (error) {
+          console.error('Compression failed:', error);
+          
+          // Final size check - reject if still too large after failed compression
+          if (file.size > 10 * 1024 * 1024) {
+            toast({
+              title: "Bestand te groot",
+              description: "Compressie mislukt en bestand is te groot (max 10MB).",
+              variant: "destructive",
+            });
+            setUploading(false);
+            return;
+          }
+          
+          toast({
+            title: "Compressie mislukt",
+            description: "Foto wordt geüpload zonder compressie",
+            variant: "destructive",
+          });
+        }
+      } else if (file.size > 10 * 1024 * 1024) {
+        // Final fallback for files that don't need compression but are still too large
+        toast({
+          title: "Bestand te groot",
+          description: "De afbeelding mag maximaal 10MB zijn.",
+          variant: "destructive",
+        });
+        setUploading(false);
+        return;
+      }
+
       // Upload file to Supabase Storage
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}.${fileExt}`;
       
       const { data, error } = await supabase.storage
         .from('speeltuin-fotos')
-        .upload(fileName, file);
+        .upload(fileName, fileToUpload);
 
       if (error) {
         throw error;

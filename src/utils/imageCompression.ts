@@ -17,6 +17,31 @@ const DEFAULT_OPTIONS: CompressionOptions = {
   maxSizeKB: 1024, // 1MB
 };
 
+const COMPRESSION_THRESHOLD_KB = 2048; // 2MB
+
+/**
+ * Checks if a file should be compressed based on size
+ */
+export const shouldCompress = (file: File): boolean => {
+  const sizeKB = file.size / 1024;
+  return sizeKB > COMPRESSION_THRESHOLD_KB;
+};
+
+/**
+ * Gets compression statistics for user feedback
+ */
+export const getCompressionStats = (originalFile: File, compressedFile: File) => {
+  const originalSizeKB = originalFile.size / 1024;
+  const compressedSizeKB = compressedFile.size / 1024;
+  const compressionRatio = ((originalSizeKB - compressedSizeKB) / originalSizeKB * 100).toFixed(0);
+  
+  return {
+    originalSize: originalSizeKB > 1024 ? `${(originalSizeKB / 1024).toFixed(1)}MB` : `${originalSizeKB.toFixed(0)}KB`,
+    compressedSize: compressedSizeKB > 1024 ? `${(compressedSizeKB / 1024).toFixed(1)}MB` : `${compressedSizeKB.toFixed(0)}KB`,
+    compressionRatio: `${compressionRatio}%`
+  };
+};
+
 /**
  * Compresses an image file using Canvas API
  */

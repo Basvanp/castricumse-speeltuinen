@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Upload, CheckCircle, Camera, MapPin, AlertTriangle, Eye, X, Image, GripVertical, Plus } from 'lucide-react';
 import exifr from 'exifr';
-import { compressImage, validateJPEGFile } from '@/utils/imageCompression';
+import { compressImage, validateJPEGFile, shouldCompress, getCompressionStats } from '@/utils/imageCompression';
 import SpeeltuinBadge, { BadgeType } from '@/components/SpeeltuinBadge';
 
 interface FotoItem {
@@ -285,20 +285,6 @@ const SpeeltuinEditor = () => {
         return;
       }
     } else {
-      // Original validation for drag & drop
-      const maxSizeInMB = 10;
-      const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
-      
-      if (file.size > maxSizeInBytes) {
-        toast({
-          title: "Bestand te groot",
-          description: `Het bestand mag niet groter zijn dan ${maxSizeInMB}MB.`,
-          variant: "destructive",
-        });
-        setUploading(false);
-        return;
-      }
-      
       // Validate file type - JPEG only for simplicity
       const allowedTypes = ['image/jpeg', 'image/jpg'];
       if (!allowedTypes.includes(file.type)) {
@@ -349,21 +335,34 @@ const SpeeltuinEditor = () => {
         console.log('EXIF extraction failed:', error);
       }
 
-      // Compress image if from camera
+      // Compress large images automatically (>2MB)
       let fileToUpload = file;
-      if (fromCamera) {
+      if (shouldCompress(file)) {
         setCompressing(true);
         try {
           console.log(`Original file size: ${(file.size / 1024).toFixed(1)}KB`);
           fileToUpload = await compressImage(file);
           console.log(`Compressed file size: ${(fileToUpload.size / 1024).toFixed(1)}KB`);
           
+          const stats = getCompressionStats(file, fileToUpload);
           toast({
             title: "Foto gecomprimeerd",
-            description: `Grootte gereduceerd van ${(file.size / 1024).toFixed(0)}KB naar ${(fileToUpload.size / 1024).toFixed(0)}KB`,
+            description: `Grootte gereduceerd van ${stats.originalSize} naar ${stats.compressedSize} (-${stats.compressionRatio})`,
           });
         } catch (error) {
           console.error('Compression failed:', error);
+          
+          // Final size check - reject if still too large after failed compression
+          if (file.size > 10 * 1024 * 1024) {
+            toast({
+              title: "Bestand te groot",
+              description: "Compressie mislukt en bestand is te groot (max 10MB).",
+              variant: "destructive",
+            });
+            setUploading(false);
+            return;
+          }
+          
           toast({
             title: "Compressie mislukt",
             description: "Originele foto wordt gebruikt.",
@@ -371,6 +370,15 @@ const SpeeltuinEditor = () => {
           });
         }
         setCompressing(false);
+      } else if (file.size > 10 * 1024 * 1024) {
+        // Final fallback for files that don't need compression but are still too large
+        toast({
+          title: "Bestand te groot",
+          description: "De foto mag maximaal 10MB zijn.",
+          variant: "destructive",
+        });
+        setUploading(false);
+        return;
       }
 
       // Generate description from filename for first photo
