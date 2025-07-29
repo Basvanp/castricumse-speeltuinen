@@ -361,7 +361,7 @@ const Index = () => {
         siteDescription={settings.site_description}
       />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">{/* pt-24 = 96px voor sticky nav + padding */}
         <div className="flex gap-8 relative">
           {/* Filters Sidebar */}
           <div className={`transition-all duration-300 ease-in-out ${
