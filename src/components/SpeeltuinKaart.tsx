@@ -27,7 +27,7 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
 
   const handleLocationClick = () => {
     if (userLocation && mapInstanceRef.current) {
-      mapInstanceRef.current.setView(userLocation, 14);
+      mapInstanceRef.current.setView(userLocation, 15);
     } else {
       onLocationRequest();
     }
@@ -50,9 +50,9 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
         shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
       });
 
-      // Center on Castricum
+      // Center on Castricum with zoom level to show all playgrounds
       const center: [number, number] = [52.5485, 4.6698];
-      mapInstanceRef.current = L.map(mapRef.current).setView(center, 13);
+      mapInstanceRef.current = L.map(mapRef.current).setView(center, 12);
 
       // Add tile layer
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -92,11 +92,14 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
 
       // Add user location marker if available
       if (userLocation) {
+        // Auto-zoom to user location at level 15
+        mapInstanceRef.current.setView(userLocation, 15);
+
         const userIcon = L.divIcon({
-          html: `<div style="background-color: #ef4444; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.4);"></div>`,
+          html: `<div style="background-color: #f97316; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.5); opacity: 0.9;"></div>`,
           className: 'user-location-marker',
-          iconSize: [16, 16],
-          iconAnchor: [8, 8],
+          iconSize: [20, 20],
+          iconAnchor: [10, 10],
         });
 
         userLocationMarkerRef.current = L.marker(userLocation, { 
