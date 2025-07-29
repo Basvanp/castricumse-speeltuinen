@@ -54,7 +54,7 @@ const Header = ({
                   className="w-12 h-12 lg:w-16 lg:h-16"
                 />
                 <div>
-                  <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-primary via-primary/80 to-accent bg-clip-text text-transparent">
+                  <h1 className="text-3xl lg:text-4xl font-bold text-foreground">
                     {siteName}
                   </h1>
                 </div>
@@ -62,7 +62,7 @@ const Header = ({
             </div>
             
             {/* Description with icon */}
-            <div className="flex items-center gap-2 text-muted-foreground text-lg max-w-2xl">
+            <div className="flex items-center gap-2 text-foreground/80 text-lg max-w-2xl">
               <Heart className="w-4 h-4 text-accent" />
               <p>{siteDescription}</p>
             </div>
