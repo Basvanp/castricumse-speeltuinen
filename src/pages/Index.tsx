@@ -8,6 +8,7 @@ import SpeeltuinKaart from '@/components/SpeeltuinKaart';
 import SpeeltuinCard from '@/components/SpeeltuinCard';
 import SpeeltuinFiltersComponent from '@/components/SpeeltuinFilters';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
@@ -258,6 +259,19 @@ const Index = () => {
     );
   };
 
+  // Calculate last updated date from speeltuinen data
+  const lastUpdated = useMemo(() => {
+    if (!speeltuinen.length) return null;
+    
+    const dates = speeltuinen
+      .map(s => s.updated_at || s.created_at)
+      .filter(Boolean)
+      .map(date => new Date(date))
+      .sort((a, b) => b.getTime() - a.getTime());
+    
+    return dates.length > 0 ? dates[0] : null;
+  }, [speeltuinen]);
+
   const filteredSpeeltuinen = useMemo(() => {
     return speeltuinen.filter((speeltuin) => {
       // Check if any filters are active
@@ -436,6 +450,8 @@ const Index = () => {
           </div>
         </div>
       </main>
+      
+      <Footer lastUpdated={lastUpdated} />
     </div>
   );
 };
