@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useUpdateSpeeltuin } from '@/hooks/useSpeeltuinen';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -82,6 +83,7 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
   const [dragOverPhoto, setDragOverPhoto] = useState<number | null>(null);
   const { mutate: updateSpeeltuin, isPending } = useUpdateSpeeltuin();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const galleryInputRef = useRef<HTMLInputElement>(null);
 
   // Initialize form when speeltuin changes
@@ -468,6 +470,7 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
           description: "De speeltuin is succesvol bijgewerkt.",
         });
         onOpenChange(false);
+        navigate('/');
       },
       onError: (error) => {
         toast({
