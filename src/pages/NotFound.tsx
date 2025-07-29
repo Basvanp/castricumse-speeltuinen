@@ -11,7 +11,7 @@ const NotFound = () => {
     );
   }, [location.pathname]);
 
-return (
+  return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-green-50">
       <div className="text-center max-w-md px-6">
         {/* Pulserende speeltuin SVG */}
@@ -77,5 +77,6 @@ return (
       </div>
     </div>
   );
+};
 
 export default NotFound;
