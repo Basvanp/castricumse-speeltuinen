@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useCreateSpeeltuin } from '@/hooks/useSpeeltuinen';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -105,6 +106,7 @@ const SpeeltuinEditor = () => {
   const [dragOverPhoto, setDragOverPhoto] = useState<number | null>(null);
   const { mutate: createSpeeltuin, isPending } = useCreateSpeeltuin();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
 
@@ -718,6 +720,8 @@ const SpeeltuinEditor = () => {
           title: "Speeltuin toegevoegd!",
           description: "De nieuwe speeltuin is succesvol toegevoegd.",
         });
+        // Navigate to overview page
+        navigate('/');
         // Reset form
         setFormData({
           naam: '',
