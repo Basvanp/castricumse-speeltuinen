@@ -7,6 +7,9 @@ import AdminButton from './AdminButton';
 interface HeaderProps {
   siteName?: string;
   siteDescription?: string;
+  onScrollToTop?: () => void;
+  onScrollToMap?: () => void;
+  onScrollToSpeeltuinen?: () => void;
 }
 
 // Custom playground slide logo component using uploaded favicon
@@ -22,7 +25,10 @@ const PlaygroundLogo = () => (
 
 const Header = ({ 
   siteName = 'Castricum Speeltuinen Gids', 
-  siteDescription = 'Ontdek alle speeltuinen in Castricum en omgeving. Complete gids met foto\'s, faciliteiten en locatie-informatie.' 
+  siteDescription = 'Ontdek alle speeltuinen in Castricum en omgeving. Complete gids met foto\'s, faciliteiten en locatie-informatie.',
+  onScrollToTop,
+  onScrollToMap,
+  onScrollToSpeeltuinen
 }: HeaderProps) => {
   return (
     <>
@@ -45,36 +51,28 @@ const Header = ({
 
             {/* Navigation */}
             <div className="hidden md:flex items-center gap-6">
-              <NavigationMenu>
-                <NavigationMenuList>
-                  <NavigationMenuItem>
-                    <NavigationMenuLink 
-                      href="/" 
-                      className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors"
-                    >
-                      <Home className="w-4 h-4" />
-                      Home
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                  <NavigationMenuItem>
-                    <NavigationMenuLink 
-                      href="/speeltuinen" 
-                      className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#1a202c]/70 hover:text-[#1a202c] hover:bg-[#1a202c]/5 rounded-md transition-colors"
-                    >
-                      Alle Speeltuinen
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                  <NavigationMenuItem>
-                    <NavigationMenuLink 
-                      href="/kaart" 
-                      className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#1a202c]/70 hover:text-[#1a202c] hover:bg-[#1a202c]/5 rounded-md transition-colors"
-                    >
-                      <MapPin className="w-4 h-4" />
-                      Kaart
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenu>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={onScrollToTop}
+                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors"
+                >
+                  <Home className="w-4 h-4" />
+                  Home
+                </button>
+                <button
+                  onClick={onScrollToSpeeltuinen}
+                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#1a202c]/70 hover:text-[#1a202c] hover:bg-[#1a202c]/5 rounded-md transition-colors"
+                >
+                  Alle Speeltuinen
+                </button>
+                <button
+                  onClick={onScrollToMap}
+                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#1a202c]/70 hover:text-[#1a202c] hover:bg-[#1a202c]/5 rounded-md transition-colors"
+                >
+                  <MapPin className="w-4 h-4" />
+                  Kaart
+                </button>
+              </div>
 
               {/* Admin button */}
               <AdminButton />

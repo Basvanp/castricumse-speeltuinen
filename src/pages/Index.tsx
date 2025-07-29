@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useSpeeltuinen } from '@/hooks/useSpeeltuinen';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { useAnalytics } from '@/hooks/useAnalytics';
@@ -24,6 +24,11 @@ const Index = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [isLocating, setIsLocating] = useState(false);
+  
+  // Refs voor scroll-functionaliteit
+  const topRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const speeltuinenRef = useRef<HTMLDivElement>(null);
   const [filters, setFilters] = useState<SpeeltuinFilters>({
     typeSpeeltuin: {
       natuurspeeltuin: false,
@@ -259,6 +264,27 @@ const Index = () => {
     );
   };
 
+  // Scroll-functies voor navigatie
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const scrollToMap = () => {
+    if (mapRef.current) {
+      const headerHeight = 80; // Hoogte van sticky header + wat extra ruimte
+      const offsetTop = mapRef.current.offsetTop - headerHeight;
+      window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+    }
+  };
+
+  const scrollToSpeeltuinen = () => {
+    if (speeltuinenRef.current) {
+      const headerHeight = 80; // Hoogte van sticky header + wat extra ruimte
+      const offsetTop = speeltuinenRef.current.offsetTop - headerHeight;
+      window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+    }
+  };
+
   // Calculate last updated date from speeltuinen data
   const lastUpdated = useMemo(() => {
     if (!speeltuinen.length) return null;
@@ -348,7 +374,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div ref={topRef} className="min-h-screen bg-background">
       <SEOHead 
         title={settings.meta_title}
         description={settings.meta_description}
@@ -359,6 +385,9 @@ const Index = () => {
       <Header 
         siteName={settings.site_name}
         siteDescription={settings.site_description}
+        onScrollToTop={scrollToTop}
+        onScrollToMap={scrollToMap}
+        onScrollToSpeeltuinen={scrollToSpeeltuinen}
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">{/* pt-24 = 96px voor sticky nav + padding */}
@@ -408,7 +437,7 @@ const Index = () => {
           <div className="flex-1 space-y-8">
             {/* Map - Only show when sidebar is collapsed or on desktop */}
             {(sidebarCollapsed || !isMobile) && (
-              <div>
+              <div ref={mapRef}>
                 <h2 className="text-xl font-semibold mb-4">Kaart</h2>
                 <SpeeltuinKaart 
                   speeltuinen={filteredSpeeltuinen} 
@@ -429,7 +458,7 @@ const Index = () => {
             )}
 
             {/* Speeltuinen Grid */}
-            <div>
+            <div ref={speeltuinenRef}>
               <h2 className="text-xl font-semibold mb-4">
                 Alle speeltuinen ({filteredSpeeltuinen.length})
               </h2>
