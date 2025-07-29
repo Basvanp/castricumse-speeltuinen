@@ -9,21 +9,14 @@ interface HeaderProps {
   siteDescription?: string;
 }
 
-// Custom playground slide logo component
+// Custom playground slide logo component using uploaded favicon
 const PlaygroundLogo = () => (
-  <div className="w-10 h-10 bg-gradient-to-br from-[#ff6b35] to-[#f7931e] rounded-xl flex items-center justify-center shadow-sm">
-    <svg viewBox="0 0 100 100" className="w-6 h-6">
-      <path d="M15 85 Q20 80 30 75 Q45 65 60 45 Q65 40 70 35" stroke="white" strokeWidth="3" fill="none"/>
-      <path d="M20 85 Q25 80 35 75 Q50 65 65 45 Q70 40 75 35" stroke="white" strokeWidth="3" fill="none"/>
-      <path d="M70 35 L70 85" stroke="white" strokeWidth="3"/>
-      <path d="M75 35 L75 85" stroke="white" strokeWidth="3"/>
-      <path d="M70 45 L75 45" stroke="white" strokeWidth="2"/>
-      <path d="M70 55 L75 55" stroke="white" strokeWidth="2"/>
-      <path d="M70 65 L75 65" stroke="white" strokeWidth="2"/>
-      <path d="M70 75 L75 75" stroke="white" strokeWidth="2"/>
-      <path d="M65 35 L80 35" stroke="white" strokeWidth="3"/>
-      <path d="M10 85 L85 85" stroke="white" strokeWidth="2"/>
-    </svg>
+  <div className="w-11 h-11 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center shadow-lg" style={{ boxShadow: '0 4px 12px rgba(96, 165, 250, 0.3)' }}>
+    <img 
+      src="/lovable-uploads/2ea4b2d6-5537-43cf-a522-d1571d0f5108.png" 
+      alt="Castricum Speeltuinen Logo" 
+      className="w-6 h-6"
+    />
   </div>
 );
 
@@ -56,7 +49,7 @@ const Header = ({
                 <NavigationMenuItem>
                   <NavigationMenuLink 
                     href="/" 
-                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#ff6b35] bg-[#ff6b35]/5 rounded-md hover:bg-[#ff6b35]/10 transition-colors"
+                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors"
                   >
                     <Home className="w-4 h-4" />
                     Home
@@ -94,7 +87,7 @@ const Header = ({
       </div>
 
       {/* Page header section */}
-      <div className="bg-gradient-to-r from-[#ff6b35]/5 to-[#f7931e]/5 border-b border-[#e2e8f0]">
+      <div className="bg-gradient-to-r from-blue-50 to-blue-100/50 border-b border-[#e2e8f0]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="max-w-3xl">
             <div className="flex items-center gap-2 mb-3">
