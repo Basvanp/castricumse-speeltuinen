@@ -42,9 +42,11 @@ const Footer = ({ lastUpdated }: FooterProps) => {
           {/* Decorative separator */}
           <div className="flex items-center justify-center gap-4">
             <div className="h-px bg-gradient-to-r from-transparent to-border w-20"></div>
-            <div className="p-2 bg-primary/10 rounded-full">
-              <MapPin className="w-4 h-4 text-primary" />
-            </div>
+            <img 
+              src="/lovable-uploads/c0bf8c44-fa41-463d-8c65-11c75f715265.png" 
+              alt="Speeltuinen logo" 
+              className="w-8 h-8 opacity-80"
+            />
             <div className="h-px bg-gradient-to-l from-transparent to-border w-20"></div>
           </div>
 

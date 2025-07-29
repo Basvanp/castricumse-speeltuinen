@@ -47,13 +47,18 @@ const Header = ({
           <div className="flex-1">
             {/* Main title with decorative elements */}
             <div className="flex items-center gap-4 mb-2">
-              <div className="flex items-center gap-2">
-                <div className="p-2 bg-primary/10 rounded-full">
-                  <MapPin className="w-6 h-6 text-primary" />
+              <div className="flex items-center gap-3">
+                <img 
+                  src="/lovable-uploads/c0bf8c44-fa41-463d-8c65-11c75f715265.png" 
+                  alt="Speeltuinen logo" 
+                  className="w-12 h-12 lg:w-16 lg:h-16"
+                />
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-primary" />
+                  <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-primary via-primary/80 to-accent bg-clip-text text-transparent">
+                    {siteName}
+                  </h1>
                 </div>
-                <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-primary via-primary/80 to-accent bg-clip-text text-transparent">
-                  {siteName}
-                </h1>
               </div>
             </div>
             
