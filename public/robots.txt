@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://castricum-speeltuinen.lovable.app/sitemap.xml
+Sitemap: https://speeltuincastricum.nl/sitemap.xml
 
 # Allow crawling of all public content
 Allow: /
