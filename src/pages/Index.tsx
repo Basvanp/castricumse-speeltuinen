@@ -440,7 +440,7 @@ const Index = () => {
               <div ref={mapRef}>
                 <h2 className="text-xl font-semibold mb-4">Kaart</h2>
                 <SpeeltuinKaart 
-                  speeltuinen={filteredSpeeltuinen} 
+                  speeltuinen={speeltuinen} 
                   onSpeeltuinSelect={setSelectedSpeeltuin}
                   userLocation={userLocation}
                   isLocating={isLocating}

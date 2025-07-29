@@ -50,9 +50,9 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
         shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
       });
 
-      // Center on Castricum with zoom level to show all playgrounds
+      // Center on Castricum with zoom level to show all playgrounds by default  
       const center: [number, number] = [52.5485, 4.6698];
-      mapInstanceRef.current = L.map(mapRef.current).setView(center, 12);
+      mapInstanceRef.current = L.map(mapRef.current).setView(center, 14);
 
       // Add tile layer
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -71,9 +71,9 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
     };
   }, []);
 
-  // Update markers when speeltuinen or userLocation changes
+  // Update markers when speeltuinen change, and handle user location separately
   useEffect(() => {
-    if (!mapInstanceRef.current) return;
+    if (!mapInstanceRef.current || !speeltuinen.length) return;
 
     import('leaflet').then((L) => {
       // Clear existing playground markers
@@ -90,24 +90,7 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
         userLocationMarkerRef.current = null;
       }
 
-      // Add user location marker if available
-      if (userLocation) {
-        // Auto-zoom to user location at level 15
-        mapInstanceRef.current.setView(userLocation, 15);
-
-        const userIcon = L.divIcon({
-          html: `<div style="background-color: #f97316; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.5); opacity: 0.9;"></div>`,
-          className: 'user-location-marker',
-          iconSize: [20, 20],
-          iconAnchor: [10, 10],
-        });
-
-        userLocationMarkerRef.current = L.marker(userLocation, { 
-          icon: userIcon 
-        }).addTo(mapInstanceRef.current);
-
-        userLocationMarkerRef.current.bindPopup('<div class="p-2"><strong>Uw locatie</strong></div>');
-      }
+      // User location will be handled in a separate effect
 
       // Add markers for speeltuinen
       speeltuinen.forEach((speeltuin) => {
@@ -181,6 +164,35 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
       });
     });
   }, [speeltuinen, userLocation, onSpeeltuinSelect]);
+
+  // Separate effect for handling user location changes
+  useEffect(() => {
+    if (!mapInstanceRef.current || !userLocation) return;
+
+    import('leaflet').then((L) => {
+      // Remove existing user location marker
+      if (userLocationMarkerRef.current) {
+        mapInstanceRef.current.removeLayer(userLocationMarkerRef.current);
+        userLocationMarkerRef.current = null;
+      }
+
+      // Auto-zoom to user location at level 15 and add marker
+      mapInstanceRef.current.setView(userLocation, 15);
+
+      const userIcon = L.divIcon({
+        html: `<div style="background-color: #f97316; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.5); opacity: 0.9;"></div>`,
+        className: 'user-location-marker',
+        iconSize: [20, 20],
+        iconAnchor: [10, 10],
+      });
+
+      userLocationMarkerRef.current = L.marker(userLocation, { 
+        icon: userIcon 
+      }).addTo(mapInstanceRef.current);
+
+      userLocationMarkerRef.current.bindPopup('<div class="p-2"><strong>Uw locatie</strong></div>');
+    });
+  }, [userLocation]);
 
   return (
     <div className="relative h-96 w-full rounded-lg overflow-hidden shadow-lg">
