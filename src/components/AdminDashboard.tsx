@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MapPin, Plus, BarChart3, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import AuditLogViewer from '@/components/AuditLogViewer';
 
 const AdminDashboard = () => {
   const { data: speeltuinen = [] } = useSpeeltuinen();
@@ -141,6 +142,9 @@ const AdminDashboard = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Security Audit Log */}
+      <AuditLogViewer />
     </div>
   );
 };

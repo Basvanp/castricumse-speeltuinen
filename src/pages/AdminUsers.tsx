@@ -64,8 +64,37 @@ const AdminUsers = () => {
     fetchUsers();
   }, []);
 
-  // Invite new user - secure implementation
+  // Invite new user - secure implementation with validation
   const handleInviteUser = async () => {
+    // Input validation
+    if (!inviteEmail || !inviteEmail.includes('@')) {
+      toast({
+        title: "Validatiefout",
+        description: "Voer een geldig emailadres in",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Additional email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(inviteEmail)) {
+      toast({
+        title: "Validatiefout", 
+        description: "Emailadres heeft een ongeldig formaat",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Confirm admin role assignment
+    if (inviteRole === 'admin') {
+      const confirmed = window.confirm(
+        `Weet je zeker dat je ${inviteEmail} admin rechten wilt geven? Dit geeft volledige toegang tot het systeem.`
+      );
+      if (!confirmed) return;
+    }
+
     try {
       // Use the secure invitation function instead of direct signup
       const { data, error } = await supabase.rpc('invite_user_secure', {
@@ -95,11 +124,27 @@ const AdminUsers = () => {
     }
   };
 
-  // Update user role
+  // Update user role with security validation
   const handleUpdateRole = async () => {
     if (!editingUser) return;
 
+    // Add confirmation for critical role changes
+    if (inviteRole === 'admin' && editingUser.role === 'user') {
+      const confirmed = window.confirm(
+        `Weet je zeker dat je ${editingUser.email} admin rechten wilt geven? Dit geeft volledige toegang tot het systeem.`
+      );
+      if (!confirmed) return;
+    }
+
     try {
+      // Use the secure validation function
+      const { error: validationError } = await supabase.rpc('validate_role_change', {
+        target_user_id: editingUser.id,
+        new_role: inviteRole
+      });
+
+      if (validationError) throw validationError;
+
       const { error } = await supabase
         .from('user_roles')
         .update({ role: inviteRole })

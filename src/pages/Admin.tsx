@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent } from '@/components/ui/card';
 import AdminLayout from '@/components/AdminLayout';
 import AdminDashboard from '@/components/AdminDashboard';
+import SecurityGuard from '@/components/SecurityGuard';
 
 const Admin = () => {
   const { user, loading } = useAuth();
@@ -89,12 +90,14 @@ const Admin = () => {
   }
 
   return (
-    <AdminLayout 
-      title="Dashboard" 
-      description="Overzicht van je speeltuinen beheer systeem"
-    >
-      <AdminDashboard />
-    </AdminLayout>
+    <SecurityGuard requireAdmin={true}>
+      <AdminLayout 
+        title="Dashboard" 
+        description="Overzicht van je speeltuinen beheer systeem"
+      >
+        <AdminDashboard />
+      </AdminLayout>
+    </SecurityGuard>
   );
 };
 
