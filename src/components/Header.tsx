@@ -25,69 +25,71 @@ const Header = ({
   siteDescription = 'Ontdek alle speeltuinen in Castricum en omgeving. Complete gids met foto\'s, faciliteiten en locatie-informatie.' 
 }: HeaderProps) => {
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-[#e2e8f0] shadow-sm">
-      {/* Main header with logo and navigation */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo section */}
-          <div className="flex items-center gap-3">
-            <PlaygroundLogo />
-            <div>
-              <h1 className="text-lg font-semibold text-[#1a202c] leading-tight">
-                {siteName}
-              </h1>
-              <p className="text-xs text-[#1a202c]/70 leading-tight">
-                Gemeente Castricum
-              </p>
+    <>
+      {/* Sticky navigation bar */}
+      <nav className="sticky top-0 z-50 bg-white border-b border-[#e2e8f0] shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo section */}
+            <div className="flex items-center gap-3">
+              <PlaygroundLogo />
+              <div>
+                <h1 className="text-lg font-semibold text-[#1a202c] leading-tight">
+                  {siteName}
+                </h1>
+                <p className="text-xs text-[#1a202c]/70 leading-tight">
+                  Gemeente Castricum
+                </p>
+              </div>
+            </div>
+
+            {/* Navigation */}
+            <div className="hidden md:flex items-center gap-6">
+              <NavigationMenu>
+                <NavigationMenuList>
+                  <NavigationMenuItem>
+                    <NavigationMenuLink 
+                      href="/" 
+                      className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors"
+                    >
+                      <Home className="w-4 h-4" />
+                      Home
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem>
+                    <NavigationMenuLink 
+                      href="/speeltuinen" 
+                      className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#1a202c]/70 hover:text-[#1a202c] hover:bg-[#1a202c]/5 rounded-md transition-colors"
+                    >
+                      Alle Speeltuinen
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem>
+                    <NavigationMenuLink 
+                      href="/kaart" 
+                      className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#1a202c]/70 hover:text-[#1a202c] hover:bg-[#1a202c]/5 rounded-md transition-colors"
+                    >
+                      <MapPin className="w-4 h-4" />
+                      Kaart
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
+
+              {/* Admin button */}
+              <AdminButton />
+            </div>
+
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <AdminButton />
             </div>
           </div>
-
-          {/* Navigation */}
-          <div className="hidden md:flex items-center gap-6">
-            <NavigationMenu>
-              <NavigationMenuList>
-                <NavigationMenuItem>
-                  <NavigationMenuLink 
-                    href="/" 
-                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors"
-                  >
-                    <Home className="w-4 h-4" />
-                    Home
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <NavigationMenuLink 
-                    href="/speeltuinen" 
-                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#1a202c]/70 hover:text-[#1a202c] hover:bg-[#1a202c]/5 rounded-md transition-colors"
-                  >
-                    Alle Speeltuinen
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <NavigationMenuLink 
-                    href="/kaart" 
-                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#1a202c]/70 hover:text-[#1a202c] hover:bg-[#1a202c]/5 rounded-md transition-colors"
-                  >
-                    <MapPin className="w-4 h-4" />
-                    Kaart
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-              </NavigationMenuList>
-            </NavigationMenu>
-
-            {/* Admin button */}
-            <AdminButton />
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="md:hidden">
-            <AdminButton />
-          </div>
         </div>
-      </div>
+      </nav>
 
-      {/* Page header section */}
-      <div className="bg-white border-b border-[#e2e8f0]">
+      {/* Page header section - not sticky */}
+      <header className="bg-white border-b border-[#e2e8f0]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="max-w-3xl">
             <div className="mb-4">
@@ -101,8 +103,8 @@ const Header = ({
             </p>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+    </>
   );
 };
 
