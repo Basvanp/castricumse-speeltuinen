@@ -51,8 +51,8 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
       });
 
       // Center on Castricum with zoom level to show all playgrounds by default  
-      const center: [number, number] = [52.5485, 4.6698];
-      mapInstanceRef.current = L.map(mapRef.current).setView(center, 14);
+      const center: [number, number] = [52.5486, 4.6695];
+      mapInstanceRef.current = L.map(mapRef.current).setView(center, 13);
 
       // Add tile layer
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -71,9 +71,9 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
     };
   }, []);
 
-  // Update markers when speeltuinen change, and handle user location separately
+  // Update markers when speeltuinen change - always run to clear/update markers
   useEffect(() => {
-    if (!mapInstanceRef.current || !speeltuinen.length) return;
+    if (!mapInstanceRef.current) return;
 
     import('leaflet').then((L) => {
       // Clear existing playground markers
@@ -163,7 +163,7 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
         }
       });
     });
-  }, [speeltuinen, userLocation, onSpeeltuinSelect]);
+  }, [speeltuinen, onSpeeltuinSelect]);
 
   // Separate effect for handling user location changes
   useEffect(() => {
