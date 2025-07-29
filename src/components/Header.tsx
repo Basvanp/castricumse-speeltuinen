@@ -91,9 +91,9 @@ const Header = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="max-w-3xl">
             <div className="mb-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                <Star className="w-3.5 h-3.5 fill-current" />
-                Gecontroleerde speeltuinen
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                <SpeeltuinIcon />
+                Actuele foto's & informatie
               </div>
             </div>
             <p className="text-slate-600 text-base leading-relaxed">
