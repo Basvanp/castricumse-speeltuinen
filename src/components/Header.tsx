@@ -1,5 +1,7 @@
 import React from 'react';
-import { Trees, MapPin, Heart } from 'lucide-react';
+import { Settings, Star, Home, MapPin } from 'lucide-react';
+import { NavigationMenu, NavigationMenuItem, NavigationMenuList, NavigationMenuLink } from './ui/navigation-menu';
+import { Button } from './ui/button';
 import AdminButton from './AdminButton';
 
 interface HeaderProps {
@@ -7,97 +9,106 @@ interface HeaderProps {
   siteDescription?: string;
 }
 
+// Custom playground slide logo component
+const PlaygroundLogo = () => (
+  <div className="w-10 h-10 bg-gradient-to-br from-[#ff6b35] to-[#f7931e] rounded-xl flex items-center justify-center shadow-sm">
+    <svg viewBox="0 0 100 100" className="w-6 h-6">
+      <path d="M15 85 Q20 80 30 75 Q45 65 60 45 Q65 40 70 35" stroke="white" strokeWidth="3" fill="none"/>
+      <path d="M20 85 Q25 80 35 75 Q50 65 65 45 Q70 40 75 35" stroke="white" strokeWidth="3" fill="none"/>
+      <path d="M70 35 L70 85" stroke="white" strokeWidth="3"/>
+      <path d="M75 35 L75 85" stroke="white" strokeWidth="3"/>
+      <path d="M70 45 L75 45" stroke="white" strokeWidth="2"/>
+      <path d="M70 55 L75 55" stroke="white" strokeWidth="2"/>
+      <path d="M70 65 L75 65" stroke="white" strokeWidth="2"/>
+      <path d="M70 75 L75 75" stroke="white" strokeWidth="2"/>
+      <path d="M65 35 L80 35" stroke="white" strokeWidth="3"/>
+      <path d="M10 85 L85 85" stroke="white" strokeWidth="2"/>
+    </svg>
+  </div>
+);
+
 const Header = ({ 
-  siteName = 'Speeltuinen in Castricum', 
-  siteDescription = 'Ontdek alle speeltuinen in Castricum en omgeving' 
+  siteName = 'Castricum Speeltuinen Gids', 
+  siteDescription = 'Ontdek alle speeltuinen in Castricum en omgeving. Complete gids met foto\'s, faciliteiten en locatie-informatie.' 
 }: HeaderProps) => {
   return (
-    <header className="relative bg-gradient-to-br from-primary/5 via-primary/3 to-accent/5 border-b border-border/50 overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        {/* Playground equipment silhouettes */}
-        <div className="absolute top-8 left-1/4 opacity-10">
-          <svg width="60" height="60" viewBox="0 0 24 24" fill="currentColor" className="text-primary">
-            {/* Swing set */}
-            <path d="M4 2h2v20H4V2zm14 0h2v20h-2V2zM8 6h8v2H8V6zm0 4h8v2l-2 6h-4l-2-6V10z"/>
-          </svg>
-        </div>
-        
-        <div className="absolute top-4 right-1/4 opacity-10">
-          <svg width="80" height="80" viewBox="0 0 24 24" fill="currentColor" className="text-accent">
-            {/* Slide */}
-            <path d="M22 2H2v20h20V2zM8 18H4v-4h4v4zm0-6H4V8h4v4zm6 6h-4v-4h4v4zm0-6h-4V8h4v4zm6 6h-4v-4h4v4zm0-6h-4V8h4v4z"/>
-          </svg>
-        </div>
-
-        <div className="absolute bottom-4 left-1/3 opacity-8">
-          <Trees className="w-16 h-16 text-muted-foreground/20" />
-        </div>
-
-        <div className="absolute top-1/2 right-1/5 opacity-8">
-          <svg width="50" height="50" viewBox="0 0 24 24" fill="currentColor" className="text-secondary/20">
-            {/* Sandbox */}
-            <path d="M2 12h4l3-8h6l3 8h4v8H2v-8z"/>
-          </svg>
-        </div>
-      </div>
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-8 lg:py-12">
-          <div className="flex-1">
-            {/* Main title with decorative elements */}
-            <div className="flex items-center gap-4 mb-2">
-              <div className="flex items-center gap-3">
-                <img 
-                  src="/lovable-uploads/c0bf8c44-fa41-463d-8c65-11c75f715265.png" 
-                  alt="Speeltuinen logo" 
-                  className="w-12 h-12 lg:w-16 lg:h-16"
-                />
-                <div>
-                  <h1 className="text-3xl lg:text-4xl font-bold text-foreground">
-                    {siteName}
-                  </h1>
-                </div>
-              </div>
-            </div>
-            
-            {/* Description with icon */}
-            <div className="flex items-center gap-2 text-foreground/80 text-lg max-w-2xl">
-              <Heart className="w-4 h-4 text-accent" />
-              <p>{siteDescription}</p>
-            </div>
-
-            {/* Fun stats or badges */}
-            <div className="flex items-center gap-6 mt-4">
-              <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full text-sm text-primary">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
-                <span>Gecontroleerde speeltuinen</span>
-              </div>
-              
-              <div className="flex items-center gap-2 px-3 py-1 bg-accent/10 rounded-full text-sm text-accent">
-                <Trees className="w-4 h-4" />
-                <span>Natuurvriendelijk</span>
-              </div>
-              
-              <div className="flex items-center gap-2 px-3 py-1 bg-secondary/10 rounded-full text-sm text-secondary">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
-                </svg>
-                <span>Regelmatig bijgewerkt</span>
-              </div>
+    <header className="bg-white border-b border-[#e2e8f0] shadow-sm">
+      {/* Main header with logo and navigation */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo section */}
+          <div className="flex items-center gap-3">
+            <PlaygroundLogo />
+            <div>
+              <h1 className="text-lg font-semibold text-[#1a202c] leading-tight">
+                {siteName}
+              </h1>
+              <p className="text-xs text-[#1a202c]/70 leading-tight">
+                Gemeente Castricum
+              </p>
             </div>
           </div>
-          
-          <div className="flex-shrink-0">
+
+          {/* Navigation */}
+          <div className="hidden md:flex items-center gap-6">
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuLink 
+                    href="/" 
+                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#ff6b35] bg-[#ff6b35]/5 rounded-md hover:bg-[#ff6b35]/10 transition-colors"
+                  >
+                    <Home className="w-4 h-4" />
+                    Home
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink 
+                    href="/speeltuinen" 
+                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#1a202c]/70 hover:text-[#1a202c] hover:bg-[#1a202c]/5 rounded-md transition-colors"
+                  >
+                    Alle Speeltuinen
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink 
+                    href="/kaart" 
+                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#1a202c]/70 hover:text-[#1a202c] hover:bg-[#1a202c]/5 rounded-md transition-colors"
+                  >
+                    <MapPin className="w-4 h-4" />
+                    Kaart
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+
+            {/* Admin button */}
+            <AdminButton />
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden">
             <AdminButton />
           </div>
         </div>
       </div>
 
-      {/* Bottom gradient fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
+      {/* Page header section */}
+      <div className="bg-gradient-to-r from-[#ff6b35]/5 to-[#f7931e]/5 border-b border-[#e2e8f0]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="max-w-3xl">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                <Star className="w-4 h-4" />
+                Gecontroleerde speeltuinen
+              </div>
+            </div>
+            <p className="text-[#1a202c]/80 text-lg leading-relaxed">
+              {siteDescription}
+            </p>
+          </div>
+        </div>
+      </div>
     </header>
   );
 };
