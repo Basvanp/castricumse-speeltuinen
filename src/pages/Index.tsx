@@ -7,7 +7,7 @@ import { Speeltuin, SpeeltuinFilters } from '@/types/speeltuin';
 import SpeeltuinKaart from '@/components/SpeeltuinKaart';
 import SpeeltuinCard from '@/components/SpeeltuinCard';
 import SpeeltuinFiltersComponent from '@/components/SpeeltuinFilters';
-import AdminButton from '@/components/AdminButton';
+import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
@@ -342,22 +342,10 @@ const Index = () => {
         structuredData={structuredData}
       />
       
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-3xl font-bold text-primary">
-                {settings.site_name || 'Speeltuinen in Castricum'}
-              </h1>
-              <p className="text-muted-foreground mt-1">
-                {settings.site_description || 'Ontdek alle speeltuinen in Castricum en omgeving'}
-              </p>
-            </div>
-            <AdminButton />
-          </div>
-        </div>
-      </header>
+      <Header 
+        siteName={settings.site_name}
+        siteDescription={settings.site_description}
+      />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-8 relative">
