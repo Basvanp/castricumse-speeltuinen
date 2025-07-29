@@ -436,7 +436,7 @@ const Index = () => {
           {/* Main Content */}
           <div className="flex-1 space-y-8">
             {/* Map - Only show when sidebar is collapsed or on desktop */}
-            {(sidebarCollapsed || !isMobile) && (
+            {(sidebarCollapsed || !isMobile) && !isLoading && (
               <div ref={mapRef}>
                 <h2 className="text-xl font-semibold mb-4">Kaart</h2>
                 <SpeeltuinKaart 
