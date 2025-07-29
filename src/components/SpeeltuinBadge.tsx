@@ -56,12 +56,12 @@ const badgeConfig: Record<BadgeType, {
     label: 'Natuurspeeltuin',
     bgColor: 'bg-green-100',
     textColor: 'text-green-800',
-    icon: (
-      <svg className="w-3 h-3" stroke="currentColor" strokeWidth="2" fill="none" viewBox="0 0 24 24">
-        <path d="M12 2v20"/>
-        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-      </svg>
-    ),
+     icon: (
+       <svg className="w-3 h-3" stroke="currentColor" strokeWidth="2" fill="none" viewBox="0 0 24 24">
+         <path d='M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z'/>
+         <path d='M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12'/>
+       </svg>
+     ),
   },
   'waterspeeltuin': {
     label: 'Waterspeeltuin',
