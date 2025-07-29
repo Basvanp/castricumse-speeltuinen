@@ -11,11 +11,11 @@ interface HeaderProps {
 
 // Custom playground slide logo component using uploaded favicon
 const PlaygroundLogo = () => (
-  <div className="w-11 h-11 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center shadow-lg" style={{ boxShadow: '0 4px 12px rgba(96, 165, 250, 0.3)' }}>
+  <div className="w-11 h-11 flex items-center justify-center">
     <img 
       src="/lovable-uploads/2ea4b2d6-5537-43cf-a522-d1571d0f5108.png" 
       alt="Castricum Speeltuinen Logo" 
-      className="w-6 h-6"
+      className="w-11 h-11"
     />
   </div>
 );
@@ -25,7 +25,7 @@ const Header = ({
   siteDescription = 'Ontdek alle speeltuinen in Castricum en omgeving. Complete gids met foto\'s, faciliteiten en locatie-informatie.' 
 }: HeaderProps) => {
   return (
-    <header className="bg-white border-b border-[#e2e8f0] shadow-sm">
+    <header className="sticky top-0 z-50 bg-white border-b border-[#e2e8f0] shadow-sm">
       {/* Main header with logo and navigation */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
