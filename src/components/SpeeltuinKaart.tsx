@@ -71,9 +71,9 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
     };
   }, []);
 
-  // Update markers when speeltuinen change - always run to clear/update markers
+  // Update markers when speeltuinen change or map initializes
   useEffect(() => {
-    if (!mapInstanceRef.current) return;
+    if (!mapInstanceRef.current || !speeltuinen.length) return;
 
     import('leaflet').then((L) => {
       // Clear existing playground markers
@@ -83,14 +83,6 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
         }
       });
       playgroundMarkersRef.current = [];
-
-      // Remove existing user location marker
-      if (userLocationMarkerRef.current) {
-        mapInstanceRef.current.removeLayer(userLocationMarkerRef.current);
-        userLocationMarkerRef.current = null;
-      }
-
-      // User location will be handled in a separate effect
 
       // Add markers for speeltuinen
       speeltuinen.forEach((speeltuin) => {
@@ -163,7 +155,7 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
         }
       });
     });
-  }, [speeltuinen, onSpeeltuinSelect]);
+  }, [speeltuinen, userLocation, onSpeeltuinSelect]);
 
   // Separate effect for handling user location changes
   useEffect(() => {
