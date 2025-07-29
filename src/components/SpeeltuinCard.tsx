@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ExternalLink, Copy, MapPin, Map, Lightbulb, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ExternalLink, Copy, MapPin, Map, AlertCircle, ChevronLeft, ChevronRight, X, Lightbulb } from 'lucide-react';
 import { Speeltuin } from '@/types/speeltuin';
 import { useToast } from '@/hooks/use-toast';
 import { useAnalytics } from '@/hooks/useAnalytics';
@@ -18,6 +18,7 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin, userLocation }
   const { toast } = useToast();
   const { trackEvent } = useAnalytics();
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+  const [isFixiPopupOpen, setIsFixiPopupOpen] = useState(false);
 
   // Get photos array from speeltuin data (backwards compatible)
   const getPhotos = useCallback(() => {
@@ -59,10 +60,12 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin, userLocation }
     setCurrentPhotoIndex(index);
   }, []);
 
-  // Keyboard navigation
+  // Keyboard navigation and popup escape handling
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (hasMultiplePhotos) {
+      if (e.key === 'Escape' && isFixiPopupOpen) {
+        setIsFixiPopupOpen(false);
+      } else if (hasMultiplePhotos && !isFixiPopupOpen) {
         if (e.key === 'ArrowLeft') {
           goToPrevious();
         } else if (e.key === 'ArrowRight') {
@@ -73,7 +76,7 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin, userLocation }
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [hasMultiplePhotos, goToPrevious, goToNext]);
+  }, [hasMultiplePhotos, goToPrevious, goToNext, isFixiPopupOpen]);
 
   const copyToClipboard = () => {
     if (speeltuin.latitude && speeltuin.longitude) {
@@ -324,39 +327,91 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin, userLocation }
             </Button>
           )}
           
-          {/* Fixi buttons side by side */}
-          <div className="flex gap-3 mt-3">
-            <Button 
-              asChild 
-              className="flex-1 h-12 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg px-4 flex items-center justify-center"
-            >
-              <a 
-                href="https://www.fixi.nl" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2"
-              >
-                <ExternalLink className="text-white" />
-                Fixi
-              </a>
-            </Button>
-            
-            {speeltuin.latitude && speeltuin.longitude && (
-              <Button 
-                onClick={copyToClipboard}
-                className="flex-1 h-12 bg-white hover:bg-gray-100 text-black border border-gray-300 font-medium rounded-xl px-4 flex items-center justify-center gap-2"
-              >
-                <Copy className="text-black" />
-                Locatie voor fixi melding
-              </Button>
-            )}
-          </div>
-          
-          <div className="flex items-start gap-1 mt-3 text-sm text-gray-500">
-            <Lightbulb className="h-4 w-4 mt-0.5 flex-shrink-0" />
-            <span>Geef toestemming voor je locatie in Fixi voor automatisch inzoomen</span>
-          </div>
+          {/* Probleem melden button */}
+          <Button 
+            onClick={() => setIsFixiPopupOpen(true)}
+            className="w-full mb-3 bg-white hover:bg-gray-50 text-black px-4 py-2 rounded font-semibold border border-gray-300 flex items-center justify-center gap-2"
+          >
+            <AlertCircle size={18} />
+            Probleem melden
+          </Button>
         </div>
+
+        {/* Fixi Popup */}
+        {isFixiPopupOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Probleem melden</h3>
+                <button
+                  onClick={() => setIsFixiPopupOpen(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  aria-label="Popup sluiten"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="space-y-4">
+                {/* Fixi explanation */}
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="text-blue-500 mt-1 flex-shrink-0" size={20} />
+                  <div>
+                    <h4 className="font-medium mb-1">Over Fixi</h4>
+                    <p className="text-sm text-gray-600">
+                      Fixi is een app waarmee je snel en gemakkelijk problemen kunt melden aan de gemeente. 
+                      Van kapotte speeltoestellen tot onderhoud - jouw melding komt direct bij de juiste dienst terecht.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Location info */}
+                <div className="bg-gray-50 rounded-lg p-3">
+                  <p className="text-sm font-medium">Locatie: {speeltuin.naam}</p>
+                </div>
+
+                {/* Action buttons */}
+                <div className="space-y-3">
+                  <Button 
+                    asChild 
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-lg font-medium"
+                  >
+                    <a 
+                      href="https://www.fixi.nl" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2"
+                    >
+                      <ExternalLink size={18} />
+                      Probleem melden via Fixi
+                    </a>
+                  </Button>
+
+                  {speeltuin.latitude && speeltuin.longitude && (
+                    <Button 
+                      onClick={() => {
+                        copyToClipboard();
+                        setIsFixiPopupOpen(false);
+                      }}
+                      className="w-full bg-white hover:bg-gray-50 text-gray-700 px-4 py-3 rounded-lg border border-gray-300 flex items-center justify-center gap-2"
+                    >
+                      <Copy size={18} />
+                      Locatie kopiëren voor Fixi
+                    </Button>
+                  )}
+                </div>
+
+                {/* Help text */}
+                <div className="flex items-start gap-2 text-sm text-gray-500 pt-2">
+                  <span>💡</span>
+                  <span>Geef toestemming voor je locatie in Fixi voor automatisch inzoomen</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
