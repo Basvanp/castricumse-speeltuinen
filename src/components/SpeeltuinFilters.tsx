@@ -56,6 +56,26 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({ filters, onFiltersC
                 geschikt_kleuters: 'Kleuters (3-5 jaar)',
                 geschikt_kinderen: 'Kinderen (6+ jaar)',
               };
+              const icons = {
+                geschikt_peuters: (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                    <circle cx="12" cy="8" r="3" fill="#FF6B6B"/>
+                    <path d="M16 14v6H8v-6c0-2.2 1.8-4 4-4s4 1.8 4 4z" fill="#FFD93D"/>
+                  </svg>
+                ),
+                geschikt_kleuters: (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                    <circle cx="12" cy="7" r="3" fill="#4ECDC4"/>
+                    <path d="M18 15v5H6v-5c0-3.3 2.7-6 6-6s6 2.7 6 6z" fill="#98D8C8"/>
+                  </svg>
+                ),
+                geschikt_kinderen: (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                    <circle cx="12" cy="6" r="3" fill="#95A5A6"/>
+                    <path d="M20 16v4H4v-4c0-4.4 3.6-8 8-8s8 3.6 8 8z" fill="#BDC3C7"/>
+                  </svg>
+                ),
+              };
               return (
                 <div key={key} className="flex items-center space-x-2">
                   <Checkbox
@@ -65,7 +85,8 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({ filters, onFiltersC
                       updateFilter('leeftijd', key, checked as boolean)
                     }
                   />
-                  <Label htmlFor={`leeftijd-${key}`}>
+                  <Label htmlFor={`leeftijd-${key}`} className="flex items-center">
+                    {icons[key as keyof typeof icons]}
                     {labels[key as keyof typeof labels] || key}
                   </Label>
                 </div>
@@ -95,6 +116,105 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({ filters, onFiltersC
                 heeft_wipwap: 'Wipwap',
                 heeft_duikelrek: 'Duikelrek',
               };
+              const icons = {
+                heeft_glijbaan: (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                    <path d="M4 20 L20 4" stroke="#FF6B6B" strokeWidth="3"/>
+                    <rect x="18" y="2" width="4" height="4" fill="#FFD93D"/>
+                    <rect x="2" y="18" width="4" height="4" fill="#4ECDC4"/>
+                  </svg>
+                ),
+                heeft_schommel: (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                    <rect x="6" y="2" width="2" height="16" fill="#8B4513"/>
+                    <rect x="16" y="2" width="2" height="16" fill="#8B4513"/>
+                    <rect x="6" y="2" width="12" height="2" fill="#8B4513"/>
+                    <rect x="9" y="14" width="6" height="2" rx="1" fill="#FFD93D"/>
+                    <path d="M8 4 L12 14" stroke="#333" strokeWidth="1"/>
+                    <path d="M16 4 L12 14" stroke="#333" strokeWidth="1"/>
+                  </svg>
+                ),
+                heeft_zandbak: (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                    <rect x="4" y="8" width="16" height="12" fill="#F4A460" stroke="#DEB887" strokeWidth="2"/>
+                    <circle cx="8" cy="12" r="1" fill="#DAA520"/>
+                    <circle cx="12" cy="14" r="1" fill="#DAA520"/>
+                    <circle cx="16" cy="12" r="1" fill="#DAA520"/>
+                  </svg>
+                ),
+                heeft_klimtoestel: (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                    <rect x="6" y="4" width="2" height="16" fill="#FF6B6B"/>
+                    <rect x="16" y="4" width="2" height="16" fill="#FF6B6B"/>
+                    <rect x="6" y="8" width="12" height="2" fill="#4ECDC4"/>
+                    <rect x="6" y="12" width="12" height="2" fill="#4ECDC4"/>
+                    <rect x="6" y="16" width="12" height="2" fill="#4ECDC4"/>
+                  </svg>
+                ),
+                heeft_kabelbaan: (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                    <path d="M2 8 L22 12" stroke="#333" strokeWidth="2"/>
+                    <rect x="10" y="10" width="4" height="3" fill="#FFD93D"/>
+                    <path d="M10 10 L8 8" stroke="#333" strokeWidth="1"/>
+                    <path d="M14 10 L16 8" stroke="#333" strokeWidth="1"/>
+                  </svg>
+                ),
+                heeft_water_pomp: (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                    <rect x="10" y="8" width="4" height="12" fill="#4ECDC4"/>
+                    <circle cx="12" cy="6" r="2" fill="#2E86AB"/>
+                    <path d="M12 2 L12 6" stroke="#2E86AB" strokeWidth="2"/>
+                    <circle cx="6" cy="18" r="1" fill="#87CEEB"/>
+                    <circle cx="18" cy="16" r="1" fill="#87CEEB"/>
+                    <circle cx="8" cy="20" r="0.5" fill="#87CEEB"/>
+                  </svg>
+                ),
+                heeft_trapveld: (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                    <rect x="6" y="8" width="12" height="8" stroke="#32CD32" strokeWidth="2" fill="none"/>
+                    <rect x="5" y="6" width="2" height="12" fill="#FFF"/>
+                    <rect x="17" y="6" width="2" height="12" fill="#FFF"/>
+                    <rect x="7" y="14" width="10" height="1" fill="#32CD32"/>
+                    <circle cx="12" cy="12" r="1" fill="#FFF"/>
+                  </svg>
+                ),
+                heeft_skatebaan: (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                    <path d="M4 16 Q12 8 20 16" stroke="#666" strokeWidth="2" fill="none"/>
+                    <rect x="10" y="14" width="4" height="1" fill="#FFD93D"/>
+                    <circle cx="8" cy="15" r="1" fill="#333"/>
+                    <circle cx="16" cy="15" r="1" fill="#333"/>
+                  </svg>
+                ),
+                heeft_basketbalveld: (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                    <circle cx="12" cy="16" r="6" stroke="#FF8C00" strokeWidth="2" fill="none"/>
+                    <rect x="10" y="4" width="4" height="6" fill="#FF8C00"/>
+                    <rect x="8" y="10" width="8" height="1" fill="#FF8C00"/>
+                    <path d="M10 10 L10 14 M14 10 L14 14" stroke="#FF8C00" strokeWidth="1"/>
+                  </svg>
+                ),
+                heeft_wipwap: (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                    <rect x="11" y="8" width="2" height="8" fill="#8B4513"/>
+                    <rect x="6" y="11" width="12" height="2" rx="1" fill="#FFD93D"/>
+                    <circle cx="8" cy="10" r="1.5" fill="#FF6B6B"/>
+                    <circle cx="16" cy="13" r="1.5" fill="#4ECDC4"/>
+                    <rect x="10" y="16" width="4" height="2" fill="#8B4513"/>
+                  </svg>
+                ),
+                heeft_duikelrek: (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                    <rect x="4" y="6" width="2" height="12" fill="#FF6B6B"/>
+                    <rect x="18" y="6" width="2" height="12" fill="#FF6B6B"/>
+                    <rect x="4" y="8" width="16" height="2" fill="#4ECDC4"/>
+                    <circle cx="7" cy="11" r="1" fill="#FFD93D"/>
+                    <circle cx="10" cy="11" r="1" fill="#FFD93D"/>
+                    <circle cx="13" cy="11" r="1" fill="#FFD93D"/>
+                    <circle cx="16" cy="11" r="1" fill="#FFD93D"/>
+                  </svg>
+                ),
+              };
               return (
                 <div key={key} className="flex items-center space-x-2">
                   <Checkbox
@@ -104,7 +224,8 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({ filters, onFiltersC
                       updateFilter('voorzieningen', key, checked as boolean)
                     }
                   />
-                  <Label htmlFor={`voorzieningen-${key}`}>
+                  <Label htmlFor={`voorzieningen-${key}`} className="flex items-center">
+                    {icons[key as keyof typeof icons]}
                     {labels[key as keyof typeof labels] || key}
                   </Label>
                 </div>
@@ -128,6 +249,49 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({ filters, onFiltersC
                 heeft_schaduw: 'Schaduw / bomen',
                 is_rolstoeltoegankelijk: 'Rolstoeltoegankelijk',
               };
+              const icons = {
+                heeft_parkeerplaats: (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                    <rect x="6" y="8" width="12" height="8" rx="2" fill="#4ECDC4"/>
+                    <rect x="8" y="10" width="8" height="4" fill="#FFF"/>
+                    <circle cx="9" cy="16" r="1" fill="#333"/>
+                    <circle cx="15" cy="16" r="1" fill="#333"/>
+                  </svg>
+                ),
+                heeft_toilet: (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                    <rect x="8" y="6" width="8" height="14" rx="1" fill="#E6F3FF"/>
+                    <rect x="10" y="8" width="4" height="2" fill="#4ECDC4"/>
+                    <circle cx="12" cy="4" r="2" fill="#FF6B6B"/>
+                  </svg>
+                ),
+                is_omheind: (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                    <rect x="4" y="8" width="2" height="8" fill="#8B4513"/>
+                    <rect x="8" y="8" width="2" height="8" fill="#8B4513"/>
+                    <rect x="12" y="8" width="2" height="8" fill="#8B4513"/>
+                    <rect x="16" y="8" width="2" height="8" fill="#8B4513"/>
+                    <rect x="20" y="8" width="2" height="8" fill="#8B4513"/>
+                  </svg>
+                ),
+                heeft_schaduw: (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                    <circle cx="12" cy="8" r="4" fill="#32CD32"/>
+                    <rect x="11" y="12" width="2" height="8" fill="#8B4513"/>
+                    <circle cx="8" cy="6" r="2" fill="#228B22"/>
+                    <circle cx="16" cy="10" r="1.5" fill="#228B22"/>
+                  </svg>
+                ),
+                is_rolstoeltoegankelijk: (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                    <circle cx="12" cy="12" r="6" stroke="#4ECDC4" strokeWidth="2" fill="none"/>
+                    <circle cx="9" cy="7" r="1.5" fill="#4ECDC4"/>
+                    <path d="M9 9 L9 13 L11 13" stroke="#4ECDC4" strokeWidth="2" fill="none"/>
+                    <circle cx="8" cy="16" r="2" stroke="#4ECDC4" strokeWidth="2" fill="none"/>
+                    <circle cx="14" cy="16" r="2" stroke="#4ECDC4" strokeWidth="2" fill="none"/>
+                  </svg>
+                ),
+              };
               return (
                 <div key={key} className="flex items-center space-x-2">
                   <Checkbox
@@ -137,7 +301,8 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({ filters, onFiltersC
                       updateFilter('praktisch', key, checked as boolean)
                     }
                   />
-                  <Label htmlFor={`praktisch-${key}`}>
+                  <Label htmlFor={`praktisch-${key}`} className="flex items-center">
+                    {icons[key as keyof typeof icons]}
                     {labels[key as keyof typeof labels] || key}
                   </Label>
                 </div>
