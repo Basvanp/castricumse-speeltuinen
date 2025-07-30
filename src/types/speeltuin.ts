@@ -27,6 +27,9 @@ export interface Speeltuin {
   heeft_water_pomp: boolean;
   heeft_trapveld: boolean;
   heeft_skatebaan: boolean;
+  heeft_basketbalveld: boolean;
+  heeft_wipwap: boolean;
+  heeft_duikelrek: boolean;
   
   // Ondergrond (surface)
   ondergrond_zand: boolean;
@@ -126,6 +129,9 @@ export interface SpeeltuinFilters {
     water_pomp: boolean;
     trapveld: boolean;
     skatebaan: boolean;
+    basketbalveld: boolean;
+    wipwap: boolean;
+    duikelrek: boolean;
     toilet: boolean;
     parkeerplaats: boolean;
     horeca: boolean;

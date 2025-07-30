@@ -135,6 +135,8 @@ export type Database = {
           geschikt_peuters: boolean | null
           grootte: Database["public"]["Enums"]["speeltuin_grootte"] | null
           heeft_bankjes: boolean | null
+          heeft_basketbalveld: boolean | null
+          heeft_duikelrek: boolean | null
           heeft_glijbaan: boolean | null
           heeft_horeca: boolean | null
           heeft_kabelbaan: boolean | null
@@ -147,6 +149,7 @@ export type Database = {
           heeft_toilet: boolean | null
           heeft_trapveld: boolean | null
           heeft_water_pomp: boolean | null
+          heeft_wipwap: boolean | null
           heeft_zandbak: boolean | null
           id: string
           is_omheind: boolean | null
@@ -201,6 +204,8 @@ export type Database = {
           geschikt_peuters?: boolean | null
           grootte?: Database["public"]["Enums"]["speeltuin_grootte"] | null
           heeft_bankjes?: boolean | null
+          heeft_basketbalveld?: boolean | null
+          heeft_duikelrek?: boolean | null
           heeft_glijbaan?: boolean | null
           heeft_horeca?: boolean | null
           heeft_kabelbaan?: boolean | null
@@ -213,6 +218,7 @@ export type Database = {
           heeft_toilet?: boolean | null
           heeft_trapveld?: boolean | null
           heeft_water_pomp?: boolean | null
+          heeft_wipwap?: boolean | null
           heeft_zandbak?: boolean | null
           id?: string
           is_omheind?: boolean | null
@@ -267,6 +273,8 @@ export type Database = {
           geschikt_peuters?: boolean | null
           grootte?: Database["public"]["Enums"]["speeltuin_grootte"] | null
           heeft_bankjes?: boolean | null
+          heeft_basketbalveld?: boolean | null
+          heeft_duikelrek?: boolean | null
           heeft_glijbaan?: boolean | null
           heeft_horeca?: boolean | null
           heeft_kabelbaan?: boolean | null
@@ -279,6 +287,7 @@ export type Database = {
           heeft_toilet?: boolean | null
           heeft_trapveld?: boolean | null
           heeft_water_pomp?: boolean | null
+          heeft_wipwap?: boolean | null
           heeft_zandbak?: boolean | null
           id?: string
           is_omheind?: boolean | null
