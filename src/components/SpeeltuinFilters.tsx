@@ -43,30 +43,29 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({ filters, onFiltersC
         <CardTitle className="text-lg">Filters</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4 overflow-y-auto overscroll-contain touch-pan-y flex-1 min-h-0">
-        {/* Type Speeltuin */}
-        <Collapsible>
+        {/* Geschikt voor leeftijd */}
+        <Collapsible defaultOpen>
           <CollapsibleTrigger className="flex w-full items-center justify-between">
-            <h3 className="font-medium">Type speeltuin</h3>
+            <h3 className="font-medium">Geschikt voor leeftijd</h3>
             <ChevronDown className="h-4 w-4" />
           </CollapsibleTrigger>
           <CollapsibleContent className="mt-2 space-y-2">
-            {Object.entries(filters.typeSpeeltuin).map(([key, value]) => {
+            {Object.entries(filters.leeftijd).map(([key, value]) => {
               const labels = {
-                natuurspeeltuin: 'Natuurspeeltuin',
-                buurtspeeltuin: 'Buurtspeeltuin',
-                schoolplein: 'Schoolplein',
-                speelbos: 'Speelbos',
+                geschikt_peuters: 'Peuters (0-2 jaar)',
+                geschikt_kleuters: 'Kleuters (3-5 jaar)',
+                geschikt_kinderen: 'Kinderen (6+ jaar)',
               };
               return (
                 <div key={key} className="flex items-center space-x-2">
                   <Checkbox
-                    id={`type-${key}`}
+                    id={`leeftijd-${key}`}
                     checked={value}
                     onCheckedChange={(checked) =>
-                      updateFilter('typeSpeeltuin', key, checked as boolean)
+                      updateFilter('leeftijd', key, checked as boolean)
                     }
                   />
-                  <Label htmlFor={`type-${key}`}>
+                  <Label htmlFor={`leeftijd-${key}`}>
                     {labels[key as keyof typeof labels] || key}
                   </Label>
                 </div>
@@ -75,63 +74,26 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({ filters, onFiltersC
           </CollapsibleContent>
         </Collapsible>
 
-        {/* Leeftijdsgroep Specifiek */}
-        <Collapsible>
+        {/* Voorzieningen */}
+        <Collapsible defaultOpen>
           <CollapsibleTrigger className="flex w-full items-center justify-between">
-            <h3 className="font-medium">Leeftijdsgroep</h3>
-            <ChevronDown className="h-4 w-4" />
-          </CollapsibleTrigger>
-          <CollapsibleContent className="mt-2 space-y-2">
-            {Object.entries(filters.leeftijdSpecifiek).map(([key, value]) => {
-              const labels = {
-                '0_2_jaar': '0–2 jaar',
-                '2_6_jaar': '2–6 jaar',
-                '6_12_jaar': '6–12 jaar',
-                '12_plus_jaar': '12+ jaar',
-              };
-              return (
-                <div key={key} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`leeftijd-specifiek-${key}`}
-                    checked={value}
-                    onCheckedChange={(checked) =>
-                      updateFilter('leeftijdSpecifiek', key, checked as boolean)
-                    }
-                  />
-                  <Label htmlFor={`leeftijd-specifiek-${key}`}>
-                    {labels[key as keyof typeof labels] || key}
-                  </Label>
-                </div>
-              );
-            })}
-          </CollapsibleContent>
-        </Collapsible>
-
-        {/* Voorzieningen / speeltoestellen */}
-        <Collapsible>
-          <CollapsibleTrigger className="flex w-full items-center justify-between">
-            <h3 className="font-medium">Voorzieningen / speeltoestellen</h3>
+            <h3 className="font-medium">Voorzieningen</h3>
             <ChevronDown className="h-4 w-4" />
           </CollapsibleTrigger>
           <CollapsibleContent className="mt-2 space-y-2">
             {Object.entries(filters.voorzieningen).map(([key, value]) => {
               const labels = {
-                glijbaan: 'Glijbaan',
-                schommel: 'Schommel',
-                zandbak: 'Zandbak',
-                kabelbaan: 'Kabelbaan',
-                bankjes: 'Bankjes',
-                sportveld: 'Sportveld',
-                klimtoestel: 'Klimtoestel',
-                water_pomp: 'Water / pomp',
-                trapveld: 'Panakooi',
-                skatebaan: 'Skatebaan',
-                basketbalveld: 'Basketbalveld',
-                wipwap: 'Wipwap',
-                duikelrek: 'Duikelrek',
-                toilet: 'Toilet',
-                parkeerplaats: 'Parkeerplaats',
-                horeca: 'Horeca',
+                heeft_glijbaan: 'Glijbaan',
+                heeft_schommel: 'Schommel',
+                heeft_zandbak: 'Zandbak',
+                heeft_klimtoestel: 'Klimtoestel',
+                heeft_kabelbaan: 'Kabelbaan',
+                heeft_water_pomp: 'Water / pomp',
+                heeft_trapveld: 'Panakooi',
+                heeft_skatebaan: 'Skatebaan',
+                heeft_basketbalveld: 'Basketbalveld',
+                heeft_wipwap: 'Wipwap',
+                heeft_duikelrek: 'Duikelrek',
               };
               return (
                 <div key={key} className="flex items-center space-x-2">
@@ -151,30 +113,31 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({ filters, onFiltersC
           </CollapsibleContent>
         </Collapsible>
 
-        {/* Toegankelijkheid */}
-        <Collapsible>
+        {/* Praktische zaken */}
+        <Collapsible defaultOpen>
           <CollapsibleTrigger className="flex w-full items-center justify-between">
-            <h3 className="font-medium">Toegankelijkheid</h3>
+            <h3 className="font-medium">Praktische zaken</h3>
             <ChevronDown className="h-4 w-4" />
           </CollapsibleTrigger>
           <CollapsibleContent className="mt-2 space-y-2">
-            {Object.entries(filters.toegankelijkheid).map(([key, value]) => {
+            {Object.entries(filters.praktisch).map(([key, value]) => {
               const labels = {
-                rolstoeltoegankelijk: 'Rolstoeltoegankelijk',
-                zichtbaar_omheind: 'Zichtbaar omheind',
-                zonder_drempel: 'Toegang zonder drempel',
-                speeltoestellen_beperking: 'Speeltoestellen voor beperking',
+                heeft_parkeerplaats: 'Parkeerplaats',
+                heeft_toilet: 'Toilet',
+                is_omheind: 'Omheind',
+                heeft_schaduw: 'Schaduw / bomen',
+                is_rolstoeltoegankelijk: 'Rolstoeltoegankelijk',
               };
               return (
                 <div key={key} className="flex items-center space-x-2">
                   <Checkbox
-                    id={`toegankelijkheid-${key}`}
+                    id={`praktisch-${key}`}
                     checked={value}
                     onCheckedChange={(checked) =>
-                      updateFilter('toegankelijkheid', key, checked as boolean)
+                      updateFilter('praktisch', key, checked as boolean)
                     }
                   />
-                  <Label htmlFor={`toegankelijkheid-${key}`}>
+                  <Label htmlFor={`praktisch-${key}`}>
                     {labels[key as keyof typeof labels] || key}
                   </Label>
                 </div>
@@ -183,157 +146,35 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({ filters, onFiltersC
           </CollapsibleContent>
         </Collapsible>
 
-        {/* Veiligheid & toezicht */}
+        {/* Type speeltuin */}
         <Collapsible>
           <CollapsibleTrigger className="flex w-full items-center justify-between">
-            <h3 className="font-medium">Veiligheid & toezicht</h3>
+            <h3 className="font-medium">Type speeltuin</h3>
             <ChevronDown className="h-4 w-4" />
           </CollapsibleTrigger>
           <CollapsibleContent className="mt-2 space-y-2">
-            {Object.entries(filters.veiligheid).map(([key, value]) => {
+            {Object.entries(filters.type).map(([key, value]) => {
               const labels = {
-                omheind: 'Omheind',
-                in_zicht_huizen: 'In zicht vanaf huizen',
-                rustige_ligging: 'Rustige ligging',
-                verkeersluw: 'Verkeersluw',
+                type_natuurspeeltuin: 'Natuurspeeltuin',
+                type_buurtspeeltuin: 'Buurtspeeltuin',
+                type_schoolplein: 'Schoolplein',
+                type_speelbos: 'Speelbos',
               };
               return (
                 <div key={key} className="flex items-center space-x-2">
                   <Checkbox
-                    id={`veiligheid-${key}`}
+                    id={`type-${key}`}
                     checked={value}
                     onCheckedChange={(checked) =>
-                      updateFilter('veiligheid', key, checked as boolean)
+                      updateFilter('type', key, checked as boolean)
                     }
                   />
-                  <Label htmlFor={`veiligheid-${key}`}>
+                  <Label htmlFor={`type-${key}`}>
                     {labels[key as keyof typeof labels] || key}
                   </Label>
                 </div>
               );
             })}
-          </CollapsibleContent>
-        </Collapsible>
-
-        {/* Voorzieningen voor ouders / begeleiders */}
-        <Collapsible>
-          <CollapsibleTrigger className="flex w-full items-center justify-between">
-            <h3 className="font-medium">Voorzieningen voor ouders</h3>
-            <ChevronDown className="h-4 w-4" />
-          </CollapsibleTrigger>
-          <CollapsibleContent className="mt-2 space-y-2">
-            {Object.entries(filters.voorzieningen_ouders).map(([key, value]) => {
-              const labels = {
-                bankjes: 'Bankjes',
-                schaduw: 'Schaduw / bomen',
-                picknicktafels: 'Picknicktafels',
-                horeca_buurt: 'Horeca in de buurt',
-                wc_buurt: 'Openbare wc in de buurt',
-              };
-              return (
-                <div key={key} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`ouders-${key}`}
-                    checked={value}
-                    onCheckedChange={(checked) =>
-                      updateFilter('voorzieningen_ouders', key, checked as boolean)
-                    }
-                  />
-                  <Label htmlFor={`ouders-${key}`}>
-                    {labels[key as keyof typeof labels] || key}
-                  </Label>
-                </div>
-              );
-            })}
-          </CollapsibleContent>
-        </Collapsible>
-
-        {/* Ligging / omgeving */}
-        <Collapsible>
-          <CollapsibleTrigger className="flex w-full items-center justify-between">
-            <h3 className="font-medium">Ligging / omgeving</h3>
-            <ChevronDown className="h-4 w-4" />
-          </CollapsibleTrigger>
-          <CollapsibleContent className="mt-2 space-y-2">
-            {Object.entries(filters.ligging).map(([key, value]) => {
-              const labels = {
-                woonwijk: 'In woonwijk',
-                bos_natuur: 'In bos / natuur',
-                bij_school: 'Bij school',
-                fietspad: 'Aan fietspad',
-                parkeerplaats: 'Nabij parkeerplaats',
-              };
-              return (
-                <div key={key} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`ligging-${key}`}
-                    checked={value}
-                    onCheckedChange={(checked) =>
-                      updateFilter('ligging', key, checked as boolean)
-                    }
-                  />
-                  <Label htmlFor={`ligging-${key}`}>
-                    {labels[key as keyof typeof labels] || key}
-                  </Label>
-                </div>
-              );
-            })}
-          </CollapsibleContent>
-        </Collapsible>
-
-        {/* Extra's */}
-        <Collapsible>
-          <CollapsibleTrigger className="flex w-full items-center justify-between">
-            <h3 className="font-medium">Extra's</h3>
-            <ChevronDown className="h-4 w-4" />
-          </CollapsibleTrigger>
-          <CollapsibleContent className="mt-2 space-y-2">
-            {Object.entries(filters.extras).map(([key, value]) => {
-              const labels = {
-                waterpomp: 'Waterpomp',
-                educatief: 'Educatief element',
-                kunstwerk_thema: 'Kunstwerk of thema',
-                buurtinitiatief: 'Buurtinitiatief',
-              };
-              return (
-                <div key={key} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`extras-${key}`}
-                    checked={value}
-                    onCheckedChange={(checked) =>
-                      updateFilter('extras', key, checked as boolean)
-                    }
-                  />
-                  <Label htmlFor={`extras-${key}`}>
-                    {labels[key as keyof typeof labels] || key}
-                  </Label>
-                </div>
-              );
-            })}
-          </CollapsibleContent>
-        </Collapsible>
-
-        {/* Ondergrond */}
-        <Collapsible>
-          <CollapsibleTrigger className="flex w-full items-center justify-between">
-            <h3 className="font-medium">Ondergrond</h3>
-            <ChevronDown className="h-4 w-4" />
-          </CollapsibleTrigger>
-          <CollapsibleContent className="mt-2 space-y-2">
-            {Object.entries(filters.ondergrond).map(([key, value]) => (
-              <div key={key} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`ondergrond-${key}`}
-                  checked={value}
-                  onCheckedChange={(checked) =>
-                    updateFilter('ondergrond', key, checked as boolean)
-                  }
-                />
-                <Label htmlFor={`ondergrond-${key}`} className="capitalize">
-                  {key}
-                </Label>
-              </div>
-            ))}
           </CollapsibleContent>
         </Collapsible>
 
@@ -361,6 +202,39 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({ filters, onFiltersC
                   />
                   <Label htmlFor={`grootte-${key}`}>
                     {labels[key] || key}
+                  </Label>
+                </div>
+              );
+            })}
+          </CollapsibleContent>
+        </Collapsible>
+
+        {/* Ondergrond */}
+        <Collapsible>
+          <CollapsibleTrigger className="flex w-full items-center justify-between">
+            <h3 className="font-medium">Ondergrond</h3>
+            <ChevronDown className="h-4 w-4" />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="mt-2 space-y-2">
+            {Object.entries(filters.ondergrond).map(([key, value]) => {
+              const labels = {
+                ondergrond_zand: 'Zand',
+                ondergrond_gras: 'Gras',
+                ondergrond_rubber: 'Rubber',
+                ondergrond_tegels: 'Tegels',
+                ondergrond_kunstgras: 'Kunstgras',
+              };
+              return (
+                <div key={key} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`ondergrond-${key}`}
+                    checked={value}
+                    onCheckedChange={(checked) =>
+                      updateFilter('ondergrond', key, checked as boolean)
+                    }
+                  />
+                  <Label htmlFor={`ondergrond-${key}`}>
+                    {labels[key as keyof typeof labels] || key}
                   </Label>
                 </div>
               );

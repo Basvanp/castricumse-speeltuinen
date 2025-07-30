@@ -30,167 +30,95 @@ const Index = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const speeltuinenRef = useRef<HTMLDivElement>(null);
   const [filters, setFilters] = useState<SpeeltuinFilters>({
-    typeSpeeltuin: {
-      natuurspeeltuin: false,
-      buurtspeeltuin: false,
-      schoolplein: false,
-      speelbos: false,
-    },
     leeftijd: {
-      peuters: false,
-      kleuters: false,
-      kinderen: false,
+      geschikt_peuters: false,
+      geschikt_kleuters: false,
+      geschikt_kinderen: false,
     },
-    leeftijdSpecifiek: {
-      '0_2_jaar': false,
-      '2_6_jaar': false,
-      '6_12_jaar': false,
-      '12_plus_jaar': false,
+    voorzieningen: {
+      heeft_glijbaan: false,
+      heeft_schommel: false,
+      heeft_zandbak: false,
+      heeft_klimtoestel: false,
+      heeft_kabelbaan: false,
+      heeft_water_pomp: false,
+      heeft_trapveld: false,
+      heeft_skatebaan: false,
+      heeft_basketbalveld: false,
+      heeft_wipwap: false,
+      heeft_duikelrek: false,
     },
-      voorzieningen: {
-        glijbaan: false,
-        schommel: false,
-        zandbak: false,
-        kabelbaan: false,
-        bankjes: false,
-        sportveld: false,
-        klimtoestel: false,
-        water_pomp: false,
-        trapveld: false,
-        skatebaan: false,
-        basketbalveld: false,
-        wipwap: false,
-        duikelrek: false,
-        toilet: false,
-        parkeerplaats: false,
-        horeca: false,
-      },
-    ondergrond: {
-      zand: false,
-      gras: false,
-      rubber: false,
-      tegels: false,
-      kunstgras: false,
+    praktisch: {
+      heeft_parkeerplaats: false,
+      heeft_toilet: false,
+      is_omheind: false,
+      heeft_schaduw: false,
+      is_rolstoeltoegankelijk: false,
+    },
+    type: {
+      type_natuurspeeltuin: false,
+      type_buurtspeeltuin: false,
+      type_schoolplein: false,
+      type_speelbos: false,
     },
     grootte: {
       klein: false,
       middel: false,
       groot: false,
     },
-    toegankelijkheid: {
-      rolstoeltoegankelijk: false,
-      zichtbaar_omheind: false,
-      zonder_drempel: false,
-      speeltoestellen_beperking: false,
-    },
-    veiligheid: {
-      omheind: false,
-      in_zicht_huizen: false,
-      rustige_ligging: false,
-      verkeersluw: false,
-    },
-    voorzieningen_ouders: {
-      bankjes: false,
-      schaduw: false,
-      picknicktafels: false,
-      horeca_buurt: false,
-      wc_buurt: false,
-    },
-    ligging: {
-      woonwijk: false,
-      bos_natuur: false,
-      bij_school: false,
-      fietspad: false,
-      parkeerplaats: false,
-    },
-    extras: {
-      waterpomp: false,
-      educatief: false,
-      kunstwerk_thema: false,
-      buurtinitiatief: false,
+    ondergrond: {
+      ondergrond_zand: false,
+      ondergrond_gras: false,
+      ondergrond_rubber: false,
+      ondergrond_tegels: false,
+      ondergrond_kunstgras: false,
     },
   });
 
   const clearAllFilters = () => {
     setFilters({
-      typeSpeeltuin: {
-        natuurspeeltuin: false,
-        buurtspeeltuin: false,
-        schoolplein: false,
-        speelbos: false,
-      },
       leeftijd: {
-        peuters: false,
-        kleuters: false,
-        kinderen: false,
+        geschikt_peuters: false,
+        geschikt_kleuters: false,
+        geschikt_kinderen: false,
       },
-      leeftijdSpecifiek: {
-        '0_2_jaar': false,
-        '2_6_jaar': false,
-        '6_12_jaar': false,
-        '12_plus_jaar': false,
+      voorzieningen: {
+        heeft_glijbaan: false,
+        heeft_schommel: false,
+        heeft_zandbak: false,
+        heeft_klimtoestel: false,
+        heeft_kabelbaan: false,
+        heeft_water_pomp: false,
+        heeft_trapveld: false,
+        heeft_skatebaan: false,
+        heeft_basketbalveld: false,
+        heeft_wipwap: false,
+        heeft_duikelrek: false,
       },
-        voorzieningen: {
-          glijbaan: false,
-          schommel: false,
-          zandbak: false,
-          kabelbaan: false,
-          bankjes: false,
-          sportveld: false,
-          klimtoestel: false,
-          water_pomp: false,
-          trapveld: false,
-          skatebaan: false,
-          basketbalveld: false,
-          wipwap: false,
-          duikelrek: false,
-          toilet: false,
-          parkeerplaats: false,
-          horeca: false,
-        },
-      ondergrond: {
-        zand: false,
-        gras: false,
-        rubber: false,
-        tegels: false,
-        kunstgras: false,
+      praktisch: {
+        heeft_parkeerplaats: false,
+        heeft_toilet: false,
+        is_omheind: false,
+        heeft_schaduw: false,
+        is_rolstoeltoegankelijk: false,
+      },
+      type: {
+        type_natuurspeeltuin: false,
+        type_buurtspeeltuin: false,
+        type_schoolplein: false,
+        type_speelbos: false,
       },
       grootte: {
         klein: false,
         middel: false,
         groot: false,
       },
-      toegankelijkheid: {
-        rolstoeltoegankelijk: false,
-        zichtbaar_omheind: false,
-        zonder_drempel: false,
-        speeltoestellen_beperking: false,
-      },
-      veiligheid: {
-        omheind: false,
-        in_zicht_huizen: false,
-        rustige_ligging: false,
-        verkeersluw: false,
-      },
-      voorzieningen_ouders: {
-        bankjes: false,
-        schaduw: false,
-        picknicktafels: false,
-        horeca_buurt: false,
-        wc_buurt: false,
-      },
-      ligging: {
-        woonwijk: false,
-        bos_natuur: false,
-        bij_school: false,
-        fietspad: false,
-        parkeerplaats: false,
-      },
-      extras: {
-        waterpomp: false,
-        educatief: false,
-        kunstwerk_thema: false,
-        buurtinitiatief: false,
+      ondergrond: {
+        ondergrond_zand: false,
+        ondergrond_gras: false,
+        ondergrond_rubber: false,
+        ondergrond_tegels: false,
+        ondergrond_kunstgras: false,
       },
     });
   };
@@ -315,36 +243,51 @@ const Index = () => {
 
       // Leeftijd filter
       const leeftijdMatch = 
-        (!filters.leeftijd.peuters && !filters.leeftijd.kleuters && !filters.leeftijd.kinderen) ||
-        (filters.leeftijd.peuters && speeltuin.geschikt_peuters) ||
-        (filters.leeftijd.kleuters && speeltuin.geschikt_kleuters) ||
-        (filters.leeftijd.kinderen && speeltuin.geschikt_kinderen);
+        (!Object.values(filters.leeftijd).some(v => v)) ||
+        (filters.leeftijd.geschikt_peuters && speeltuin.geschikt_peuters) ||
+        (filters.leeftijd.geschikt_kleuters && speeltuin.geschikt_kleuters) ||
+        (filters.leeftijd.geschikt_kinderen && speeltuin.geschikt_kinderen);
+
+      // Type filter
+      const typeMatch = 
+        (!Object.values(filters.type).some(v => v)) ||
+        (filters.type.type_natuurspeeltuin && speeltuin.type_natuurspeeltuin) ||
+        (filters.type.type_buurtspeeltuin && speeltuin.type_buurtspeeltuin) ||
+        (filters.type.type_schoolplein && speeltuin.type_schoolplein) ||
+        (filters.type.type_speelbos && speeltuin.type_speelbos);
 
       // Voorzieningen filter
       const voorzieningenMatch = 
         (!Object.values(filters.voorzieningen).some(v => v)) ||
-        (filters.voorzieningen.glijbaan && speeltuin.heeft_glijbaan) ||
-        (filters.voorzieningen.schommel && speeltuin.heeft_schommel) ||
-        (filters.voorzieningen.zandbak && speeltuin.heeft_zandbak) ||
-        (filters.voorzieningen.kabelbaan && speeltuin.heeft_kabelbaan) ||
-        (filters.voorzieningen.bankjes && speeltuin.heeft_bankjes) ||
-        (filters.voorzieningen.sportveld && speeltuin.heeft_sportveld) ||
-        (filters.voorzieningen.klimtoestel && speeltuin.heeft_klimtoestel) ||
-        (filters.voorzieningen.water_pomp && speeltuin.heeft_water_pomp) ||
-        (filters.voorzieningen.trapveld && speeltuin.heeft_trapveld) ||
-        (filters.voorzieningen.skatebaan && speeltuin.heeft_skatebaan) ||
-        (filters.voorzieningen.toilet && speeltuin.heeft_toilet) ||
-        (filters.voorzieningen.parkeerplaats && speeltuin.heeft_parkeerplaats) ||
-        (filters.voorzieningen.horeca && speeltuin.heeft_horeca);
+        (filters.voorzieningen.heeft_glijbaan && speeltuin.heeft_glijbaan) ||
+        (filters.voorzieningen.heeft_schommel && speeltuin.heeft_schommel) ||
+        (filters.voorzieningen.heeft_zandbak && speeltuin.heeft_zandbak) ||
+        (filters.voorzieningen.heeft_kabelbaan && speeltuin.heeft_kabelbaan) ||
+        (filters.voorzieningen.heeft_klimtoestel && speeltuin.heeft_klimtoestel) ||
+        (filters.voorzieningen.heeft_water_pomp && speeltuin.heeft_water_pomp) ||
+        (filters.voorzieningen.heeft_trapveld && speeltuin.heeft_trapveld) ||
+        (filters.voorzieningen.heeft_skatebaan && speeltuin.heeft_skatebaan) ||
+        (filters.voorzieningen.heeft_basketbalveld && speeltuin.heeft_basketbalveld) ||
+        (filters.voorzieningen.heeft_wipwap && speeltuin.heeft_wipwap) ||
+        (filters.voorzieningen.heeft_duikelrek && speeltuin.heeft_duikelrek);
+
+      // Praktische zaken filter
+      const praktischMatch = 
+        (!Object.values(filters.praktisch).some(v => v)) ||
+        (filters.praktisch.heeft_toilet && speeltuin.heeft_toilet) ||
+        (filters.praktisch.heeft_parkeerplaats && speeltuin.heeft_parkeerplaats) ||
+        (filters.praktisch.is_omheind && speeltuin.is_omheind) ||
+        (filters.praktisch.heeft_schaduw && speeltuin.heeft_schaduw) ||
+        (filters.praktisch.is_rolstoeltoegankelijk && speeltuin.is_rolstoeltoegankelijk);
 
       // Ondergrond filter
       const ondergrondMatch = 
         (!Object.values(filters.ondergrond).some(v => v)) ||
-        (filters.ondergrond.zand && speeltuin.ondergrond_zand) ||
-        (filters.ondergrond.gras && speeltuin.ondergrond_gras) ||
-        (filters.ondergrond.rubber && speeltuin.ondergrond_rubber) ||
-        (filters.ondergrond.tegels && speeltuin.ondergrond_tegels) ||
-        (filters.ondergrond.kunstgras && speeltuin.ondergrond_kunstgras);
+        (filters.ondergrond.ondergrond_zand && speeltuin.ondergrond_zand) ||
+        (filters.ondergrond.ondergrond_gras && speeltuin.ondergrond_gras) ||
+        (filters.ondergrond.ondergrond_rubber && speeltuin.ondergrond_rubber) ||
+        (filters.ondergrond.ondergrond_tegels && speeltuin.ondergrond_tegels) ||
+        (filters.ondergrond.ondergrond_kunstgras && speeltuin.ondergrond_kunstgras);
 
       // Grootte filter
       const grootteMatch = 
@@ -353,7 +296,7 @@ const Index = () => {
         (filters.grootte.middel && speeltuin.grootte === 'middel') ||
         (filters.grootte.groot && speeltuin.grootte === 'groot');
 
-      return leeftijdMatch && voorzieningenMatch && ondergrondMatch && grootteMatch;
+      return leeftijdMatch && typeMatch && voorzieningenMatch && praktischMatch && ondergrondMatch && grootteMatch;
     });
   }, [speeltuinen, filters]);
 

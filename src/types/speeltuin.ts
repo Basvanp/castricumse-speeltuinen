@@ -101,83 +101,47 @@ export interface Speeltuin {
 }
 
 export interface SpeeltuinFilters {
-  typeSpeeltuin: {
-    natuurspeeltuin: boolean;
-    buurtspeeltuin: boolean;
-    schoolplein: boolean;
-    speelbos: boolean;
-  };
   leeftijd: {
-    peuters: boolean;
-    kleuters: boolean;
-    kinderen: boolean;
-  };
-  leeftijdSpecifiek: {
-    '0_2_jaar': boolean;
-    '2_6_jaar': boolean;
-    '6_12_jaar': boolean;
-    '12_plus_jaar': boolean;
+    geschikt_peuters: boolean;
+    geschikt_kleuters: boolean;
+    geschikt_kinderen: boolean;
   };
   voorzieningen: {
-    glijbaan: boolean;
-    schommel: boolean;
-    zandbak: boolean;
-    kabelbaan: boolean;
-    bankjes: boolean;
-    sportveld: boolean;
-    klimtoestel: boolean;
-    water_pomp: boolean;
-    trapveld: boolean;
-    skatebaan: boolean;
-    basketbalveld: boolean;
-    wipwap: boolean;
-    duikelrek: boolean;
-    toilet: boolean;
-    parkeerplaats: boolean;
-    horeca: boolean;
+    heeft_glijbaan: boolean;
+    heeft_schommel: boolean;
+    heeft_zandbak: boolean;
+    heeft_klimtoestel: boolean;
+    heeft_kabelbaan: boolean;
+    heeft_water_pomp: boolean;
+    heeft_trapveld: boolean;
+    heeft_skatebaan: boolean;
+    heeft_basketbalveld: boolean;
+    heeft_wipwap: boolean;
+    heeft_duikelrek: boolean;
   };
-  ondergrond: {
-    zand: boolean;
-    gras: boolean;
-    rubber: boolean;
-    tegels: boolean;
-    kunstgras: boolean;
+  praktisch: {
+    heeft_parkeerplaats: boolean;
+    heeft_toilet: boolean;
+    is_omheind: boolean;
+    heeft_schaduw: boolean;
+    is_rolstoeltoegankelijk: boolean;
+  };
+  type: {
+    type_natuurspeeltuin: boolean;
+    type_buurtspeeltuin: boolean;
+    type_schoolplein: boolean;
+    type_speelbos: boolean;
   };
   grootte: {
     klein: boolean;
     middel: boolean;
     groot: boolean;
   };
-  toegankelijkheid: {
-    rolstoeltoegankelijk: boolean;
-    zichtbaar_omheind: boolean;
-    zonder_drempel: boolean;
-    speeltoestellen_beperking: boolean;
-  };
-  veiligheid: {
-    omheind: boolean;
-    in_zicht_huizen: boolean;
-    rustige_ligging: boolean;
-    verkeersluw: boolean;
-  };
-  voorzieningen_ouders: {
-    bankjes: boolean;
-    schaduw: boolean;
-    picknicktafels: boolean;
-    horeca_buurt: boolean;
-    wc_buurt: boolean;
-  };
-  ligging: {
-    woonwijk: boolean;
-    bos_natuur: boolean;
-    bij_school: boolean;
-    fietspad: boolean;
-    parkeerplaats: boolean;
-  };
-  extras: {
-    waterpomp: boolean;
-    educatief: boolean;
-    kunstwerk_thema: boolean;
-    buurtinitiatief: boolean;
+  ondergrond: {
+    ondergrond_zand: boolean;
+    ondergrond_gras: boolean;
+    ondergrond_rubber: boolean;
+    ondergrond_tegels: boolean;
+    ondergrond_kunstgras: boolean;
   };
 }
