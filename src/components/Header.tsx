@@ -33,7 +33,7 @@ const Header = ({
   return (
     <>
       {/* Sticky navigation bar */}
-      <nav className="sticky top-0 z-50 bg-white border-b border-[#e2e8f0] shadow-sm">
+      <nav className="sticky top-0 z-50 bg-orange-50 border-b border-[#e2e8f0] shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo section */}
