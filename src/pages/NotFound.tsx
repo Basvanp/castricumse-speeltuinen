@@ -1,80 +1,313 @@
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
 const NotFound = () => {
-  const location = useLocation();
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    console.error(
-      "404 Error: User attempted to access non-existent route:",
-      location.pathname
-    );
-  }, [location.pathname]);
+    setIsLoaded(true);
+  }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-green-50">
-      <div className="text-center max-w-md px-6">
-        {/* Pulserende speeltuin SVG */}
-        <div className="mb-8 animate-pulse">
-          <svg 
-            width="200" 
-            height="200" 
-            viewBox="0 0 200 200" 
-            className="mx-auto drop-shadow-lg"
-          >
-            {/* Glijbaan */}
-            <path 
-              d="M50 80 Q80 60 110 80 L110 120 Q80 140 50 120 Z" 
-              fill="#FF6B6B" 
-              className="animate-pulse"
-            />
-            <rect x="45" y="75" width="10" height="50" fill="#E55555" />
-            
-            {/* Ladder */}
-            <rect x="115" y="80" width="8" height="40" fill="#4ECDC4" />
-            <rect x="110" y="85" width="18" height="3" fill="#4ECDC4" />
-            <rect x="110" y="95" width="18" height="3" fill="#4ECDC4" />
-            <rect x="110" y="105" width="18" height="3" fill="#4ECDC4" />
-            <rect x="110" y="115" width="18" height="3" fill="#4ECDC4" />
-            
-            {/* Schommel */}
-            <line x1="140" y1="60" x2="140" y2="120" stroke="#8B4513" strokeWidth="4" />
-            <line x1="160" y1="60" x2="160" y2="120" stroke="#8B4513" strokeWidth="4" />
-            <line x1="135" y1="60" x2="165" y2="60" stroke="#8B4513" strokeWidth="6" />
-            
-            {/* Schommelzitje */}
-            <rect x="135" y="115" width="30" height="8" rx="4" fill="#FFD93D" />
-            <line x1="140" y1="120" x2="140" y2="108" stroke="#333" strokeWidth="2" />
-            <line x1="160" y1="120" x2="160" y2="108" stroke="#333" strokeWidth="2" />
-            
-            {/* Gras */}
-            <ellipse cx="100" cy="180" rx="80" ry="15" fill="#95E1A3" />
-            
-            {/* Bloemetjes */}
-            <circle cx="70" cy="175" r="3" fill="#FF69B4" />
-            <circle cx="130" cy="175" r="3" fill="#FFD700" />
-            <circle cx="85" cy="180" r="2.5" fill="#FF1493" />
-            <circle cx="115" cy="180" r="2.5" fill="#00CED1" />
-            
-            {/* Wolkjes */}
-            <ellipse cx="40" cy="30" rx="15" ry="8" fill="#FFF" opacity="0.8" />
-            <ellipse cx="160" cy="25" rx="20" ry="10" fill="#FFF" opacity="0.8" />
-          </svg>
-        </div>
-        
-        <h1 className="text-6xl font-bold text-gray-800 mb-4 animate-bounce">404</h1>
-        <h2 className="text-2xl font-semibold text-gray-700 mb-4">Oeps! Deze speeltuin bestaat niet</h2>
-        <p className="text-lg text-gray-600 mb-8">
-          De pagina die je zoekt is verdwenen, net als een bal die over de schutting is gevlogen!
-        </p>
-        
-        <a 
-          href="/" 
-          className="inline-block bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
-        >
-          🏠 Terug naar alle speeltuinen
-        </a>
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden px-4 playground-404">
+      {/* Background Gradient */}
+      <div className="absolute inset-0 playground-gradient"></div>
+      
+      {/* Floating Clouds */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="cloud cloud-1"></div>
+        <div className="cloud cloud-2"></div>
+        <div className="cloud cloud-3"></div>
       </div>
+
+      {/* Main Content Container */}
+      <div className="relative z-10 max-w-4xl mx-auto text-center">
+        
+        {/* 404 Error Code */}
+        <div className="mb-8">
+          <h1 
+            className="error-code"
+            style={{
+              animation: isLoaded ? 'bounce 2s infinite' : 'none'
+            }}
+          >
+            404
+          </h1>
+        </div>
+
+        {/* Main Message */}
+        <div className="mb-8">
+          <h2 
+            className="main-message"
+            style={{
+              animation: isLoaded ? 'pulse 2s infinite' : 'none'
+            }}
+          >
+            Oeps! Deze speeltuin bestaat niet!
+          </h2>
+        </div>
+
+        {/* Subtitle */}
+        <div className="mb-12">
+          <p className="subtitle">
+            Het lijkt erop dat je bent verdwaald in onze digitale speeltuin! 🎪 
+            Geen zorgen, gebeurt de beste van ons. Laten we je terugbrengen naar 
+            de hoofdingang waar alle leuke spellen wachten!
+          </p>
+        </div>
+
+        {/* CTA Button */}
+        <div className="cta-container">
+          {/* 404 Image - Centered above button */}
+          <div className="mb-8 playground-illustration" style={{ marginLeft: '115px' }}>
+            <img 
+              src="/lovable-uploads/404-image.png" 
+              alt="404 Speeltuin schutting met kijkgat" 
+              className="playground-svg"
+              style={{
+                animation: isLoaded ? 'float 4s ease-in-out infinite' : 'none',
+                maxWidth: '400px',
+                height: 'auto'
+              }}
+            />
+          </div>
+          
+          <a 
+            href="/" 
+            className="cta-button"
+            onClick={(e) => {
+              // Confetti effect
+              const burst = document.createElement('div');
+              burst.className = 'absolute inset-0 pointer-events-none';
+              burst.innerHTML = Array.from({ length: 15 }).map((_, i) => 
+                `<div class="absolute w-2 h-2 rounded-full animate-ping" style="
+                  background-color: ${['#FF6B6B', '#4ECDC4', '#FFD93D', '#FFCCCB'][Math.floor(Math.random() * 4)]};
+                  left: ${50 + (Math.random() - 0.5) * 100}%;
+                  top: ${50 + (Math.random() - 0.5) * 100}%;
+                  animation-delay: ${Math.random() * 0.5}s;
+                  animation-duration: ${1 + Math.random()}s;
+                "></div>`
+              ).join('');
+              e.currentTarget.appendChild(burst);
+              setTimeout(() => burst.remove(), 2000);
+            }}
+          >
+            🏠 Terug naar alle speeltuinen
+          </a>
+        </div>
+      </div>
+
+      {/* Custom CSS */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+        
+        .playground-404 {
+          font-family: 'Nunito', sans-serif;
+          animation: fadeInUp 1s ease-out;
+        }
+        
+        .playground-gradient {
+          background: linear-gradient(135deg, #FFE5B4 0%, #FFCCCB 25%, #E6E6FA 50%, #B0E0E6 75%, #FFE5B4 100%);
+          background-size: 400% 400%;
+          animation: gradientShift 8s ease-in-out infinite;
+        }
+        
+        .error-code {
+          font-size: 8rem;
+          font-weight: 800;
+          color: #FF6B6B;
+          text-shadow: 4px 4px 0px #FFD93D, 8px 8px 0px rgba(255, 107, 107, 0.3);
+          margin: 0;
+          line-height: 1;
+        }
+        
+        .main-message {
+          font-size: 2.5rem;
+          font-weight: 700;
+          color: #4ECDC4;
+          text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+          margin: 0;
+          line-height: 1.2;
+        }
+        
+        .subtitle {
+          font-size: 1.2rem;
+          font-weight: 400;
+          color: #666;
+          line-height: 1.6;
+          max-width: 600px;
+          margin: 0 auto;
+        }
+        
+        .playground-illustration {
+          filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
+        }
+        
+        .playground-svg {
+          max-width: 100%;
+          height: auto;
+          border-radius: 20px;
+          box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+          transition: all 0.3s ease;
+        }
+        
+        .playground-svg:hover {
+          transform: scale(1.02);
+          box-shadow: 0 20px 45px rgba(0,0,0,0.15);
+        }
+        
+        .cta-button {
+          display: inline-block;
+          background: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 100%);
+          color: white;
+          font-size: 1.2rem;
+          font-weight: 700;
+          padding: 16px 32px;
+          border-radius: 50px;
+          text-decoration: none;
+          box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+          transition: all 0.3s ease;
+          position: relative;
+          overflow: hidden;
+        }
+        
+        .cta-button:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 12px 35px rgba(255, 107, 107, 0.4);
+          background: linear-gradient(135deg, #FF5252 0%, #26A69A 100%);
+        }
+        
+        .cta-button:active {
+          transform: translateY(-1px);
+        }
+        
+        /* Cloud Animations */
+        .cloud {
+          position: absolute;
+          background: white;
+          border-radius: 50px;
+          opacity: 0.8;
+        }
+        
+        .cloud-1 {
+          width: 80px;
+          height: 30px;
+          top: 20%;
+          left: -100px;
+          animation: translate 12s linear infinite;
+        }
+        
+        .cloud-2 {
+          width: 60px;
+          height: 25px;
+          top: 40%;
+          left: -100px;
+          animation: translate 8s linear infinite;
+          animation-delay: 2s;
+        }
+        
+        .cloud-3 {
+          width: 100px;
+          height: 35px;
+          top: 60%;
+          left: -100px;
+          animation: translate 15s linear infinite;
+          animation-delay: 5s;
+        }
+        
+        /* Keyframe Animations */
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        @keyframes gradientShift {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+        }
+        
+        @keyframes bounce {
+          0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+          40% { transform: translateY(-20px); }
+          60% { transform: translateY(-10px); }
+        }
+        
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+        }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes swing {
+          0%, 100% { transform: rotate(-5deg); }
+          50% { transform: rotate(5deg); }
+        }
+        
+        @keyframes rotate {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        
+        @keyframes translate {
+          from { transform: translateX(0px); }
+          to { transform: translateX(calc(100vw + 100px)); }
+        }
+        
+        @keyframes slideGlow {
+          0%, 100% { filter: brightness(1); }
+          50% { filter: brightness(1.2); }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+          .error-code {
+            font-size: 6rem;
+          }
+          
+          .main-message {
+            font-size: 2rem;
+          }
+          
+          .subtitle {
+            font-size: 1rem;
+            padding: 0 20px;
+          }
+          
+          .playground-svg {
+            width: 300px;
+            height: 225px;
+          }
+          
+          .cta-button {
+            font-size: 1rem;
+            padding: 14px 28px;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .error-code {
+            font-size: 4rem;
+          }
+          
+          .main-message {
+            font-size: 1.5rem;
+          }
+          
+          .playground-svg {
+            width: 250px;
+            height: 188px;
+          }
+        }
+      `}</style>
     </div>
   );
 };
