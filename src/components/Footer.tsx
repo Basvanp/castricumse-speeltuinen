@@ -1,7 +1,7 @@
 import React from 'react';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
-import { MapPin, Clock, Heart } from 'lucide-react';
+import { MapPin, Clock, Heart, ExternalLink, ArrowUp } from 'lucide-react';
 
 interface FooterProps {
   lastUpdated?: string | Date;
@@ -17,6 +17,10 @@ const Footer = ({ lastUpdated }: FooterProps) => {
     } catch {
       return 'Onbekend';
     }
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -45,10 +49,12 @@ const Footer = ({ lastUpdated }: FooterProps) => {
             <img 
               src="/lovable-uploads/c0bf8c44-fa41-463d-8c65-11c75f715265.png" 
               alt="Speeltuinen logo" 
-              className="w-20 h-20 opacity-80"
+              className="w-20 h-20 opacity-80 hover:opacity-100 transition-opacity duration-300"
             />
             <div className="h-px bg-gradient-to-l from-transparent to-border w-20"></div>
           </div>
+
+
 
           {/* Last updated section */}
           <div className="flex items-center justify-center gap-2 text-muted-foreground">
@@ -58,15 +64,45 @@ const Footer = ({ lastUpdated }: FooterProps) => {
             </span>
           </div>
 
+          {/* Legal Links */}
+          <div className="pt-6 border-t border-border/30">
+            <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground mb-4 flex-wrap">
+              <a href="/privacy" className="hover:text-foreground transition-colors flex items-center gap-1">
+                🔒 Privacybeleid
+              </a>
+              <span>•</span>
+              <a href="/terms" className="hover:text-foreground transition-colors flex items-center gap-1">
+                📄 Algemene Voorwaarden
+              </a>
+              <span>•</span>
+              <a href="https://www.castricum.nl" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors flex items-center gap-1">
+                🏛️ Gemeente Castricum
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+          </div>
+
           {/* Copyright section */}
-          <div className="pt-8 border-t border-border/30">
-            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+          <div className="pt-4 border-t border-border/30">
+            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground flex-wrap">
               <span>© 2025 Castricum Speeltuinen Gids</span>
               <span>•</span>
               <span className="flex items-center gap-1">
-                Gemaakt met <Heart className="w-4 h-4 text-red-500 fill-current" /> voor families in Castricum
+                Gemaakt met <Heart className="w-4 h-4 text-red-500 fill-current animate-pulse" /> voor families in Castricum
               </span>
             </div>
+          </div>
+
+          {/* Scroll to top button */}
+          <div className="pt-4">
+            <button
+              onClick={scrollToTop}
+              className="inline-flex items-center gap-2 bg-primary/10 hover:bg-primary/20 text-primary px-4 py-2 rounded-full transition-all duration-300 hover:scale-105"
+              aria-label="Terug naar boven"
+            >
+              <ArrowUp className="w-4 h-4" />
+              <span className="text-sm">Terug naar boven</span>
+            </button>
           </div>
 
           {/* Background decoration */}
@@ -85,6 +121,18 @@ const Footer = ({ lastUpdated }: FooterProps) => {
           </div>
         </div>
       </div>
+
+      {/* Custom CSS for animations */}
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-5px); }
+        }
+        
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+      `}</style>
     </footer>
   );
 };

@@ -9,7 +9,10 @@ import AdminStats from "./pages/AdminStats";
 import AdminUsers from "./pages/AdminUsers";
 import AdminSettings from "./pages/AdminSettings";
 import NotFound from "./pages/NotFound";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 import SitemapGenerator from "./components/SitemapGenerator";
+import CookieConsent from "./components/CookieConsent";
 import { Toaster } from "@/components/ui/toaster";
 
 const queryClient = new QueryClient();
@@ -26,9 +29,12 @@ const App = () => (
         <Route path="/admin/stats" element={<AdminStats />} />
         <Route path="/admin/users" element={<AdminUsers />} />
         <Route path="/admin/settings" element={<AdminSettings />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
         <Route path="/sitemap.xml" element={<SitemapGenerator />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <CookieConsent />
       <Toaster />
     </BrowserRouter>
   </QueryClientProvider>

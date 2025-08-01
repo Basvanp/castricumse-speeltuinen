@@ -39,6 +39,23 @@ const AdminStats = () => {
       description="Analytics en gebruiksstatistieken van de speeltuinen website"
     >
       <div className="grid gap-6">
+        {/* Data Source Indicator */}
+        {stats?.isRealData === false && (
+          <div className="col-span-full">
+            <Card className="border-amber-200 bg-amber-50">
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-2 text-amber-800">
+                  <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
+                  <span className="text-sm font-medium">Demo Data</span>
+                </div>
+                <p className="text-xs text-amber-700 mt-1">
+                  Deze statistieken zijn demonstratie data. Echte analytics worden getoond zodra er meer bezoekers zijn.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
         {/* Quick Stats */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
@@ -48,7 +65,7 @@ const AdminStats = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats?.totalVisitors.toLocaleString() || 0}</div>
-              <p className="text-xs text-muted-foreground">Afgelopen 30 dagen</p>
+              <p className="text-xs text-muted-foreground">Afgelopen 7 dagen</p>
             </CardContent>
           </Card>
           <Card>
@@ -58,7 +75,7 @@ const AdminStats = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats?.speeltuinViews.toLocaleString() || 0}</div>
-              <p className="text-xs text-muted-foreground">Afgelopen 30 dagen</p>
+              <p className="text-xs text-muted-foreground">Afgelopen 7 dagen</p>
             </CardContent>
           </Card>
           <Card>
