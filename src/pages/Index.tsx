@@ -221,139 +221,123 @@ const Index = () => {
     }
   };
 
+  // Keyword associations for fuzzy search
+  const keywordAssociations = {
+    koffie: ['horeca', 'cafe', 'restaurant', 'terras', 'eten', 'drinken'],
+    glij: ['glijbaan', 'slide', 'klimtoestel', 'glijden'],
+    wippen: ['wipwap', 'wip', 'seesaw', 'balanceren'],
+    schommelen: ['schommel', 'swing', 'schommels'],
+    klimmen: ['klimtoestel', 'klimrek', 'klimmuur', 'klimmen'],
+    water: ['waterspeelplaats', 'fontein', 'sproei', 'nat', 'spetteren'],
+    sport: ['voetbalveld', 'basketbal', 'fitness', 'sporten'],
+    baby: ['peuters', '0-4 jaar', 'zandbak', 'kleintjes'],
+    groot: ['12+', 'tieners', 'oudere kinderen'],
+    klein: ['0-4', '4-8', 'peuters', 'kleuters'],
+    parkeren: ['parking', 'auto', 'parkeerplaats'],
+    toilet: ['wc', 'sanitair', 'voorzieningen']
+  };
+
+  // Create searchable content for each playground
+  const createSearchableContent = (speeltuin: Speeltuin): string => {
+    const facilities = [];
+    if (speeltuin.heeft_glijbaan) facilities.push('glijbaan', 'slide', 'glijden');
+    if (speeltuin.heeft_schommel) facilities.push('schommel', 'swing', 'schommelen');
+    if (speeltuin.heeft_zandbak) facilities.push('zandbak', 'zand');
+    if (speeltuin.heeft_klimtoestel) facilities.push('klimtoestel', 'klimmen', 'klimrek');
+    if (speeltuin.heeft_kabelbaan) facilities.push('kabelbaan', 'kabel');
+    if (speeltuin.heeft_water_pomp) facilities.push('water', 'pomp', 'waterspeelplaats');
+    if (speeltuin.heeft_trapveld) facilities.push('trapveld', 'panakooi', 'voetbal');
+    if (speeltuin.heeft_skatebaan) facilities.push('skatebaan', 'skate', 'skaten');
+    if (speeltuin.heeft_basketbalveld) facilities.push('basketbal', 'basket', 'sport');
+    if (speeltuin.heeft_wipwap) facilities.push('wipwap', 'wip', 'seesaw', 'balanceren');
+    if (speeltuin.heeft_duikelrek) facilities.push('duikelrek', 'duikel', 'rekstok');
+
+    const amenities = [];
+    if (speeltuin.heeft_toilet) amenities.push('toilet', 'wc', 'sanitair');
+    if (speeltuin.heeft_parkeerplaats) amenities.push('parkeren', 'parking', 'auto', 'parkeerplaats');
+    if (speeltuin.heeft_horeca) amenities.push('horeca', 'koffie', 'cafe', 'restaurant', 'eten', 'drinken');
+    if (speeltuin.is_omheind) amenities.push('omheind', 'hek', 'veilig');
+    if (speeltuin.heeft_schaduw) amenities.push('schaduw', 'schaduwrijk', 'bomen');
+    if (speeltuin.is_rolstoeltoegankelijk) amenities.push('rolstoel', 'toegankelijk', 'mindervaliden');
+
+    const ageGroups = [];
+    if (speeltuin.geschikt_peuters) ageGroups.push('peuters', 'baby', 'kleintjes', '0-4');
+    if (speeltuin.geschikt_kleuters) ageGroups.push('kleuters', 'klein', '4-8');
+    if (speeltuin.geschikt_kinderen) ageGroups.push('kinderen', 'groot', '8-12', '12+');
+
+    const types = [];
+    if (speeltuin.type_natuurspeeltuin) types.push('natuur', 'natuurspeeltuin');
+    if (speeltuin.type_buurtspeeltuin) types.push('buurt', 'buurtspeeltuin', 'wijk');
+    if (speeltuin.type_schoolplein) types.push('school', 'schoolplein');
+    if (speeltuin.type_speelbos) types.push('speelbos', 'bos', 'natuur');
+
+    return [
+      speeltuin.naam,
+      speeltuin.omschrijving || '',
+      ...facilities,
+      ...amenities,
+      ...ageGroups,
+      ...types,
+      speeltuin.grootte || '',
+      'castricum'
+    ].join(' ').toLowerCase();
+  };
+
+  // Fuzzy search function
+  const fuzzySearch = (query: string, content: string): number => {
+    if (!query.trim()) return 0;
+    
+    const lowerQuery = query.toLowerCase().trim();
+    const lowerContent = content.toLowerCase();
+    
+    // Exact match - highest weight
+    if (lowerContent.includes(lowerQuery)) return 100;
+    
+    // Check for keyword associations
+    let associationScore = 0;
+    Object.entries(keywordAssociations).forEach(([key, values]) => {
+      if (lowerQuery.includes(key)) {
+        values.forEach(value => {
+          if (lowerContent.includes(value)) {
+            associationScore = Math.max(associationScore, 50);
+          }
+        });
+      }
+    });
+    
+    if (associationScore > 0) return associationScore;
+    
+    // Partial matches
+    const queryWords = lowerQuery.split(' ').filter(word => word.length > 0);
+    let partialScore = 0;
+    
+    queryWords.forEach(word => {
+      if (lowerContent.includes(word)) {
+        partialScore += 30;
+      } else {
+        // Check for partial word matches (fuzzy)
+        const contentWords = lowerContent.split(' ');
+        contentWords.forEach(contentWord => {
+          if (contentWord.includes(word) || word.includes(contentWord)) {
+            partialScore += 15;
+          }
+        });
+      }
+    });
+    
+    return partialScore;
+  };
+
   const handleHeroSearch = (query: string) => {
-    // Set search query and apply smart search
     setSearchQuery(query);
     
     if (!query.trim()) {
-      // If query is empty, clear all filters
       clearAllFilters();
-      scrollToSpeeltuinen();
       return;
     }
 
-    const lowerQuery = query.toLowerCase().trim();
-    const newFilters = { ...filters };
-
-    // Reset all filters first
-    Object.keys(newFilters).forEach(category => {
-      Object.keys(newFilters[category as keyof SpeeltuinFilters]).forEach(key => {
-        newFilters[category as keyof SpeeltuinFilters][key as any] = false;
-      });
-    });
-
-    // Smart search logic
-    const searchTerms = lowerQuery.split(' ').filter(term => term.length > 0);
-    
-    searchTerms.forEach(term => {
-      // Voorzieningen matching
-      if (term.includes('glijbaan') || term.includes('glij')) {
-        newFilters.voorzieningen.heeft_glijbaan = true;
-      }
-      if (term.includes('schommel') || term.includes('schom')) {
-        newFilters.voorzieningen.heeft_schommel = true;
-      }
-      if (term.includes('zandbak') || term.includes('zand')) {
-        newFilters.voorzieningen.heeft_zandbak = true;
-      }
-      if (term.includes('klimtoestel') || term.includes('klim')) {
-        newFilters.voorzieningen.heeft_klimtoestel = true;
-      }
-      if (term.includes('kabelbaan') || term.includes('kabel')) {
-        newFilters.voorzieningen.heeft_kabelbaan = true;
-      }
-      if (term.includes('water') || term.includes('pomp')) {
-        newFilters.voorzieningen.heeft_water_pomp = true;
-      }
-      if (term.includes('panakooi') || term.includes('pana') || term.includes('trapveld')) {
-        newFilters.voorzieningen.heeft_trapveld = true;
-      }
-      if (term.includes('skate') || term.includes('skatebaan')) {
-        newFilters.voorzieningen.heeft_skatebaan = true;
-      }
-      if (term.includes('basketbal') || term.includes('basket')) {
-        newFilters.voorzieningen.heeft_basketbalveld = true;
-      }
-      if (term.includes('wipwap') || term.includes('wip')) {
-        newFilters.voorzieningen.heeft_wipwap = true;
-      }
-      if (term.includes('duikelrek') || term.includes('duikel')) {
-        newFilters.voorzieningen.heeft_duikelrek = true;
-      }
-
-      // Praktische zaken
-      if (term.includes('toilet') || term.includes('wc')) {
-        newFilters.praktisch.heeft_toilet = true;
-      }
-      if (term.includes('parkeer') || term.includes('auto')) {
-        newFilters.praktisch.heeft_parkeerplaats = true;
-      }
-      if (term.includes('omheind') || term.includes('hek')) {
-        newFilters.praktisch.is_omheind = true;
-      }
-      if (term.includes('schaduw') || term.includes('schaduwrijk')) {
-        newFilters.praktisch.heeft_schaduw = true;
-      }
-      if (term.includes('rolstoel') || term.includes('toegankelijk')) {
-        newFilters.praktisch.is_rolstoeltoegankelijk = true;
-      }
-
-      // Leeftijd
-      if (term.includes('peuter') || term.includes('baby')) {
-        newFilters.leeftijd.geschikt_peuters = true;
-      }
-      if (term.includes('kleuter') || term.includes('klein')) {
-        newFilters.leeftijd.geschikt_kleuters = true;
-      }
-      if (term.includes('kind') || term.includes('groot')) {
-        newFilters.leeftijd.geschikt_kinderen = true;
-      }
-
-      // Type speeltuin
-      if (term.includes('natuur') || term.includes('bos')) {
-        newFilters.type.type_natuurspeeltuin = true;
-      }
-      if (term.includes('buurt') || term.includes('wijk')) {
-        newFilters.type.type_buurtspeeltuin = true;
-      }
-      if (term.includes('school') || term.includes('schoolplein')) {
-        newFilters.type.type_schoolplein = true;
-      }
-      if (term.includes('speelbos') || term.includes('bos')) {
-        newFilters.type.type_speelbos = true;
-      }
-
-      // Grootte
-      if (term.includes('klein') || term.includes('kleintje')) {
-        newFilters.grootte.klein = true;
-      }
-      if (term.includes('middel') || term.includes('medium')) {
-        newFilters.grootte.middel = true;
-      }
-      if (term.includes('groot') || term.includes('speelpark')) {
-        newFilters.grootte.groot = true;
-      }
-
-      // Ondergrond
-      if (term.includes('zand') || term.includes('zandbak')) {
-        newFilters.ondergrond.ondergrond_zand = true;
-      }
-      if (term.includes('gras') || term.includes('grasveld')) {
-        newFilters.ondergrond.ondergrond_gras = true;
-      }
-      if (term.includes('rubber') || term.includes('valdemping')) {
-        newFilters.ondergrond.ondergrond_rubber = true;
-      }
-      if (term.includes('tegel') || term.includes('beton')) {
-        newFilters.ondergrond.ondergrond_tegels = true;
-      }
-      if (term.includes('kunstgras') || term.includes('kunst')) {
-        newFilters.ondergrond.ondergrond_kunstgras = true;
-      }
-    });
-
-    setFilters(newFilters);
-    scrollToSpeeltuinen();
+    // Scroll to results when search is performed
+    setTimeout(() => scrollToSpeeltuinen(), 100);
   };
 
   const handleCategoryClick = (category: string) => {
@@ -389,83 +373,88 @@ const Index = () => {
   }, [speeltuinen]);
 
   const filteredSpeeltuinen = useMemo(() => {
-    return speeltuinen.filter((speeltuin) => {
-      // Text search - check if speeltuin name or description matches search query
-      if (searchQuery.trim()) {
-        const lowerQuery = searchQuery.toLowerCase();
-        const nameMatch = speeltuin.naam.toLowerCase().includes(lowerQuery);
-        const descriptionMatch = speeltuin.omschrijving?.toLowerCase().includes(lowerQuery) || false;
-        
-        if (!nameMatch && !descriptionMatch) {
+    // Create searchable content and scores for each playground
+    const speeltuinenWithScores = speeltuinen.map((speeltuin) => {
+      const searchableContent = createSearchableContent(speeltuin);
+      const searchScore = searchQuery.trim() ? fuzzySearch(searchQuery, searchableContent) : 0;
+      return { speeltuin, searchScore };
+    });
+
+    // Filter based on search and filters
+    return speeltuinenWithScores
+      .filter(({ speeltuin, searchScore }) => {
+        // If there's a search query, only show results with a score > 0
+        if (searchQuery.trim() && searchScore === 0) {
           return false;
         }
-      }
 
-      // Check if any filters are active
-      const hasActiveFilters = Object.values(filters).some((category) =>
-        Object.values(category).some((value) => value)
-      );
+        // Check if any filters are active
+        const hasActiveFilters = Object.values(filters).some((category) =>
+          Object.values(category).some((value) => value)
+        );
 
-      if (!hasActiveFilters) return true;
+        if (!hasActiveFilters) return true;
 
-      // Leeftijd filter
-      const leeftijdMatch = 
-        (!Object.values(filters.leeftijd).some(v => v)) ||
-        (filters.leeftijd.geschikt_peuters && speeltuin.geschikt_peuters) ||
-        (filters.leeftijd.geschikt_kleuters && speeltuin.geschikt_kleuters) ||
-        (filters.leeftijd.geschikt_kinderen && speeltuin.geschikt_kinderen);
+        // Leeftijd filter
+        const leeftijdMatch = 
+          (!Object.values(filters.leeftijd).some(v => v)) ||
+          (filters.leeftijd.geschikt_peuters && speeltuin.geschikt_peuters) ||
+          (filters.leeftijd.geschikt_kleuters && speeltuin.geschikt_kleuters) ||
+          (filters.leeftijd.geschikt_kinderen && speeltuin.geschikt_kinderen);
 
-      // Type filter
-      const typeMatch = 
-        (!Object.values(filters.type).some(v => v)) ||
-        (filters.type.type_natuurspeeltuin && speeltuin.type_natuurspeeltuin) ||
-        (filters.type.type_buurtspeeltuin && speeltuin.type_buurtspeeltuin) ||
-        (filters.type.type_schoolplein && speeltuin.type_schoolplein) ||
-        (filters.type.type_speelbos && speeltuin.type_speelbos);
+        // Type filter
+        const typeMatch = 
+          (!Object.values(filters.type).some(v => v)) ||
+          (filters.type.type_natuurspeeltuin && speeltuin.type_natuurspeeltuin) ||
+          (filters.type.type_buurtspeeltuin && speeltuin.type_buurtspeeltuin) ||
+          (filters.type.type_schoolplein && speeltuin.type_schoolplein) ||
+          (filters.type.type_speelbos && speeltuin.type_speelbos);
 
-      // Voorzieningen filter
-      const voorzieningenMatch = 
-        (!Object.values(filters.voorzieningen).some(v => v)) ||
-        (filters.voorzieningen.heeft_glijbaan && speeltuin.heeft_glijbaan) ||
-        (filters.voorzieningen.heeft_schommel && speeltuin.heeft_schommel) ||
-        (filters.voorzieningen.heeft_zandbak && speeltuin.heeft_zandbak) ||
-        (filters.voorzieningen.heeft_kabelbaan && speeltuin.heeft_kabelbaan) ||
-        (filters.voorzieningen.heeft_klimtoestel && speeltuin.heeft_klimtoestel) ||
-        (filters.voorzieningen.heeft_water_pomp && speeltuin.heeft_water_pomp) ||
-        (filters.voorzieningen.heeft_trapveld && speeltuin.heeft_trapveld) ||
-        (filters.voorzieningen.heeft_skatebaan && speeltuin.heeft_skatebaan) ||
-        (filters.voorzieningen.heeft_basketbalveld && speeltuin.heeft_basketbalveld) ||
-        (filters.voorzieningen.heeft_wipwap && speeltuin.heeft_wipwap) ||
-        (filters.voorzieningen.heeft_duikelrek && speeltuin.heeft_duikelrek);
+        // Voorzieningen filter
+        const voorzieningenMatch = 
+          (!Object.values(filters.voorzieningen).some(v => v)) ||
+          (filters.voorzieningen.heeft_glijbaan && speeltuin.heeft_glijbaan) ||
+          (filters.voorzieningen.heeft_schommel && speeltuin.heeft_schommel) ||
+          (filters.voorzieningen.heeft_zandbak && speeltuin.heeft_zandbak) ||
+          (filters.voorzieningen.heeft_kabelbaan && speeltuin.heeft_kabelbaan) ||
+          (filters.voorzieningen.heeft_klimtoestel && speeltuin.heeft_klimtoestel) ||
+          (filters.voorzieningen.heeft_water_pomp && speeltuin.heeft_water_pomp) ||
+          (filters.voorzieningen.heeft_trapveld && speeltuin.heeft_trapveld) ||
+          (filters.voorzieningen.heeft_skatebaan && speeltuin.heeft_skatebaan) ||
+          (filters.voorzieningen.heeft_basketbalveld && speeltuin.heeft_basketbalveld) ||
+          (filters.voorzieningen.heeft_wipwap && speeltuin.heeft_wipwap) ||
+          (filters.voorzieningen.heeft_duikelrek && speeltuin.heeft_duikelrek);
 
-      // Praktische zaken filter
-      const praktischMatch = 
-        (!Object.values(filters.praktisch).some(v => v)) ||
-        (filters.praktisch.heeft_toilet && speeltuin.heeft_toilet) ||
-        (filters.praktisch.heeft_parkeerplaats && speeltuin.heeft_parkeerplaats) ||
-        (filters.praktisch.is_omheind && speeltuin.is_omheind) ||
-        (filters.praktisch.heeft_schaduw && speeltuin.heeft_schaduw) ||
-        (filters.praktisch.is_rolstoeltoegankelijk && speeltuin.is_rolstoeltoegankelijk);
+        // Praktische zaken filter
+        const praktischMatch = 
+          (!Object.values(filters.praktisch).some(v => v)) ||
+          (filters.praktisch.heeft_toilet && speeltuin.heeft_toilet) ||
+          (filters.praktisch.heeft_parkeerplaats && speeltuin.heeft_parkeerplaats) ||
+          (filters.praktisch.is_omheind && speeltuin.is_omheind) ||
+          (filters.praktisch.heeft_schaduw && speeltuin.heeft_schaduw) ||
+          (filters.praktisch.is_rolstoeltoegankelijk && speeltuin.is_rolstoeltoegankelijk);
 
-      // Ondergrond filter
-      const ondergrondMatch = 
-        (!Object.values(filters.ondergrond).some(v => v)) ||
-        (filters.ondergrond.ondergrond_zand && speeltuin.ondergrond_zand) ||
-        (filters.ondergrond.ondergrond_gras && speeltuin.ondergrond_gras) ||
-        (filters.ondergrond.ondergrond_rubber && speeltuin.ondergrond_rubber) ||
-        (filters.ondergrond.ondergrond_tegels && speeltuin.ondergrond_tegels) ||
-        (filters.ondergrond.ondergrond_kunstgras && speeltuin.ondergrond_kunstgras);
+        // Ondergrond filter
+        const ondergrondMatch = 
+          (!Object.values(filters.ondergrond).some(v => v)) ||
+          (filters.ondergrond.ondergrond_zand && speeltuin.ondergrond_zand) ||
+          (filters.ondergrond.ondergrond_gras && speeltuin.ondergrond_gras) ||
+          (filters.ondergrond.ondergrond_rubber && speeltuin.ondergrond_rubber) ||
+          (filters.ondergrond.ondergrond_tegels && speeltuin.ondergrond_tegels) ||
+          (filters.ondergrond.ondergrond_kunstgras && speeltuin.ondergrond_kunstgras);
 
-      // Grootte filter
-      const grootteMatch = 
-        (!Object.values(filters.grootte).some(v => v)) ||
-        (filters.grootte.klein && speeltuin.grootte === 'klein') ||
-        (filters.grootte.middel && speeltuin.grootte === 'middel') ||
-        (filters.grootte.groot && speeltuin.grootte === 'groot');
+        // Grootte filter
+        const grootteMatch = 
+          (!Object.values(filters.grootte).some(v => v)) ||
+          (filters.grootte.klein && speeltuin.grootte === 'klein') ||
+          (filters.grootte.middel && speeltuin.grootte === 'middel') ||
+          (filters.grootte.groot && speeltuin.grootte === 'groot');
 
-      return leeftijdMatch && typeMatch && voorzieningenMatch && praktischMatch && ondergrondMatch && grootteMatch;
-    });
-  }, [speeltuinen, filters]);
+        return leeftijdMatch && typeMatch && voorzieningenMatch && praktischMatch && ondergrondMatch && grootteMatch;
+      })
+      .sort((a, b) => b.searchScore - a.searchScore) // Sort by search relevance
+      .map(({ speeltuin }) => speeltuin);
+  }, [speeltuinen, filters, searchQuery, createSearchableContent, fuzzySearch]);
 
   if (isLoading) {
     return (

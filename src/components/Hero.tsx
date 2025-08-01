@@ -13,6 +13,13 @@ const Hero: React.FC<HeroProps> = ({
     e.preventDefault();
     onSearch(searchQuery);
   };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    // Trigger instant search on every keystroke
+    onSearch(value);
+  };
   return <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden -mt-16 z-10">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{
@@ -46,7 +53,15 @@ const Hero: React.FC<HeroProps> = ({
       }}>
           <div className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto">
             <div className="flex-1 relative">
-              <Input type="text" placeholder="Vind jouw speeltuin..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full px-4 py-3 text-lg bg-white/90 backdrop-blur-sm border-0 rounded-xl text-gray-900 placeholder-gray-600 focus:ring-2 focus:ring-orange-400 focus:bg-white transition-all duration-300" />
+              <Input 
+                type="text" 
+                placeholder="Vind jouw speeltuin..." 
+                value={searchQuery} 
+                onChange={handleInputChange}
+                autoComplete="off"
+                spellCheck="false"
+                className="w-full px-4 py-3 text-lg bg-white/90 backdrop-blur-sm border-0 rounded-xl text-gray-900 placeholder-gray-600 focus:ring-2 focus:ring-orange-400 focus:bg-white transition-all duration-300" 
+              />
             </div>
             <Button type="submit" className="px-8 py-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2">
               <Search className="w-5 h-5" />
