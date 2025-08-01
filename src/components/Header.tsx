@@ -6,7 +6,6 @@ import AdminButton from './AdminButton';
 
 interface HeaderProps {
   siteName?: string;
-  siteDescription?: string;
   onScrollToTop?: () => void;
   onScrollToMap?: () => void;
   onScrollToSpeeltuinen?: () => void;
@@ -25,7 +24,6 @@ const PlaygroundLogo = () => (
 
 const Header = ({ 
   siteName = 'Castricum Speeltuinen Gids', 
-  siteDescription = 'Ontdek alle speeltuinen in Castricum en omgeving. Complete gids met foto\'s, faciliteiten en locatie-informatie.',
   onScrollToTop,
   onScrollToMap,
   onScrollToSpeeltuinen
@@ -86,22 +84,7 @@ const Header = ({
         </div>
       </nav>
 
-      {/* Page header section - not sticky */}
-      <header className="bg-white border-b border-[#e2e8f0]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="max-w-3xl">
-            <div className="mb-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                <Star className="w-4 h-4" />
-                Actuele foto's & informatie
-              </div>
-            </div>
-            <p className="text-slate-600 text-base leading-relaxed">
-              {siteDescription}
-            </p>
-          </div>
-        </div>
-      </header>
+
     </>
   );
 };

@@ -25,7 +25,7 @@ export interface Speeltuin {
   // Voorzieningen (facilities) - new
   heeft_klimtoestel: boolean;
   heeft_water_pomp: boolean;
-  heeft_trapveld: boolean;
+  heeft_panakooi: boolean;
   heeft_skatebaan: boolean;
   heeft_basketbalveld: boolean;
   heeft_wipwap: boolean;
@@ -59,6 +59,9 @@ export interface Speeltuin {
   heeft_horeca: boolean;
   heeft_toilet: boolean;
   heeft_parkeerplaats: boolean;
+  heeft_horeca_aanwezig: boolean;
+  heeft_toilet_beschikbaar: boolean;
+  heeft_parkeerplaats_nabij: boolean;
   
   // Toegankelijkheid
   toegang_zichtbaar_omheind: boolean;

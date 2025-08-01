@@ -9,6 +9,7 @@ import SpeeltuinCard from '@/components/SpeeltuinCard';
 import SpeeltuinFiltersComponent from '@/components/SpeeltuinFilters';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import Hero from '@/components/Hero';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
@@ -29,6 +30,7 @@ const Index = () => {
   const topRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<HTMLDivElement>(null);
   const speeltuinenRef = useRef<HTMLDivElement>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState<SpeeltuinFilters>({
     leeftijd: {
       geschikt_peuters: false,
@@ -219,6 +221,160 @@ const Index = () => {
     }
   };
 
+  const handleHeroSearch = (query: string) => {
+    // Set search query and apply smart search
+    setSearchQuery(query);
+    
+    if (!query.trim()) {
+      // If query is empty, clear all filters
+      clearAllFilters();
+      scrollToSpeeltuinen();
+      return;
+    }
+
+    const lowerQuery = query.toLowerCase().trim();
+    const newFilters = { ...filters };
+
+    // Reset all filters first
+    Object.keys(newFilters).forEach(category => {
+      Object.keys(newFilters[category as keyof SpeeltuinFilters]).forEach(key => {
+        newFilters[category as keyof SpeeltuinFilters][key as any] = false;
+      });
+    });
+
+    // Smart search logic
+    const searchTerms = lowerQuery.split(' ').filter(term => term.length > 0);
+    
+    searchTerms.forEach(term => {
+      // Voorzieningen matching
+      if (term.includes('glijbaan') || term.includes('glij')) {
+        newFilters.voorzieningen.heeft_glijbaan = true;
+      }
+      if (term.includes('schommel') || term.includes('schom')) {
+        newFilters.voorzieningen.heeft_schommel = true;
+      }
+      if (term.includes('zandbak') || term.includes('zand')) {
+        newFilters.voorzieningen.heeft_zandbak = true;
+      }
+      if (term.includes('klimtoestel') || term.includes('klim')) {
+        newFilters.voorzieningen.heeft_klimtoestel = true;
+      }
+      if (term.includes('kabelbaan') || term.includes('kabel')) {
+        newFilters.voorzieningen.heeft_kabelbaan = true;
+      }
+      if (term.includes('water') || term.includes('pomp')) {
+        newFilters.voorzieningen.heeft_water_pomp = true;
+      }
+      if (term.includes('panakooi') || term.includes('panda')) {
+        newFilters.voorzieningen.heeft_panakooi = true;
+      }
+      if (term.includes('skate') || term.includes('skatebaan')) {
+        newFilters.voorzieningen.heeft_skatebaan = true;
+      }
+      if (term.includes('basketbal') || term.includes('basket')) {
+        newFilters.voorzieningen.heeft_basketbalveld = true;
+      }
+      if (term.includes('wipwap') || term.includes('wip')) {
+        newFilters.voorzieningen.heeft_wipwap = true;
+      }
+      if (term.includes('duikelrek') || term.includes('duikel')) {
+        newFilters.voorzieningen.heeft_duikelrek = true;
+      }
+
+      // Praktische zaken
+      if (term.includes('toilet') || term.includes('wc')) {
+        newFilters.praktisch.heeft_toilet = true;
+      }
+      if (term.includes('parkeer') || term.includes('auto')) {
+        newFilters.praktisch.heeft_parkeerplaats = true;
+      }
+      if (term.includes('omheind') || term.includes('hek')) {
+        newFilters.praktisch.is_omheind = true;
+      }
+      if (term.includes('schaduw') || term.includes('schaduwrijk')) {
+        newFilters.praktisch.heeft_schaduw = true;
+      }
+      if (term.includes('rolstoel') || term.includes('toegankelijk')) {
+        newFilters.praktisch.is_rolstoeltoegankelijk = true;
+      }
+
+      // Leeftijd
+      if (term.includes('peuter') || term.includes('baby')) {
+        newFilters.leeftijd.geschikt_peuters = true;
+      }
+      if (term.includes('kleuter') || term.includes('klein')) {
+        newFilters.leeftijd.geschikt_kleuters = true;
+      }
+      if (term.includes('kind') || term.includes('groot')) {
+        newFilters.leeftijd.geschikt_kinderen = true;
+      }
+
+      // Type speeltuin
+      if (term.includes('natuur') || term.includes('bos')) {
+        newFilters.type.type_natuurspeeltuin = true;
+      }
+      if (term.includes('buurt') || term.includes('wijk')) {
+        newFilters.type.type_buurtspeeltuin = true;
+      }
+      if (term.includes('school') || term.includes('schoolplein')) {
+        newFilters.type.type_schoolplein = true;
+      }
+      if (term.includes('speelbos') || term.includes('bos')) {
+        newFilters.type.type_speelbos = true;
+      }
+
+      // Grootte
+      if (term.includes('klein') || term.includes('kleintje')) {
+        newFilters.grootte.klein = true;
+      }
+      if (term.includes('middel') || term.includes('medium')) {
+        newFilters.grootte.middel = true;
+      }
+      if (term.includes('groot') || term.includes('speelpark')) {
+        newFilters.grootte.groot = true;
+      }
+
+      // Ondergrond
+      if (term.includes('zand') || term.includes('zandbak')) {
+        newFilters.ondergrond.ondergrond_zand = true;
+      }
+      if (term.includes('gras') || term.includes('grasveld')) {
+        newFilters.ondergrond.ondergrond_gras = true;
+      }
+      if (term.includes('rubber') || term.includes('valdemping')) {
+        newFilters.ondergrond.ondergrond_rubber = true;
+      }
+      if (term.includes('tegel') || term.includes('beton')) {
+        newFilters.ondergrond.ondergrond_tegels = true;
+      }
+      if (term.includes('kunstgras') || term.includes('kunst')) {
+        newFilters.ondergrond.ondergrond_kunstgras = true;
+      }
+    });
+
+    setFilters(newFilters);
+    scrollToSpeeltuinen();
+  };
+
+  const handleCategoryClick = (category: string) => {
+    // Set filter for the selected category and scroll to results
+    const newFilters = { ...filters };
+    
+    // Map category names to filter properties
+    const categoryMap: { [key: string]: string } = {
+      'glijbaan': 'heeft_glijbaan',
+      'pandakooi': 'heeft_panakooi',
+      'waterpomp': 'heeft_water_pomp'
+    };
+    
+    const filterKey = categoryMap[category];
+    if (filterKey) {
+      newFilters.voorzieningen[filterKey as keyof typeof newFilters.voorzieningen] = true;
+      setFilters(newFilters);
+      scrollToSpeeltuinen();
+    }
+  };
+
   // Calculate last updated date from speeltuinen data
   const lastUpdated = useMemo(() => {
     if (!speeltuinen.length) return null;
@@ -234,6 +390,17 @@ const Index = () => {
 
   const filteredSpeeltuinen = useMemo(() => {
     return speeltuinen.filter((speeltuin) => {
+      // Text search - check if speeltuin name or description matches search query
+      if (searchQuery.trim()) {
+        const lowerQuery = searchQuery.toLowerCase();
+        const nameMatch = speeltuin.naam.toLowerCase().includes(lowerQuery);
+        const descriptionMatch = speeltuin.omschrijving?.toLowerCase().includes(lowerQuery) || false;
+        
+        if (!nameMatch && !descriptionMatch) {
+          return false;
+        }
+      }
+
       // Check if any filters are active
       const hasActiveFilters = Object.values(filters).some((category) =>
         Object.values(category).some((value) => value)
@@ -339,7 +506,12 @@ const Index = () => {
         onScrollToSpeeltuinen={scrollToSpeeltuinen}
       />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">{/* pt-24 = 96px voor sticky nav + padding */}
+      {/* Hero Section */}
+      <Hero 
+        onSearch={handleHeroSearch}
+      />
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-8 relative">
           {/* Filters Sidebar */}
           <div className={`transition-all duration-300 ease-in-out ${

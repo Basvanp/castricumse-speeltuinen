@@ -48,6 +48,10 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
     afbeelding_url: '',
     fotos: [] as FotoItem[],
     selected_badge: '' as BadgeType | '',
+    // Bouwjaar
+    bouwjaar: null as number | null,
+    // Grootte
+    grootte: 'middel' as 'klein' | 'middel' | 'groot',
     // Voorzieningen
     heeft_glijbaan: false,
     heeft_schommel: false,
@@ -55,14 +59,22 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
     heeft_kabelbaan: false,
     heeft_bankjes: false,
     heeft_sportveld: false,
+    heeft_klimtoestel: false,
+    heeft_water_pomp: false,
+    heeft_panakooi: false,
+    heeft_skatebaan: false,
+    heeft_basketbalveld: false,
+    heeft_wipwap: false,
+    heeft_duikelrek: false,
+    heeft_toilet: false,
+    heeft_parkeerplaats: false,
+    heeft_horeca: false,
     // Ondergrond
     ondergrond_zand: false,
     ondergrond_gras: false,
     ondergrond_rubber: false,
     ondergrond_tegels: false,
     ondergrond_kunstgras: false,
-    // Grootte
-    grootte: 'middel' as 'klein' | 'middel' | 'groot',
     // Leeftijd
     geschikt_peuters: false,
     geschikt_kleuters: false,
@@ -71,9 +83,9 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
     is_omheind: false,
     heeft_schaduw: false,
     is_rolstoeltoegankelijk: false,
-    heeft_horeca: false,
-    heeft_toilet: false,
-    heeft_parkeerplaats: false,
+    heeft_horeca_aanwezig: false,
+    heeft_toilet_beschikbaar: false,
+    heeft_parkeerplaats_nabij: false,
   });
 
   const [dragOver, setDragOver] = useState(false);
@@ -109,27 +121,38 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
         afbeelding_url: speeltuin.afbeelding_url || '',
         fotos: fotosArray,
         selected_badge: (speeltuin.badge as BadgeType) || '',
+        bouwjaar: speeltuin.bouwjaar || null,
+        grootte: speeltuin.grootte || 'middel',
         heeft_glijbaan: speeltuin.heeft_glijbaan || false,
         heeft_schommel: speeltuin.heeft_schommel || false,
         heeft_zandbak: speeltuin.heeft_zandbak || false,
         heeft_kabelbaan: speeltuin.heeft_kabelbaan || false,
         heeft_bankjes: speeltuin.heeft_bankjes || false,
         heeft_sportveld: speeltuin.heeft_sportveld || false,
+        heeft_klimtoestel: speeltuin.heeft_klimtoestel || false,
+        heeft_water_pomp: speeltuin.heeft_water_pomp || false,
+        heeft_panakooi: speeltuin.heeft_panakooi || false,
+        heeft_skatebaan: speeltuin.heeft_skatebaan || false,
+        heeft_basketbalveld: speeltuin.heeft_basketbalveld || false,
+        heeft_wipwap: speeltuin.heeft_wipwap || false,
+        heeft_duikelrek: speeltuin.heeft_duikelrek || false,
+        heeft_toilet: speeltuin.heeft_toilet || false,
+        heeft_parkeerplaats: speeltuin.heeft_parkeerplaats || false,
+        heeft_horeca: speeltuin.heeft_horeca || false,
         ondergrond_zand: speeltuin.ondergrond_zand || false,
         ondergrond_gras: speeltuin.ondergrond_gras || false,
         ondergrond_rubber: speeltuin.ondergrond_rubber || false,
         ondergrond_tegels: speeltuin.ondergrond_tegels || false,
         ondergrond_kunstgras: speeltuin.ondergrond_kunstgras || false,
-        grootte: speeltuin.grootte || 'middel',
         geschikt_peuters: speeltuin.geschikt_peuters || false,
         geschikt_kleuters: speeltuin.geschikt_kleuters || false,
         geschikt_kinderen: speeltuin.geschikt_kinderen || false,
         is_omheind: speeltuin.is_omheind || false,
         heeft_schaduw: speeltuin.heeft_schaduw || false,
         is_rolstoeltoegankelijk: speeltuin.is_rolstoeltoegankelijk || false,
-        heeft_horeca: speeltuin.heeft_horeca || false,
-        heeft_toilet: speeltuin.heeft_toilet || false,
-        heeft_parkeerplaats: speeltuin.heeft_parkeerplaats || false,
+        heeft_horeca_aanwezig: speeltuin.heeft_horeca_aanwezig || false,
+        heeft_toilet_beschikbaar: speeltuin.heeft_toilet_beschikbaar || false,
+        heeft_parkeerplaats_nabij: speeltuin.heeft_parkeerplaats_nabij || false,
       });
       setGpsFromPhoto(false);
     }
@@ -187,7 +210,7 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
         variant: "destructive",
       });
       setUploading(false);
-      return;
+      throw new Error(`Invalid file type: ${file.type}`);
     }
     
     try {
@@ -215,16 +238,14 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
           }
         }
       } catch (error) {
-        console.log('GPS extraction failed:', error);
+        // GPS extraction failed silently
       }
 
       // Compress large images automatically (>2MB)
       let fileToUpload = file;
       if (shouldCompress(file)) {
         try {
-          console.log(`Original file size: ${(file.size / 1024).toFixed(1)}KB`);
           fileToUpload = await compressImage(file);
-          console.log(`Compressed file size: ${(fileToUpload.size / 1024).toFixed(1)}KB`);
           
           const stats = getCompressionStats(file, fileToUpload);
           toast({
@@ -232,8 +253,6 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
             description: `Grootte gereduceerd van ${stats.originalSize} naar ${stats.compressedSize} (-${stats.compressionRatio})`,
           });
         } catch (error) {
-          console.error('Compression failed:', error);
-          
           // Final size check - reject if still too large after failed compression
           if (file.size > 10 * 1024 * 1024) {
             toast({
@@ -316,12 +335,12 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
       });
 
     } catch (error) {
-      console.error('Upload error:', error);
       toast({
         title: "Upload mislukt",
-        description: "Er is een fout opgetreden bij het uploaden van de afbeelding.",
+        description: `Er is een fout opgetreden bij het uploaden van ${file.name}.`,
         variant: "destructive",
       });
+      throw error; // Re-throw to be caught by the calling function
     } finally {
       setUploading(false);
     }
@@ -418,13 +437,28 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
   }, [draggedPhoto, toast]);
 
   // Gallery upload handler
-  const handleGallerySelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleGallerySelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (files) {
-      Array.from(files).forEach(file => {
-        handleFileUpload(file);
-      });
+    if (!files || files.length === 0) return;
+
+    // Upload files sequentially to avoid concurrent upload issues
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      
+      try {
+        await handleFileUpload(file);
+        
+        // Add small delay between uploads to prevent rate limiting
+        if (i < files.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+        
+      } catch (error) {
+        // Error is already handled in handleFileUpload
+        continue;
+      }
     }
+
     // Reset input value to allow same file selection
     if (galleryInputRef.current) {
       galleryInputRef.current.value = '';
@@ -434,10 +468,30 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.naam) {
+    // Validate required fields
+    if (!formData.naam || !formData.latitude || !formData.longitude || !formData.grootte) {
       toast({
         title: "Verplichte velden",
-        description: "Vul een naam in.",
+        description: "Vul alle verplichte velden in (naam, coördinaten, grootte).",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate coordinate ranges
+    if (formData.latitude < -90 || formData.latitude > 90) {
+      toast({
+        title: "Ongeldige breedtegraad",
+        description: "Breedtegraad moet tussen -90 en 90 liggen.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (formData.longitude < -180 || formData.longitude > 180) {
+      toast({
+        title: "Ongeldige lengtegraad",
+        description: "Lengtegraad moet tussen -180 en 180 liggen.",
         variant: "destructive",
       });
       return;
@@ -494,7 +548,7 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6 p-4">
           {/* Multi-Photo Upload */}
           <div className="space-y-4">
             <Label className="text-lg font-semibold">Foto's beheren</Label>
@@ -651,67 +705,6 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
             </div>
           )}
 
-          {/* Badge Selectie */}
-          <Card>
-            <CardContent className="pt-6">
-              <h3 className="font-medium mb-4">Badge Selectie</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Selecteer welke badge getoond wordt op de speeltuinkaart. Kies er slechts één voor een clean design.
-              </p>
-              <div className="space-y-3">
-                {[
-                  // Toegankelijkheid
-                  { key: 'rolstoelvriendelijk', label: 'Rolstoelvriendelijk', description: 'Voor toegankelijke speeltuinen' },
-                  { key: 'babytoegankelijk', label: 'Babytoegankelijk', description: 'Voor peuters en baby\'s' },
-                  
-                  // Type speeltuin
-                  { key: 'natuurspeeltuin', label: 'Natuurspeeltuin', description: 'Voor speeltuinen met natuurlijke elementen' },
-                  { key: 'waterspeeltuin', label: 'Waterspeeltuin', description: 'Voor speeltuinen met waterelementen' },
-                  { key: 'avonturenspeeltuin', label: 'Avonturenspeeltuin', description: 'Voor avontuurlijke speeltuinen' },
-                  
-                  // Voorzieningen
-                  { key: 'toiletten', label: 'Toiletten', description: 'Voor speeltuinen met toilet voorzieningen' },
-                  { key: 'parkeren', label: 'Parkeren', description: 'Voor speeltuinen met parkeervoorzieningen' },
-                  { key: 'horeca', label: 'Horeca', description: 'Voor speeltuinen met horeca voorzieningen' },
-                ].map(({ key, label, description }) => (
-                  <div key={key} className="flex items-start space-x-3 p-2 border rounded-md hover:bg-muted/50">
-                    <input
-                      type="radio"
-                      id={`badge-${key}`}
-                      name="selected_badge"
-                      checked={formData.selected_badge === key}
-                      onChange={() => setFormData(prev => ({ ...prev, selected_badge: key as BadgeType }))}
-                      className="h-4 w-4 mt-0.5"
-                    />
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <Label htmlFor={`badge-${key}`} className="font-medium">{label}</Label>
-                        {formData.selected_badge === key && (
-                          <SpeeltuinBadge type={key as BadgeType} />
-                        )}
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-1">{description}</p>
-                    </div>
-                  </div>
-                ))}
-                <div className="flex items-start space-x-3 p-2 border rounded-md hover:bg-muted/50">
-                  <input
-                    type="radio"
-                    id="badge-none"
-                    name="selected_badge"
-                    checked={formData.selected_badge === ''}
-                    onChange={() => setFormData(prev => ({ ...prev, selected_badge: '' }))}
-                    className="h-4 w-4 mt-0.5"
-                  />
-                  <div className="flex-1">
-                    <Label htmlFor="badge-none" className="font-medium">Geen badge</Label>
-                    <p className="text-xs text-muted-foreground mt-1">Geen badge tonen op de kaart</p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Basic Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -721,6 +714,7 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
                 value={formData.naam}
                 onChange={(e) => setFormData(prev => ({ ...prev, naam: e.target.value }))}
                 required
+                className="w-full p-2 border rounded"
               />
             </div>
             <div className="space-y-2">
@@ -730,6 +724,7 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
                 value={formData.omschrijving}
                 onChange={(e) => setFormData(prev => ({ ...prev, omschrijving: e.target.value }))}
                 rows={3}
+                className="w-full p-2 border rounded"
               />
             </div>
           </div>
@@ -737,7 +732,7 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
           {/* GPS Coordinates */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="latitude">Latitude</Label>
+              <Label htmlFor="latitude">Breedtegraad *</Label>
               <Input
                 id="latitude"
                 type="number"
@@ -748,10 +743,12 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
                   latitude: e.target.value ? parseFloat(e.target.value) : null 
                 }))}
                 placeholder="Bijv. 52.370216"
+                required
+                className="w-full p-2 border rounded"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="longitude">Longitude</Label>
+              <Label htmlFor="longitude">Lengtegraad *</Label>
               <Input
                 id="longitude"
                 type="number"
@@ -762,53 +759,87 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
                   longitude: e.target.value ? parseFloat(e.target.value) : null 
                 }))}
                 placeholder="Bijv. 4.895168"
+                required
+                className="w-full p-2 border rounded"
               />
             </div>
           </div>
 
-          {/* Grootte */}
+          {/* Bouwjaar */}
           <div className="space-y-2">
-            <Label>Grootte</Label>
+            <Label htmlFor="bouwjaar">Bouwjaar (optioneel)</Label>
+            <Input
+              id="bouwjaar"
+              type="number"
+              value={formData.bouwjaar || ''}
+              onChange={(e) => setFormData(prev => ({ 
+                ...prev, 
+                bouwjaar: e.target.value ? parseInt(e.target.value) : null 
+              }))}
+              placeholder="Bijvoorbeeld: 2020"
+              min={1900}
+              max={2025}
+              className="w-full p-2 border rounded"
+            />
+          </div>
+
+          {/* Grootte */}
+          <div className="space-y-3">
+            <Label className="text-sm font-medium text-gray-700">Grootte *</Label>
             <RadioGroup 
               value={formData.grootte} 
               onValueChange={(value) => setFormData(prev => ({ ...prev, grootte: value as 'klein' | 'middel' | 'groot' }))}
+              required
             >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="klein" id="klein" />
-                <Label htmlFor="klein">Klein</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="middel" id="middel" />
-                <Label htmlFor="middel">Middel</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="groot" id="groot" />
-                <Label htmlFor="groot">Groot</Label>
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="klein" id="grootte-klein" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300" />
+                  <Label htmlFor="grootte-klein">Klein (buurt speeltuintje)</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="middel" id="grootte-middel" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300" />
+                  <Label htmlFor="grootte-middel">Middel</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="groot" id="grootte-groot" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300" />
+                  <Label htmlFor="grootte-groot">Groot (speelpark)</Label>
+                </div>
               </div>
             </RadioGroup>
           </div>
 
           {/* Voorzieningen */}
           <div className="space-y-3">
-            <Label className="text-lg font-semibold">Voorzieningen</Label>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <Label className="text-sm font-medium text-gray-700">Voorzieningen</Label>
+            <div className="grid grid-cols-3 gap-3">
               {[
-                { key: 'heeft_glijbaan', label: 'Glijbaan' },
-                { key: 'heeft_schommel', label: 'Schommel' },
-                { key: 'heeft_zandbak', label: 'Zandbak' },
-                { key: 'heeft_kabelbaan', label: 'Kabelbaan' },
-                { key: 'heeft_bankjes', label: 'Bankjes' },
-                { key: 'heeft_sportveld', label: 'Sportveld' },
-              ].map(({ key, label }) => (
+                { key: 'heeft_glijbaan', label: 'Glijbaan', id: 'voorz-glijbaan' },
+                { key: 'heeft_schommel', label: 'Schommel', id: 'voorz-schommel' },
+                { key: 'heeft_zandbak', label: 'Zandbak', id: 'voorz-zandbak' },
+                { key: 'heeft_kabelbaan', label: 'Kabelbaan', id: 'voorz-kabelbaan' },
+                { key: 'heeft_bankjes', label: 'Bankjes', id: 'voorz-bankjes' },
+                { key: 'heeft_sportveld', label: 'Sportveld', id: 'voorz-sportveld' },
+                { key: 'heeft_klimtoestel', label: 'Klimtoestel', id: 'voorz-klimtoestel' },
+                { key: 'heeft_water_pomp', label: 'Water / pomp', id: 'voorz-water-pomp' },
+                { key: 'heeft_panakooi', label: 'Panakooi', id: 'voorz-panakooi' },
+                { key: 'heeft_skatebaan', label: 'Skatebaan', id: 'voorz-skatebaan' },
+                { key: 'heeft_basketbalveld', label: 'Basketbalveld', id: 'voorz-basketbal' },
+                { key: 'heeft_wipwap', label: 'Wipwap', id: 'voorz-wipwap' },
+                { key: 'heeft_duikelrek', label: 'Duikelrek', id: 'voorz-duikelrek' },
+                { key: 'heeft_toilet', label: 'Toilet', id: 'voorz-toilet' },
+                { key: 'heeft_parkeerplaats', label: 'Parkeerplaats', id: 'voorz-parkeer' },
+                { key: 'heeft_horeca', label: 'Horeca', id: 'voorz-horeca' },
+              ].map(({ key, label, id }) => (
                 <div key={key} className="flex items-center space-x-2">
                   <Checkbox
-                    id={key}
+                    id={id}
                     checked={formData[key as keyof typeof formData] as boolean}
                     onCheckedChange={(checked) =>
                       setFormData(prev => ({ ...prev, [key]: checked }))
                     }
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
-                  <Label htmlFor={key}>{label}</Label>
+                  <Label htmlFor={id} className="text-sm">{label}</Label>
                 </div>
               ))}
             </div>
@@ -816,47 +847,49 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
 
           {/* Ondergrond */}
           <div className="space-y-3">
-            <Label className="text-lg font-semibold">Ondergrond</Label>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <Label className="text-sm font-medium text-gray-700">Ondergrond</Label>
+            <div className="grid grid-cols-3 gap-3">
               {[
-                { key: 'ondergrond_zand', label: 'Zand' },
-                { key: 'ondergrond_gras', label: 'Gras' },
-                { key: 'ondergrond_rubber', label: 'Rubber' },
-                { key: 'ondergrond_tegels', label: 'Tegels' },
-                { key: 'ondergrond_kunstgras', label: 'Kunstgras' },
-              ].map(({ key, label }) => (
+                { key: 'ondergrond_zand', label: 'Zand', id: 'ond-zand' },
+                { key: 'ondergrond_gras', label: 'Gras', id: 'ond-gras' },
+                { key: 'ondergrond_rubber', label: 'Rubber', id: 'ond-rubber' },
+                { key: 'ondergrond_tegels', label: 'Tegels', id: 'ond-tegels' },
+                { key: 'ondergrond_kunstgras', label: 'Kunstgras', id: 'ond-kunstgras' },
+              ].map(({ key, label, id }) => (
                 <div key={key} className="flex items-center space-x-2">
                   <Checkbox
-                    id={key}
+                    id={id}
                     checked={formData[key as keyof typeof formData] as boolean}
                     onCheckedChange={(checked) =>
                       setFormData(prev => ({ ...prev, [key]: checked }))
                     }
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
-                  <Label htmlFor={key}>{label}</Label>
+                  <Label htmlFor={id} className="text-sm">{label}</Label>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Leeftijd */}
+          {/* Geschikt voor */}
           <div className="space-y-3">
-            <Label className="text-lg font-semibold">Geschikt voor</Label>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <Label className="text-sm font-medium text-gray-700">Geschikt voor</Label>
+            <div className="grid grid-cols-3 gap-3">
               {[
-                { key: 'geschikt_peuters', label: 'Peuters (0-3 jaar)' },
-                { key: 'geschikt_kleuters', label: 'Kleuters (3-6 jaar)' },
-                { key: 'geschikt_kinderen', label: 'Kinderen (6+ jaar)' },
-              ].map(({ key, label }) => (
+                { key: 'geschikt_peuters', label: 'Peuters (0-2 jaar)', id: 'leef-peuters' },
+                { key: 'geschikt_kleuters', label: 'Kleuters (3-5 jaar)', id: 'leef-kleuters' },
+                { key: 'geschikt_kinderen', label: 'Kinderen (6+ jaar)', id: 'leef-kinderen' },
+              ].map(({ key, label, id }) => (
                 <div key={key} className="flex items-center space-x-2">
                   <Checkbox
-                    id={key}
+                    id={id}
                     checked={formData[key as keyof typeof formData] as boolean}
                     onCheckedChange={(checked) =>
                       setFormData(prev => ({ ...prev, [key]: checked }))
                     }
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
-                  <Label htmlFor={key}>{label}</Label>
+                  <Label htmlFor={id} className="text-sm">{label}</Label>
                 </div>
               ))}
             </div>
@@ -864,33 +897,88 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
 
           {/* Overige eigenschappen */}
           <div className="space-y-3">
-            <Label className="text-lg font-semibold">Overige eigenschappen</Label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <Label className="text-sm font-medium text-gray-700">Overige eigenschappen</Label>
+            <div className="grid grid-cols-2 gap-3">
               {[
-                { key: 'is_omheind', label: 'Omheind' },
-                { key: 'heeft_schaduw', label: 'Schaduw' },
-                { key: 'is_rolstoeltoegankelijk', label: 'Rolstoeltoegankelijk' },
-                { key: 'heeft_horeca', label: 'Horeca nabij' },
-                { key: 'heeft_toilet', label: 'Toilet beschikbaar' },
-                { key: 'heeft_parkeerplaats', label: 'Parkeerplaats nabij' },
-              ].map(({ key, label }) => (
+                { key: 'is_omheind', label: 'Omheind', id: 'over-omheind' },
+                { key: 'heeft_schaduw', label: 'Schaduw', id: 'over-schaduw' },
+                { key: 'is_rolstoeltoegankelijk', label: 'Rolstoeltoegankelijk', id: 'over-rolstoel' },
+                { key: 'heeft_horeca_aanwezig', label: 'Horeca aanwezig', id: 'over-horeca-aan' },
+                { key: 'heeft_toilet_beschikbaar', label: 'Toilet beschikbaar', id: 'over-toilet-besch' },
+                { key: 'heeft_parkeerplaats_nabij', label: 'Parkeerplaats nabij', id: 'over-parkeer-nabij' },
+              ].map(({ key, label, id }) => (
                 <div key={key} className="flex items-center space-x-2">
                   <Checkbox
-                    id={key}
+                    id={id}
                     checked={formData[key as keyof typeof formData] as boolean}
                     onCheckedChange={(checked) =>
                       setFormData(prev => ({ ...prev, [key]: checked }))
                     }
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
-                  <Label htmlFor={key}>{label}</Label>
+                  <Label htmlFor={id} className="text-sm">{label}</Label>
                 </div>
               ))}
             </div>
           </div>
 
+          {/* Badge Selectie */}
+          <div className="space-y-3 mb-6">
+            <Label className="text-sm font-medium text-gray-700">Badge Selectie</Label>
+            <p className="text-xs text-gray-500 mt-1">
+              Selecteer welke badge getoond wordt op de speeltuinkaart. Kies er slechts één voor een clean design.
+            </p>
+            <div className="space-y-3">
+              {[
+                { key: 'rolstoelvriendelijk', label: 'Rolstoelvriendelijk', description: 'Voor toegankelijke speeltuinen', id: 'badge-rolstoel' },
+                { key: 'babytoegankelijk', label: 'Babytoegankelijk', description: 'Voor peuters en baby\'s', id: 'badge-baby' },
+                { key: 'natuurspeeltuin', label: 'Natuurspeeltuin', description: 'Voor speeltuinen met natuurlijke elementen', id: 'badge-natuur' },
+                { key: 'waterspeeltuin', label: 'Waterspeeltuin', description: 'Voor speeltuinen met waterelementen', id: 'badge-water' },
+                { key: 'avonturenspeeltuin', label: 'Avonturenspeeltuin', description: 'Voor avontuurlijke speeltuinen', id: 'badge-avontuur' },
+                { key: 'toiletten', label: 'Toiletten', description: 'Voor speeltuinen met toilet voorzieningen', id: 'badge-toiletten' },
+                { key: 'parkeren', label: 'Parkeren', description: 'Voor speeltuinen met parkeervoorzieningen', id: 'badge-parkeren' },
+                { key: 'horeca_badge', label: 'Horeca', description: 'Voor speeltuinen met horeca voorzieningen', id: 'badge-horeca' },
+              ].map(({ key, label, description, id }) => (
+                <div key={key} className="flex items-start space-x-3 p-2 border rounded-md hover:bg-muted/50">
+                  <input
+                    type="radio"
+                    id={id}
+                    name="selected_badge"
+                    checked={formData.selected_badge === key}
+                    onChange={() => setFormData(prev => ({ ...prev, selected_badge: key as BadgeType }))}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-0.5"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor={id} className="font-medium">{label}</Label>
+                      {formData.selected_badge === key && (
+                        <SpeeltuinBadge type={key as BadgeType} />
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">{description}</p>
+                  </div>
+                </div>
+              ))}
+              <div className="flex items-start space-x-3 p-2 border rounded-md hover:bg-muted/50">
+                <input
+                  type="radio"
+                  id="badge-geen"
+                  name="selected_badge"
+                  checked={formData.selected_badge === ''}
+                  onChange={() => setFormData(prev => ({ ...prev, selected_badge: '' }))}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-0.5"
+                />
+                <div className="flex-1">
+                  <Label htmlFor="badge-geen" className="font-medium">Geen badge</Label>
+                  <p className="text-xs text-gray-500 mt-1">Geen badge tonen op de kaart</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <Button 
             type="submit" 
-            className="w-full" 
+            className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors" 
             disabled={isPending || uploading}
           >
             {isPending ? (
@@ -901,6 +989,14 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
                 Speeltuin bijwerken
               </>
             )}
+          </Button>
+          
+          <Button 
+            type="button" 
+            className="w-full bg-gray-300 text-gray-700 py-3 px-4 rounded-md hover:bg-gray-400 transition-colors mt-2"
+            onClick={() => onOpenChange(false)}
+          >
+            Annuleren
           </Button>
         </form>
       </DialogContent>
