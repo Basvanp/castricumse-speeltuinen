@@ -265,8 +265,8 @@ const Index = () => {
       if (term.includes('water') || term.includes('pomp')) {
         newFilters.voorzieningen.heeft_water_pomp = true;
       }
-      if (term.includes('panakooi') || term.includes('panda')) {
-        newFilters.voorzieningen.heeft_panakooi = true;
+      if (term.includes('panakooi') || term.includes('pana') || term.includes('trapveld')) {
+        newFilters.voorzieningen.heeft_trapveld = true;
       }
       if (term.includes('skate') || term.includes('skatebaan')) {
         newFilters.voorzieningen.heeft_skatebaan = true;
@@ -500,7 +500,6 @@ const Index = () => {
       
       <Header 
         siteName={settings.site_name}
-        siteDescription={settings.site_description}
         onScrollToTop={scrollToTop}
         onScrollToMap={scrollToMap}
         onScrollToSpeeltuinen={scrollToSpeeltuinen}

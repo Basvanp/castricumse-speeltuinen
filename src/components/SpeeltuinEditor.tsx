@@ -72,6 +72,9 @@ const SpeeltuinEditor = () => {
     heeft_horeca: false,
     heeft_toilet: false,
     heeft_parkeerplaats: false,
+    heeft_horeca_aanwezig: false,
+    heeft_toilet_beschikbaar: false,
+    heeft_parkeerplaats_nabij: false,
     // Toegankelijkheid
     toegang_zichtbaar_omheind: false,
     toegang_zonder_drempel: false,
@@ -777,6 +780,9 @@ const SpeeltuinEditor = () => {
           heeft_horeca: false,
           heeft_toilet: false,
           heeft_parkeerplaats: false,
+          heeft_horeca_aanwezig: false,
+          heeft_toilet_beschikbaar: false,
+          heeft_parkeerplaats_nabij: false,
           // Toegankelijkheid
           toegang_zichtbaar_omheind: false,
           toegang_zonder_drempel: false,
