@@ -215,9 +215,11 @@ const Index = () => {
 
   const scrollToSpeeltuinen = () => {
     if (speeltuinenRef.current) {
-      const headerHeight = 100; // Meer ruimte voor header
-      const extraOffset = 50; // Extra offset om zeker naar de juiste positie te scrollen
-      const offsetTop = speeltuinenRef.current.offsetTop - headerHeight + extraOffset;
+      const headerHeight = 80;
+      const heroHeight = window.innerHeight * 0.7; // Hero section is 70vh
+      const mapHeight = 500; // Geschatte kaart hoogte
+      const extraSpace = 100; // Extra ruimte
+      const offsetTop = speeltuinenRef.current.offsetTop - headerHeight;
       window.scrollTo({ top: offsetTop, behavior: 'smooth' });
     }
   };
