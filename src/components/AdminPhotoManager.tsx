@@ -399,142 +399,148 @@ const AdminPhotoManager: React.FC = () => {
                             const url = photo.url;
                             const filename = url.split('/').pop() || url;
                             const isUsedInProduction = photo.used_in_production;
-                        
-                        return (
-                          <div key={index} className="relative group">
-                            <img
-                              src={url}
-                              alt={`${speeltuin.naam} foto ${index + 1}`}
-                              className="w-full h-32 object-cover rounded-lg border"
-                            />
                             
-                            {/* Production usage indicator */}
-                            <div className="absolute top-2 left-2">
-                              <Badge 
-                                variant={isUsedInProduction ? "default" : "secondary"}
-                                className="text-xs"
-                              >
-                                {isUsedInProduction ? (
-                                  <>
-                                    <Eye className="h-3 w-3 mr-1" />
-                                    Productie
-                                  </>
-                                ) : (
-                                  <>
-                                    <EyeOff className="h-3 w-3 mr-1" />
-                                    Verborgen
-                                  </>
+                            return (
+                              <div key={index} className="relative group">
+                                <img
+                                  src={url}
+                                  alt={`${speeltuin.naam} foto ${index + 1}`}
+                                  className="w-full h-32 object-cover rounded-lg border"
+                                />
+                                
+                                {/* Production usage indicator */}
+                                <div className="absolute top-2 left-2">
+                                  <Badge 
+                                    variant={isUsedInProduction ? "default" : "secondary"}
+                                    className="text-xs"
+                                  >
+                                    {isUsedInProduction ? (
+                                      <>
+                                        <Eye className="h-3 w-3 mr-1" />
+                                        Productie
+                                      </>
+                                    ) : (
+                                      <>
+                                        <EyeOff className="h-3 w-3 mr-1" />
+                                        Verborgen
+                                      </>
+                                    )}
+                                  </Badge>
+                                </div>
+                                
+                                {/* Old photo indicator */}
+                                {photo.isOldPhoto && (
+                                  <div className="absolute top-2 right-2">
+                                    <Badge variant="outline" className="text-xs bg-orange-100 text-orange-800">
+                                      Oude Foto
+                                    </Badge>
+                                  </div>
                                 )}
-                              </Badge>
-                            </div>
-                            
-                            {/* Old photo indicator */}
-                            {photo.isOldPhoto && (
-                              <div className="absolute top-2 right-2">
-                                <Badge variant="outline" className="text-xs bg-orange-100 text-orange-800">
-                                  Oude Foto
-                                </Badge>
+                                
+                                {/* Delete button */}
+                                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 rounded-lg flex items-center justify-center">
+                                  <Button
+                                    size="sm"
+                                    variant="destructive"
+                                    className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                                    onClick={() => {
+                                      if (photo.isOldPhoto) {
+                                        // Remove old photo by clearing afbeelding_url
+                                        const fullSpeeltuin = speeltuinen.find(s => s.id === speeltuin.id);
+                                        if (fullSpeeltuin) {
+                                          updateSpeeltuin.mutateAsync({
+                                            id: speeltuin.id,
+                                            afbeelding_url: ''
+                                          }).then(() => {
+                                            toast({
+                                              title: "Oude foto verwijderd",
+                                              description: `Oude foto is verwijderd uit ${speeltuin.naam}`,
+                                            });
+                                            analyzeDatabase();
+                                          });
+                                        }
+                                      } else {
+                                        // Remove from fotos array
+                                        handleDeletePhoto(speeltuin.id, index);
+                                      }
+                                    }}
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                                
+                                <div className="mt-2 space-y-1">
+                                  <p className="text-xs text-muted-foreground truncate" title={filename}>
+                                    {filename}
+                                  </p>
+                                  <div className="flex gap-1">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      className="flex-1 text-xs"
+                                      onClick={() => window.open(url, '_blank')}
+                                    >
+                                      <ExternalLink className="h-3 w-3 mr-1" />
+                                      Bekijk
+                                    </Button>
+                                    {!photo.isOldPhoto && (
+                                      <Button
+                                        size="sm"
+                                        variant={isUsedInProduction ? "outline" : "default"}
+                                        className="flex-1 text-xs"
+                                        onClick={async () => {
+                                          try {
+                                            await updateSpeeltuin.mutateAsync({
+                                              id: speeltuin.id,
+                                              fotos: speeltuin.fotos.map((p: any, i: number) => 
+                                                i === index ? { ...p, used_in_production: !isUsedInProduction } : p
+                                              )
+                                            });
+                                            
+                                            toast({
+                                              title: isUsedInProduction ? "Foto verborgen" : "Foto zichtbaar gemaakt",
+                                              description: `Foto is ${isUsedInProduction ? 'verborgen' : 'zichtbaar'} in productie`,
+                                            });
+                                            
+                                            analyzeDatabase();
+                                          } catch (error) {
+                                            toast({
+                                              title: "Fout",
+                                              description: "Er is een fout opgetreden bij het wijzigen van de foto status.",
+                                              variant: "destructive",
+                                            });
+                                          }
+                                        }}
+                                      >
+                                        {isUsedInProduction ? (
+                                          <>
+                                            <EyeOff className="h-3 w-3 mr-1" />
+                                            Verberg
+                                          </>
+                                        ) : (
+                                          <>
+                                            <Eye className="h-3 w-3 mr-1" />
+                                            Toon
+                                          </>
+                                        )}
+                                      </Button>
+                                    )}
+                                  </div>
+                                </div>
                               </div>
-                            )}
-                            
-                            {/* Delete button */}
-                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 rounded-lg flex items-center justify-center">
-                              <Button
-                                size="sm"
-                                variant="destructive"
-                                className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                                onClick={() => {
-                                  if (photo.isOldPhoto) {
-                                    // Remove old photo by clearing afbeelding_url
-                                    const fullSpeeltuin = speeltuinen.find(s => s.id === speeltuin.id);
-                                    if (fullSpeeltuin) {
-                                      updateSpeeltuin.mutateAsync({
-                                        id: speeltuin.id,
-                                        afbeelding_url: ''
-                                      }).then(() => {
-                                        toast({
-                                          title: "Oude foto verwijderd",
-                                          description: `Oude foto is verwijderd uit ${speeltuin.naam}`,
-                                        });
-                                        analyzeDatabase();
-                                      });
-                                    }
-                                  } else {
-                                    // Remove from fotos array
-                                    handleDeletePhoto(speeltuin.id, index);
-                                  }
-                                }}
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            </div>
-                            
-                            <div className="mt-2 space-y-1">
-                              <p className="text-xs text-muted-foreground truncate" title={filename}>
-                                {filename}
-                              </p>
-                              <div className="flex gap-1">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="flex-1 text-xs"
-                                  onClick={() => window.open(url, '_blank')}
-                                >
-                                  <ExternalLink className="h-3 w-3 mr-1" />
-                                  Bekijk
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant={isUsedInProduction ? "outline" : "default"}
-                                  className="flex-1 text-xs"
-                                  onClick={async () => {
-                                    try {
-                                      await updateSpeeltuin.mutateAsync({
-                                        id: speeltuin.id,
-                                        fotos: speeltuin.fotos.map((p: any, i: number) => 
-                                          i === index ? { ...p, used_in_production: !isUsedInProduction } : p
-                                        )
-                                      });
-                                      
-                                      toast({
-                                        title: isUsedInProduction ? "Foto verborgen" : "Foto zichtbaar gemaakt",
-                                        description: `Foto is ${isUsedInProduction ? 'verborgen' : 'zichtbaar'} in productie`,
-                                      });
-                                      
-                                      analyzeDatabase();
-                                    } catch (error) {
-                                      toast({
-                                        title: "Fout",
-                                        description: "Er is een fout opgetreden bij het wijzigen van de foto status.",
-                                        variant: "destructive",
-                                      });
-                                    }
-                                  }}
-                                >
-                                  {isUsedInProduction ? (
-                                    <>
-                                      <EyeOff className="h-3 w-3 mr-1" />
-                                      Verberg
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Eye className="h-3 w-3 mr-1" />
-                                      Toon
-                                    </>
-                                  )}
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 text-muted-foreground">
-                      <FileImage className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>Geen foto's gevonden</p>
-                    </div>
-                  )}
+                            );
+                          })}
+                        </div>
+                      );
+                    } else {
+                      return (
+                        <div className="text-center py-8 text-muted-foreground">
+                          <FileImage className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                          <p>Geen foto's gevonden</p>
+                        </div>
+                      );
+                    }
+                  })()}
                 </CardContent>
               </Card>
             ))}
