@@ -1,31 +1,42 @@
 import React, { useState, useEffect } from 'react';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
+import { useCookieConsent } from '@/hooks/useAnalytics';
 
 const CookieConsent = () => {
   const [showConsent, setShowConsent] = useState(false);
+  const { data: settings } = useSiteSettings();
+  const { hasConsented, acceptCookies, declineCookies } = useCookieConsent();
 
   useEffect(() => {
+    // Only show consent if it's enabled in settings
+    if (!settings?.cookie_consent_enabled) {
+      return;
+    }
+
     // Check if user has already given consent
-    const hasConsented = localStorage.getItem('cookieConsent');
-    if (!hasConsented) {
+    if (hasConsented === null) {
       // Show consent banner after a short delay
       const timer = setTimeout(() => {
         setShowConsent(true);
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [settings?.cookie_consent_enabled, hasConsented]);
 
-  const acceptCookies = () => {
-    localStorage.setItem('cookieConsent', 'accepted');
+  const handleAcceptCookies = () => {
+    // Enable analytics if it's configured in settings
+    const enableAnalytics = settings?.analytics_tracking_enabled ?? true;
+    acceptCookies(enableAnalytics);
     setShowConsent(false);
   };
 
-  const declineCookies = () => {
-    localStorage.setItem('cookieConsent', 'declined');
+  const handleDeclineCookies = () => {
+    declineCookies();
     setShowConsent(false);
   };
 
-  if (!showConsent) {
+  // Don't show if consent is disabled in settings or user has already consented
+  if (!settings?.cookie_consent_enabled || !showConsent || hasConsented !== null) {
     return null;
   }
 
@@ -38,20 +49,20 @@ const CookieConsent = () => {
           <div className="cookie-text">
             <h3>🍪 Lekkere koekjes!</h3>
             <p>
-              Wij gebruiken koekjes om je ervaring op onze speeltuin website nog leuker te maken! 
-              Deze helpen ons om de website te verbeteren en te onthouden wat je leuk vindt. 
-              Geen zorgen, het zijn alleen digitale koekjes! 😊
+              {settings?.privacy_policy_text || 
+                'Wij gebruiken koekjes om je ervaring op onze speeltuin website nog leuker te maken! Deze helpen ons om de website te verbeteren en te onthouden wat je leuk vindt. Geen zorgen, het zijn alleen digitale koekjes! 😊'
+              }
             </p>
           </div>
           <div className="cookie-buttons">
             <button 
-              onClick={acceptCookies}
+              onClick={handleAcceptCookies}
               className="cookie-accept"
             >
               🎉 Ja, dat is prima!
             </button>
             <button 
-              onClick={declineCookies}
+              onClick={handleDeclineCookies}
               className="cookie-decline"
             >
               🚫 Nee, liever niet
