@@ -333,10 +333,9 @@ const Index = () => {
     
     if (!query.trim()) {
       clearAllFilters();
-      return;
     }
 
-    // Scroll to results when search is performed
+    // Always scroll to results when search is performed
     setTimeout(() => scrollToSpeeltuinen(), 100);
   };
 
