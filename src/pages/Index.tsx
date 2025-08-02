@@ -304,6 +304,16 @@ const Index = () => {
           </div>
           
           <div className="flex flex-col lg:flex-row gap-8">
+            {/* Filters Sidebar */}
+            <div className="lg:w-80 flex-shrink-0">
+              <SpeeltuinFiltersComponent
+                filters={filters}
+                onFiltersChange={setFilters}
+                onApplyFilters={handleApplyFilters}
+                onClearFilters={clearAllFilters}
+              />
+            </div>
+
             {/* Map */}
             <div className="flex-1">
               <SpeeltuinKaart
@@ -312,16 +322,6 @@ const Index = () => {
                 userLocation={userLocation}
                 isLocating={isLocating}
                 onLocationRequest={getCurrentLocation}
-              />
-            </div>
-
-            {/* Filters Sidebar */}
-            <div className="lg:w-80 flex-shrink-0">
-              <SpeeltuinFiltersComponent
-                filters={filters}
-                onFiltersChange={setFilters}
-                onApplyFilters={handleApplyFilters}
-                onClearFilters={clearAllFilters}
               />
             </div>
           </div>
