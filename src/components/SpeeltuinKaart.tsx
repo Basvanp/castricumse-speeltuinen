@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Target } from 'lucide-react';
 import { calculateDistance } from '@/lib/utils';
 import { BadgeType } from '@/components/SpeeltuinBadge';
+import { usePublicSiteSettings } from '@/hooks/useSiteSettings';
 
 interface SpeeltuinKaartProps {
   speeltuinen: Speeltuin[];
@@ -24,6 +25,9 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
   const mapInstanceRef = useRef<any>(null);
   const userLocationMarkerRef = useRef<any>(null);
   const playgroundMarkersRef = useRef<any[]>([]);
+  
+  // Get site settings for map configuration
+  const { data: siteSettings } = usePublicSiteSettings();
 
   const handleLocationClick = () => {
     if (userLocation && mapInstanceRef.current) {
@@ -50,9 +54,14 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
         shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
       });
 
-      // Center on Castricum with zoom level to show all playgrounds by default  
-      const center: [number, number] = [52.5486, 4.6695];
-      mapInstanceRef.current = L.map(mapRef.current).setView(center, 13);
+      // Use site settings for map configuration, fallback to defaults
+      const defaultZoom = siteSettings?.default_zoom || 13;
+      const defaultCenter: [number, number] = [
+        siteSettings?.center_lat || 52.5486, 
+        siteSettings?.center_lng || 4.6695
+      ];
+      
+      mapInstanceRef.current = L.map(mapRef.current).setView(defaultCenter, defaultZoom);
 
       // Add tile layer
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -69,7 +78,7 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
         mapInstanceRef.current = null;
       }
     };
-  }, []);
+  }, [siteSettings]); // Re-initialize when site settings change
 
   // Update markers when speeltuinen change or map initializes
   useEffect(() => {
@@ -84,10 +93,14 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
       });
       playgroundMarkersRef.current = [];
 
+      // Get marker color from site settings
+      const markerColor = siteSettings?.marker_color || '#3b82f6';
+
       // Add markers for speeltuinen
       speeltuinen.forEach((speeltuin) => {
         if (speeltuin.latitude && speeltuin.longitude) {
-          const color = speeltuin.heeft_glijbaan ? '#22c55e' : '#3b82f6';
+          // Use site settings marker color, fallback to logic-based colors
+          const color = speeltuin.heeft_glijbaan ? '#22c55e' : markerColor;
           
           // Calculate distance if user location is available
           let distanceText = '';
@@ -155,7 +168,7 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
         }
       });
     });
-  }, [speeltuinen, userLocation, onSpeeltuinSelect]);
+  }, [speeltuinen, userLocation, onSpeeltuinSelect, siteSettings]); // Include siteSettings in dependencies
 
   // Separate effect for handling user location changes
   useEffect(() => {
