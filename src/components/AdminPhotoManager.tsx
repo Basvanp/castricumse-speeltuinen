@@ -71,7 +71,9 @@ const AdminPhotoManager: React.FC = () => {
       // Calculate statistics from local data
       const stats = {
         total_speeltuinen: speeltuinen.length,
-        speeltuinen_met_fotos: speeltuinen.filter(s => s.fotos && s.fotos.length > 0).length,
+        speeltuinen_met_fotos: speeltuinen.filter(s => 
+          (s.fotos && s.fotos.length > 0) || (s.afbeelding_url && s.afbeelding_url !== '')
+        ).length,
         speeltuinen_met_oude_foto: speeltuinen.filter(s => s.afbeelding_url && s.afbeelding_url !== '').length
       };
 
@@ -79,12 +81,12 @@ const AdminPhotoManager: React.FC = () => {
 
       // Create speeltuinen with photos data from local data
       const photosData = speeltuinen
-        .filter(s => s.fotos && s.fotos.length > 0)
+        .filter(s => (s.fotos && s.fotos.length > 0) || (s.afbeelding_url && s.afbeelding_url !== ''))
         .map(s => ({
           id: s.id,
           naam: s.naam,
-          fotos: s.fotos,
-          aantal_fotos: Array.isArray(s.fotos) ? s.fotos.length : 0
+          fotos: s.fotos || [],
+          aantal_fotos: Array.isArray(s.fotos) ? s.fotos.length : (s.afbeelding_url ? 1 : 0)
         }))
         .sort((a, b) => b.aantal_fotos - a.aantal_fotos);
 
@@ -94,6 +96,7 @@ const AdminPhotoManager: React.FC = () => {
       const usageMap = new Map<string, PhotoUsage>();
       
       speeltuinen.forEach(speeltuin => {
+        // Handle new fotos array
         if (speeltuin.fotos && Array.isArray(speeltuin.fotos)) {
           speeltuin.fotos.forEach((photo: any) => {
             const url = photo.url || photo;
@@ -109,6 +112,22 @@ const AdminPhotoManager: React.FC = () => {
             
             usageMap.get(url)!.used_by.push(speeltuin.naam);
           });
+        }
+        
+        // Handle old afbeelding_url
+        if (speeltuin.afbeelding_url && speeltuin.afbeelding_url !== '') {
+          const url = speeltuin.afbeelding_url;
+          const filename = url.split('/').pop() || url;
+          
+          if (!usageMap.has(url)) {
+            usageMap.set(url, {
+              url,
+              filename,
+              used_by: []
+            });
+          }
+          
+          usageMap.get(url)!.used_by.push(speeltuin.naam);
         }
       });
       
@@ -348,12 +367,38 @@ const AdminPhotoManager: React.FC = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  {speeltuin.fotos && Array.isArray(speeltuin.fotos) && speeltuin.fotos.length > 0 ? (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                      {speeltuin.fotos.map((photo: any, index: number) => {
-                        const url = photo.url || photo;
-                        const filename = url.split('/').pop() || url;
-                        const isUsedInProduction = photo.used_in_production !== false; // Default to true if not specified
+                  {(() => {
+                    // Get all photos (both new fotos array and old afbeelding_url)
+                    const allPhotos: any[] = [];
+                    
+                    // Add photos from fotos array
+                    if (speeltuin.fotos && Array.isArray(speeltuin.fotos)) {
+                      speeltuin.fotos.forEach((photo: any) => {
+                        allPhotos.push({
+                          url: photo.url || photo,
+                          isOldPhoto: false,
+                          used_in_production: photo.used_in_production !== false
+                        });
+                      });
+                    }
+                    
+                    // Add photo from afbeelding_url if it exists
+                    const fullSpeeltuin = speeltuinen.find(s => s.id === speeltuin.id);
+                    if (fullSpeeltuin?.afbeelding_url && fullSpeeltuin.afbeelding_url !== '') {
+                      allPhotos.push({
+                        url: fullSpeeltuin.afbeelding_url,
+                        isOldPhoto: true,
+                        used_in_production: true
+                      });
+                    }
+                    
+                    if (allPhotos.length > 0) {
+                      return (
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                          {allPhotos.map((photo: any, index: number) => {
+                            const url = photo.url;
+                            const filename = url.split('/').pop() || url;
+                            const isUsedInProduction = photo.used_in_production;
                         
                         return (
                           <div key={index} className="relative group">
@@ -383,13 +428,42 @@ const AdminPhotoManager: React.FC = () => {
                               </Badge>
                             </div>
                             
+                            {/* Old photo indicator */}
+                            {photo.isOldPhoto && (
+                              <div className="absolute top-2 right-2">
+                                <Badge variant="outline" className="text-xs bg-orange-100 text-orange-800">
+                                  Oude Foto
+                                </Badge>
+                              </div>
+                            )}
+                            
                             {/* Delete button */}
                             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 rounded-lg flex items-center justify-center">
                               <Button
                                 size="sm"
                                 variant="destructive"
                                 className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                                onClick={() => handleDeletePhoto(speeltuin.id, index)}
+                                onClick={() => {
+                                  if (photo.isOldPhoto) {
+                                    // Remove old photo by clearing afbeelding_url
+                                    const fullSpeeltuin = speeltuinen.find(s => s.id === speeltuin.id);
+                                    if (fullSpeeltuin) {
+                                      updateSpeeltuin.mutateAsync({
+                                        id: speeltuin.id,
+                                        afbeelding_url: ''
+                                      }).then(() => {
+                                        toast({
+                                          title: "Oude foto verwijderd",
+                                          description: `Oude foto is verwijderd uit ${speeltuin.naam}`,
+                                        });
+                                        analyzeDatabase();
+                                      });
+                                    }
+                                  } else {
+                                    // Remove from fotos array
+                                    handleDeletePhoto(speeltuin.id, index);
+                                  }
+                                }}
                               >
                                 <X className="h-4 w-4" />
                               </Button>
