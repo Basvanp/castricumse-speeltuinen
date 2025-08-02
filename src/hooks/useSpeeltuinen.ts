@@ -137,6 +137,32 @@ export const useSpeeltuinen = (filters?: SpeeltuinFilters) => {
   });
 };
 
+export const useCreateSpeeltuin = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (speeltuin: Omit<Speeltuin, 'id' | 'created_at' | 'updated_at'>) => {
+      const { data, error } = await supabase
+        .from('speeltuinen')
+        .insert([{
+          ...speeltuin,
+          toegevoegd_door: (await supabase.auth.getUser()).data.user?.id
+        }])
+        .select()
+        .single();
+      
+      if (error) {
+        throw error;
+      }
+      
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['speeltuinen'] });
+    },
+  });
+};
+
 export const useSpeeltuin = (id: string) => {
   return useQuery({
     queryKey: ['speeltuin', id],
