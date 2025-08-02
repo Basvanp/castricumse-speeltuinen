@@ -1,88 +1,174 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { SiteSetting, SiteSettings, SiteSettingsFormData } from '@/types/siteSettings';
 
-interface SiteSetting {
-  id: string;
-  setting_key: string;
-  setting_value: string | null;
-  setting_type: string;
-  description: string | null;
-}
-
+// Fetch all site settings
 export const useSiteSettings = () => {
   return useQuery({
     queryKey: ['site-settings'],
-    queryFn: async (): Promise<Record<string, string>> => {
+    queryFn: async (): Promise<SiteSettings> => {
       const { data, error } = await supabase
         .from('site_settings')
-        .select('setting_key, setting_value');
-      
+        .select('*')
+        .order('category', { ascending: true });
+
       if (error) {
+        console.error('Error fetching site settings:', error);
         throw error;
       }
+
+      // Transform the data into a flat object
+      const settings: Partial<SiteSettings> = {};
       
-      // Convert array to object for easier access
-      const settings: Record<string, string> = {};
-      data?.forEach(setting => {
-        if (setting.setting_value) {
-          settings[setting.setting_key] = setting.setting_value;
+      data?.forEach((setting: SiteSetting) => {
+        const key = setting.setting_key as keyof SiteSettings;
+        let value = setting.setting_value;
+        
+        // Parse the value based on type
+        if (setting.setting_type === 'number') {
+          value = Number(value);
+        } else if (setting.setting_type === 'boolean') {
+          value = Boolean(value);
+        } else if (setting.setting_type === 'string' && typeof value === 'string') {
+          // Remove quotes if they exist
+          value = value.replace(/^"|"$/g, '');
         }
+        
+        settings[key] = value;
       });
+
+      return settings as SiteSettings;
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+// Fetch public site settings (for non-admin users)
+export const usePublicSiteSettings = () => {
+  return useQuery({
+    queryKey: ['public-site-settings'],
+    queryFn: async (): Promise<Partial<SiteSettings>> => {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('*')
+        .eq('is_public', true)
+        .order('category', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching public site settings:', error);
+        throw error;
+      }
+
+      // Transform the data into a flat object
+      const settings: Partial<SiteSettings> = {};
       
+      data?.forEach((setting: SiteSetting) => {
+        const key = setting.setting_key as keyof SiteSettings;
+        let value = setting.setting_value;
+        
+        // Parse the value based on type
+        if (setting.setting_type === 'number') {
+          value = Number(value);
+        } else if (setting.setting_type === 'boolean') {
+          value = Boolean(value);
+        } else if (setting.setting_type === 'string' && typeof value === 'string') {
+          // Remove quotes if they exist
+          value = value.replace(/^"|"$/g, '');
+        }
+        
+        settings[key] = value;
+      });
+
       return settings;
     },
+    staleTime: 10 * 60 * 1000, // 10 minutes
   });
 };
 
+// Update site settings
+export const useUpdateSiteSettings = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (updates: Partial<SiteSettingsFormData>) => {
+      const updatePromises = Object.entries(updates).map(async ([key, value]) => {
+        // Determine the type of the value
+        let settingType = 'string';
+        if (typeof value === 'number') {
+          settingType = 'number';
+        } else if (typeof value === 'boolean') {
+          settingType = 'boolean';
+        }
+
+        // Format the value for storage
+        let formattedValue = value;
+        if (settingType === 'string') {
+          formattedValue = `"${value}"`;
+        }
+
+        const { error } = await supabase
+          .from('site_settings')
+          .update({
+            setting_value: formattedValue,
+            setting_type: settingType,
+            updated_at: new Date().toISOString()
+          })
+          .eq('setting_key', key);
+
+        if (error) {
+          console.error(`Error updating setting ${key}:`, error);
+          throw error;
+        }
+      });
+
+      await Promise.all(updatePromises);
+    },
+    onSuccess: () => {
+      // Invalidate and refetch site settings
+      queryClient.invalidateQueries({ queryKey: ['site-settings'] });
+      queryClient.invalidateQueries({ queryKey: ['public-site-settings'] });
+    },
+  });
+};
+
+// Update a single setting
 export const useUpdateSiteSetting = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: async ({ key, value }: { key: string; value: string }) => {
-      const { data, error } = await supabase
+    mutationFn: async ({ key, value }: { key: string; value: any }) => {
+      // Determine the type of the value
+      let settingType = 'string';
+      if (typeof value === 'number') {
+        settingType = 'number';
+      } else if (typeof value === 'boolean') {
+        settingType = 'boolean';
+      }
+
+      // Format the value for storage
+      let formattedValue = value;
+      if (settingType === 'string') {
+        formattedValue = `"${value}"`;
+      }
+
+      const { error } = await supabase
         .from('site_settings')
-        .update({ setting_value: value })
-        .eq('setting_key', key)
-        .select()
-        .single();
-      
+        .update({
+          setting_value: formattedValue,
+          setting_type: settingType,
+          updated_at: new Date().toISOString()
+        })
+        .eq('setting_key', key);
+
       if (error) {
+        console.error(`Error updating setting ${key}:`, error);
         throw error;
       }
-      
-      return data;
     },
     onSuccess: () => {
+      // Invalidate and refetch site settings
       queryClient.invalidateQueries({ queryKey: ['site-settings'] });
-    },
-  });
-};
-
-export const useUpdateMultipleSiteSettings = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async (settings: Record<string, string>) => {
-      const updates = Object.entries(settings).map(async ([key, value]) => {
-        return supabase
-          .from('site_settings')
-          .update({ setting_value: value })
-          .eq('setting_key', key);
-      });
-      
-      const results = await Promise.all(updates);
-      
-      // Check for errors
-      for (const result of results) {
-        if (result.error) {
-          throw result.error;
-        }
-      }
-      
-      return results;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['site-settings'] });
+      queryClient.invalidateQueries({ queryKey: ['public-site-settings'] });
     },
   });
 };
