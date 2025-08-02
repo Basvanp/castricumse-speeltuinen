@@ -1,48 +1,175 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Speeltuin, SpeeltuinFilters, Favorite, Review, Notification, UserPreferences } from '@/types/speeltuin';
+import { Speeltuin, SpeeltuinFilters, Review, Notification, UserPreferences } from '@/types/speeltuin';
 
-export const useSpeeltuinen = () => {
+// Existing speeltuinen hooks
+export const useSpeeltuinen = (filters?: SpeeltuinFilters) => {
   return useQuery({
-    queryKey: ['speeltuinen'],
-    queryFn: async (): Promise<Speeltuin[]> => {
-      const { data, error } = await supabase
+    queryKey: ['speeltuinen', filters],
+    queryFn: async () => {
+      let query = supabase
         .from('speeltuinen')
         .select('*')
         .order('naam');
-      
+
+      if (filters?.searchTerm) {
+        query = query.ilike('naam', `%${filters.searchTerm}%`);
+      }
+
+      if (filters?.hasGlijbaan) {
+        query = query.eq('heeft_glijbaan', true);
+      }
+
+      if (filters?.hasSchommel) {
+        query = query.eq('heeft_schommel', true);
+      }
+
+      if (filters?.hasZandbak) {
+        query = query.eq('heeft_zandbak', true);
+      }
+
+      if (filters?.hasKabelbaan) {
+        query = query.eq('heeft_kabelbaan', true);
+      }
+
+      if (filters?.hasBankjes) {
+        query = query.eq('heeft_bankjes', true);
+      }
+
+      if (filters?.hasSportveld) {
+        query = query.eq('heeft_sportveld', true);
+      }
+
+      if (filters?.typeNatuurspeeltuin) {
+        query = query.eq('type_natuurspeeltuin', true);
+      }
+
+      if (filters?.typeBuurtspeeltuin) {
+        query = query.eq('type_buurtspeeltuin', true);
+      }
+
+      if (filters?.typeSchoolplein) {
+        query = query.eq('type_schoolplein', true);
+      }
+
+      if (filters?.typeSpeelbos) {
+        query = query.eq('type_speelbos', true);
+      }
+
+      if (filters?.isRolstoeltoegankelijk) {
+        query = query.eq('is_rolstoeltoegankelijk', true);
+      }
+
+      if (filters?.hasWaterPomp) {
+        query = query.eq('heeft_water_pomp', true);
+      }
+
+      if (filters?.hasKlimtoestel) {
+        query = query.eq('heeft_klimtoestel', true);
+      }
+
+      if (filters?.hasSkatebaan) {
+        query = query.eq('heeft_skatebaan', true);
+      }
+
+      if (filters?.hasBasketbalveld) {
+        query = query.eq('heeft_basketbalveld', true);
+      }
+
+      if (filters?.hasTrapveld) {
+        query = query.eq('heeft_trapveld', true);
+      }
+
+      if (filters?.hasWipwap) {
+        query = query.eq('heeft_wipwap', true);
+      }
+
+      if (filters?.hasDuikelrek) {
+        query = query.eq('heeft_duikelrek', true);
+      }
+
+      if (filters?.hasSchaduw) {
+        query = query.eq('heeft_schaduw', true);
+      }
+
+      if (filters?.isOmheind) {
+        query = query.eq('is_omheind', true);
+      }
+
+      if (filters?.hasParkeerplaats) {
+        query = query.eq('heeft_parkeerplaats', true);
+      }
+
+      if (filters?.hasToilet) {
+        query = query.eq('heeft_toilet', true);
+      }
+
+      if (filters?.hasHoreca) {
+        query = query.eq('heeft_horeca', true);
+      }
+
+      if (filters?.grootte) {
+        query = query.eq('grootte', filters.grootte);
+      }
+
+      const { data, error } = await query;
+
       if (error) {
         throw error;
       }
-      
-      // Convert the database response to match our Speeltuin type
-      return (data || []).map(speeltuin => ({
-        ...speeltuin,
-        fotos: speeltuin.fotos || []
-      })) as Speeltuin[];
+
+      // Filter by distance if user location is provided
+      if (filters?.userLocation && filters?.maxDistance) {
+        const filteredData = data.filter((speeltuin) => {
+          const distance = calculateDistance(
+            filters.userLocation![0],
+            filters.userLocation![1],
+            speeltuin.latitude,
+            speeltuin.longitude
+          );
+          return distance <= filters.maxDistance!;
+        });
+        return filteredData;
+      }
+
+      return data;
     },
   });
 };
 
-export const useCreateSpeeltuin = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async (speeltuin: Omit<Speeltuin, 'id' | 'created_at' | 'updated_at'>) => {
+export const useSpeeltuin = (id: string) => {
+  return useQuery({
+    queryKey: ['speeltuin', id],
+    queryFn: async () => {
       const { data, error } = await supabase
         .from('speeltuinen')
-        .insert([{
-          ...speeltuin,
-          toegevoegd_door: (await supabase.auth.getUser()).data.user?.id
-        }])
-        .select()
+        .select('*')
+        .eq('id', id)
         .single();
-      
+
       if (error) {
         throw error;
       }
-      
+
       return data;
+    },
+    enabled: !!id,
+  });
+};
+
+export const useDeleteSpeeltuin = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('speeltuinen')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['speeltuinen'] });
@@ -52,215 +179,123 @@ export const useCreateSpeeltuin = () => {
 
 export const useUpdateSpeeltuin = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: async ({ id, ...updates }: Partial<Speeltuin> & { id: string }) => {
+    mutationFn: async ({ id, updates }: { id: string; updates: Partial<Speeltuin> }) => {
       const { data, error } = await supabase
         .from('speeltuinen')
         .update(updates)
         .eq('id', id)
         .select()
         .single();
-      
+
       if (error) {
         throw error;
       }
-      
+
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['speeltuinen'] });
+      queryClient.invalidateQueries({ queryKey: ['speeltuin', data.id] });
     },
-  });
-};
-
-export const useDeleteSpeeltuin = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('speeltuinen')
-        .delete()
-        .eq('id', id);
-      
-      if (error) {
-        throw error;
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['speeltuinen'] });
-    },
-  });
-};
-
-// Favorites hooks
-export const useFavorites = (userId?: string) => {
-  return useQuery({
-    queryKey: ['favorites', userId],
-    queryFn: async (): Promise<Favorite[]> => {
-      if (!userId) return [];
-      
-      const { data, error } = await supabase
-        .from('favorites')
-        .select(`
-          *,
-          speeltuin:speeltuinen(*)
-        `)
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: !!userId,
-  });
-};
-
-export const useAddFavorite = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async ({ speeltuinId, userId }: { speeltuinId: string; userId: string }) => {
-      const { data, error } = await supabase
-        .from('favorites')
-        .insert({
-          speeltuin_id: speeltuinId,
-          user_id: userId,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: (_, { userId }) => {
-      queryClient.invalidateQueries({ queryKey: ['favorites', userId] });
-    },
-  });
-};
-
-export const useRemoveFavorite = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async ({ speeltuinId, userId }: { speeltuinId: string; userId: string }) => {
-      const { error } = await supabase
-        .from('favorites')
-        .delete()
-        .eq('speeltuin_id', speeltuinId)
-        .eq('user_id', userId);
-
-      if (error) throw error;
-    },
-    onSuccess: (_, { userId }) => {
-      queryClient.invalidateQueries({ queryKey: ['favorites', userId] });
-    },
-  });
-};
-
-export const useIsFavorite = (speeltuinId: string, userId?: string) => {
-  return useQuery({
-    queryKey: ['favorite', speeltuinId, userId],
-    queryFn: async (): Promise<boolean> => {
-      if (!userId) return false;
-      
-      const { data, error } = await supabase
-        .from('favorites')
-        .select('id')
-        .eq('speeltuin_id', speeltuinId)
-        .eq('user_id', userId)
-        .single();
-
-      if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows returned
-      return !!data;
-    },
-    enabled: !!userId,
   });
 };
 
 // Reviews hooks
-export const useReviews = (speeltuinId: string) => {
+export const useReviews = (speeltuinId?: string) => {
   return useQuery({
     queryKey: ['reviews', speeltuinId],
-    queryFn: async (): Promise<Review[]> => {
-      const { data, error } = await supabase
+    queryFn: async () => {
+      let query = supabase
         .from('reviews')
         .select(`
           *,
-          speeltuin:speeltuinen(*),
-          user:profiles(name, avatar_url)
+          speeltuin:speeltuinen(id, naam, afbeelding_url)
         `)
-        .eq('speeltuin_id', speeltuinId)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      return data || [];
+      if (speeltuinId) {
+        query = query.eq('speeltuin_id', speeltuinId);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        throw error;
+      }
+
+      return data;
     },
+    enabled: !!speeltuinId,
   });
 };
 
 export const useAddReview = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (review: Omit<Review, 'id' | 'created_at' | 'updated_at' | 'is_verified'>) => {
       const { data, error } = await supabase
         .from('reviews')
-        .insert({
-          ...review,
-          is_verified: false,
-        })
+        .insert(review)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
+
       return data;
     },
-    onSuccess: (_, { speeltuin_id }) => {
-      queryClient.invalidateQueries({ queryKey: ['reviews', speeltuin_id] });
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['reviews', data.speeltuin_id] });
+      queryClient.invalidateQueries({ queryKey: ['reviews'] });
     },
   });
 };
 
 export const useUpdateReview = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: async ({ id, ...review }: Partial<Review> & { id: string }) => {
+    mutationFn: async ({ id, updates }: { id: string; updates: Partial<Review> }) => {
       const { data, error } = await supabase
         .from('reviews')
-        .update({
-          ...review,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updates)
         .eq('id', id)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
+
       return data;
     },
-    onSuccess: (_, { speeltuin_id }) => {
-      queryClient.invalidateQueries({ queryKey: ['reviews', speeltuin_id] });
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['reviews', data.speeltuin_id] });
+      queryClient.invalidateQueries({ queryKey: ['reviews'] });
     },
   });
 };
 
 export const useDeleteReview = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: async ({ id, speeltuinId }: { id: string; speeltuinId: string }) => {
+    mutationFn: async (id: string) => {
       const { error } = await supabase
         .from('reviews')
         .delete()
         .eq('id', id);
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
     },
-    onSuccess: (_, { speeltuinId }) => {
-      queryClient.invalidateQueries({ queryKey: ['reviews', speeltuinId] });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reviews'] });
     },
   });
 };
@@ -269,21 +304,21 @@ export const useDeleteReview = () => {
 export const useNotifications = (userId?: string) => {
   return useQuery({
     queryKey: ['notifications', userId],
-    queryFn: async (): Promise<Notification[]> => {
-      if (!userId) return [];
-      
+    queryFn: async () => {
       const { data, error } = await supabase
         .from('notifications')
         .select(`
           *,
-          speeltuin:speeltuinen(*)
+          speeltuin:speeltuinen(id, naam, afbeelding_url)
         `)
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false })
-        .limit(50);
+        .eq('user_id', userId!)
+        .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      return data || [];
+      if (error) {
+        throw error;
+      }
+
+      return data;
     },
     enabled: !!userId,
   });
@@ -292,17 +327,19 @@ export const useNotifications = (userId?: string) => {
 export const useUnreadNotifications = (userId?: string) => {
   return useQuery({
     queryKey: ['unread-notifications', userId],
-    queryFn: async (): Promise<number> => {
-      if (!userId) return 0;
-      
-      const { count, error } = await supabase
+    queryFn: async () => {
+      const { data, error } = await supabase
         .from('notifications')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', userId)
-        .eq('is_read', false);
+        .select('*')
+        .eq('user_id', userId!)
+        .eq('is_read', false)
+        .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      return count || 0;
+      if (error) {
+        throw error;
+      }
+
+      return data;
     },
     enabled: !!userId,
   });
@@ -310,26 +347,28 @@ export const useUnreadNotifications = (userId?: string) => {
 
 export const useMarkNotificationRead = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: async ({ id, userId }: { id: string; userId: string }) => {
+    mutationFn: async (id: string) => {
       const { error } = await supabase
         .from('notifications')
         .update({ is_read: true })
         .eq('id', id);
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
     },
-    onSuccess: (_, { userId }) => {
-      queryClient.invalidateQueries({ queryKey: ['notifications', userId] });
-      queryClient.invalidateQueries({ queryKey: ['unread-notifications', userId] });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['unread-notifications'] });
     },
   });
 };
 
 export const useMarkAllNotificationsRead = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (userId: string) => {
       const { error } = await supabase
@@ -338,11 +377,13 @@ export const useMarkAllNotificationsRead = () => {
         .eq('user_id', userId)
         .eq('is_read', false);
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
     },
-    onSuccess: (_, userId) => {
-      queryClient.invalidateQueries({ queryKey: ['notifications', userId] });
-      queryClient.invalidateQueries({ queryKey: ['unread-notifications', userId] });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['unread-notifications'] });
     },
   });
 };
@@ -351,16 +392,17 @@ export const useMarkAllNotificationsRead = () => {
 export const useUserPreferences = (userId?: string) => {
   return useQuery({
     queryKey: ['user-preferences', userId],
-    queryFn: async (): Promise<UserPreferences | null> => {
-      if (!userId) return null;
-      
+    queryFn: async () => {
       const { data, error } = await supabase
         .from('user_preferences')
         .select('*')
-        .eq('user_id', userId)
+        .eq('user_id', userId!)
         .single();
 
-      if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows returned
+      if (error) {
+        throw error;
+      }
+
       return data;
     },
     enabled: !!userId,
@@ -369,24 +411,38 @@ export const useUserPreferences = (userId?: string) => {
 
 export const useUpdateUserPreferences = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: async ({ userId, ...preferences }: Partial<UserPreferences> & { userId: string }) => {
+    mutationFn: async ({ userId, updates }: { userId: string; updates: Partial<UserPreferences> }) => {
       const { data, error } = await supabase
         .from('user_preferences')
-        .upsert({
-          user_id: userId,
-          ...preferences,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updates)
+        .eq('user_id', userId)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
+
       return data;
     },
-    onSuccess: (_, { userId }) => {
-      queryClient.invalidateQueries({ queryKey: ['user-preferences', userId] });
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['user-preferences', data.user_id] });
     },
   });
 };
+
+// Helper function for distance calculation
+function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371; // Radius of the Earth in kilometers
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const distance = R * c; // Distance in kilometers
+  return distance;
+}
