@@ -5,6 +5,7 @@ export interface Speeltuin {
   latitude: number;
   longitude: number;
   afbeelding_url?: string;
+  fotos?: string[] | { id?: number; url: string; naam?: string }[]; // Support both formats
   badge?: string;
   heeft_glijbaan: boolean;
   heeft_schommel: boolean;
