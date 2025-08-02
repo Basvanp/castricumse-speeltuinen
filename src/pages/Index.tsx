@@ -22,7 +22,6 @@ const Index = () => {
   const { trackEvent } = useAnalytics();
   const isMobile = useIsMobile();
   const [selectedSpeeltuin, setSelectedSpeeltuin] = useState<Speeltuin | null>(null);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [isLocating, setIsLocating] = useState(false);
   
@@ -294,7 +293,7 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Map Section */}
+        {/* Map Section with Filters Sidebar */}
         <section ref={mapRef} className="mb-16">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-foreground mb-4">Speeltuinen Kaart</h2>
@@ -304,96 +303,83 @@ const Index = () => {
             </p>
           </div>
           
-          <SpeeltuinKaart
-            speeltuinen={filteredSpeeltuinen as any}
-            onSpeeltuinSelect={setSelectedSpeeltuin}
-            userLocation={userLocation}
-            isLocating={isLocating}
-            onLocationRequest={getCurrentLocation}
-          />
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Map */}
+            <div className="flex-1">
+              <SpeeltuinKaart
+                speeltuinen={filteredSpeeltuinen as any}
+                onSpeeltuinSelect={setSelectedSpeeltuin}
+                userLocation={userLocation}
+                isLocating={isLocating}
+                onLocationRequest={getCurrentLocation}
+              />
+            </div>
+
+            {/* Filters Sidebar */}
+            <div className="lg:w-80 flex-shrink-0">
+              <SpeeltuinFiltersComponent
+                filters={filters}
+                onFiltersChange={setFilters}
+                onApplyFilters={handleApplyFilters}
+                onClearFilters={clearAllFilters}
+              />
+            </div>
+          </div>
         </section>
 
         {/* Speeltuinen Section */}
         <section ref={speeltuinenRef} className="mb-16">
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Filters Sidebar */}
-            <div className={`lg:w-80 transition-all duration-300 ${sidebarCollapsed ? 'lg:w-20' : ''}`}>
-              <div className="sticky top-24">
-                <SpeeltuinFiltersComponent
-                  filters={filters}
-                  onFiltersChange={setFilters}
-                  onApplyFilters={handleApplyFilters}
-                  onClearFilters={clearAllFilters}
-                />
-              </div>
-            </div>
-
-            {/* Speeltuinen Grid */}
-            <div className="flex-1">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-3xl font-bold text-foreground mb-2">
-                    Alle Speeltuinen
-                  </h2>
-                  <p className="text-muted-foreground">
-                    {filteredSpeeltuinen.length} van {speeltuinen.length} speeltuinen
-                    {searchQuery && ` voor "${searchQuery}"`}
-                  </p>
-                </div>
-                
-                {/* Mobile filter toggle */}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                  className="lg:hidden"
-                >
-                  {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-                  Filters
-                </Button>
-              </div>
-
-              {isLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {Array.from({ length: 6 }).map((_, i) => (
-                    <div key={i} className="bg-card border border-border rounded-lg p-6 animate-pulse">
-                      <div className="h-48 bg-muted rounded-lg mb-4"></div>
-                      <div className="h-4 bg-muted rounded mb-2"></div>
-                      <div className="h-3 bg-muted rounded w-2/3"></div>
-                    </div>
-                  ))}
-                </div>
-              ) : filteredSpeeltuinen.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="text-6xl mb-4">🎪</div>
-                  <h3 className="text-xl font-semibold text-foreground mb-2">Geen speeltuinen gevonden</h3>
-                  <p className="text-muted-foreground mb-4">
-                    {searchQuery 
-                      ? `Geen speeltuinen gevonden voor "${searchQuery}". Probeer andere zoektermen.`
-                      : "Er zijn momenteel geen speeltuinen beschikbaar."
-                    }
-                  </p>
-                  {(searchQuery || Object.keys(filters).length > 0) && (
-                    <Button onClick={clearAllFilters} variant="outline">
-                      Alle filters wissen
-                    </Button>
-                  )}
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredSpeeltuinen.map((speeltuin) => (
-                    <SpeeltuinCard
-                      key={speeltuin.id}
-                      speeltuin={speeltuin as any}
-                      onSelect={setSelectedSpeeltuin}
-                      userLocation={userLocation}
-                      showDistance={true}
-                    />
-                  ))}
-                </div>
-              )}
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-3xl font-bold text-foreground mb-2">
+                Alle Speeltuinen
+              </h2>
+              <p className="text-muted-foreground">
+                {filteredSpeeltuinen.length} van {speeltuinen.length} speeltuinen
+                {searchQuery && ` voor "${searchQuery}"`}
+              </p>
             </div>
           </div>
+
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="bg-card border border-border rounded-lg p-6 animate-pulse">
+                  <div className="h-48 bg-muted rounded-lg mb-4"></div>
+                  <div className="h-4 bg-muted rounded mb-2"></div>
+                  <div className="h-3 bg-muted rounded w-2/3"></div>
+                </div>
+              ))}
+            </div>
+          ) : filteredSpeeltuinen.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">🎪</div>
+              <h3 className="text-xl font-semibold text-foreground mb-2">Geen speeltuinen gevonden</h3>
+              <p className="text-muted-foreground mb-4">
+                {searchQuery 
+                  ? `Geen speeltuinen gevonden voor "${searchQuery}". Probeer andere zoektermen.`
+                  : "Er zijn momenteel geen speeltuinen beschikbaar."
+                }
+              </p>
+              {(searchQuery || Object.keys(filters).length > 0) && (
+                <Button onClick={clearAllFilters} variant="outline">
+                  Alle filters wissen
+                </Button>
+              )}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {filteredSpeeltuinen.map((speeltuin) => (
+                <SpeeltuinCard
+                  key={speeltuin.id}
+                  speeltuin={speeltuin as any}
+                  onSelect={setSelectedSpeeltuin}
+                  userLocation={userLocation}
+                  showDistance={true}
+                />
+              ))}
+            </div>
+          )}
         </section>
       </main>
 
