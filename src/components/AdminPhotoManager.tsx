@@ -465,13 +465,6 @@ const AdminPhotoManager: React.FC = () => {
               </Card>
             ))}
           </div>
-
-          {speeltuinenWithPhotos.length === 0 && (
-            <div className="text-center py-8 text-muted-foreground">
-              <FileImage className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Geen speeltuinen met foto's gevonden</p>
-            </div>
-          )}
         </TabsContent>
 
         <TabsContent value="usage" className="space-y-4">
