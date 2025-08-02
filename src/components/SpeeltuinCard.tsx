@@ -208,7 +208,7 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
   return (
     <>
       <Card 
-        className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary/20"
+        className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary/20 flex flex-col h-full"
         onClick={() => onSelect?.(speeltuin)}
       >
         <CardHeader className="pb-3">
@@ -241,7 +241,7 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
           </div>
         </CardHeader>
 
-        <CardContent className="pt-0">
+        <CardContent className="pt-0 flex flex-col flex-1">
           {/* Photo Carousel */}
           <div className="relative h-48 w-full rounded-lg overflow-hidden shadow-lg mb-4">
             {photos.length > 0 ? (
@@ -317,54 +317,60 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
             </div>
           )}
 
-          {/* Description */}
-          {speeltuin.omschrijving && (
-            <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
-              {speeltuin.omschrijving}
-            </p>
-          )}
-
-          {/* Badges */}
-          <div className="flex flex-wrap gap-1 mb-4">
-            {badges.slice(0, 6).map(getBadgeHTML)}
-          </div>
-
-          {/* Quick stats */}
-          <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
-            <div className="flex items-center gap-1">
-              <Users className="h-3 w-3" />
-              <span>{speeltuin.grootte}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              <span>Altijd open</span>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex flex-col gap-2 pt-4">
-            {/* Google Maps button */}
-            {speeltuin.latitude && speeltuin.longitude && (
-              <Button 
-                onClick={handleGoogleMapsClick}
-                className="w-full h-12 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg py-3 px-4 flex items-center justify-center gap-2"
-              >
-                <MapPin className="text-white" />
-                Open in Google Maps
-              </Button>
+          {/* Content area that grows to fill space */}
+          <div className="flex flex-col flex-1">
+            {/* Description */}
+            {speeltuin.omschrijving && (
+              <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
+                {speeltuin.omschrijving}
+              </p>
             )}
-            
-            {/* Probleem melden button */}
-            <Button 
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsFixiPopupOpen(true);
-              }}
-              className="w-full mb-3 bg-white hover:bg-gray-50 text-black px-4 py-2 rounded font-semibold border border-gray-300 flex items-center justify-center gap-2"
-            >
-              <AlertTriangle size={18} />
-              Probleem melden
-            </Button>
+
+            {/* Badges */}
+            <div className="flex flex-wrap gap-1 mb-4">
+              {badges.slice(0, 6).map(getBadgeHTML)}
+            </div>
+
+            {/* Quick stats */}
+            <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
+              <div className="flex items-center gap-1">
+                <Users className="h-3 w-3" />
+                <span>{speeltuin.grootte}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                <span>Altijd open</span>
+              </div>
+            </div>
+
+            {/* Spacer to push buttons to bottom */}
+            <div className="flex-1"></div>
+
+            {/* Action Buttons - always at bottom */}
+            <div className="flex flex-col gap-2 pt-4">
+              {/* Google Maps button */}
+              {speeltuin.latitude && speeltuin.longitude && (
+                <Button 
+                  onClick={handleGoogleMapsClick}
+                  className="w-full h-12 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg py-3 px-4 flex items-center justify-center gap-2"
+                >
+                  <MapPin className="text-white" />
+                  Open in Google Maps
+                </Button>
+              )}
+              
+              {/* Probleem melden button */}
+              <Button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsFixiPopupOpen(true);
+                }}
+                className="w-full bg-white hover:bg-gray-50 text-black px-4 py-2 rounded font-semibold border border-gray-300 flex items-center justify-center gap-2"
+              >
+                <AlertTriangle size={18} />
+                Probleem melden
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
