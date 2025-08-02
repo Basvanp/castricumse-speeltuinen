@@ -215,8 +215,9 @@ const Index = () => {
 
   const scrollToSpeeltuinen = () => {
     if (speeltuinenRef.current) {
-      const headerHeight = 80;
-      const offsetTop = speeltuinenRef.current.offsetTop - headerHeight;
+      const headerHeight = 100; // Meer ruimte voor header
+      const extraOffset = 50; // Extra offset om zeker naar de juiste positie te scrollen
+      const offsetTop = speeltuinenRef.current.offsetTop - headerHeight + extraOffset;
       window.scrollTo({ top: offsetTop, behavior: 'smooth' });
     }
   };
