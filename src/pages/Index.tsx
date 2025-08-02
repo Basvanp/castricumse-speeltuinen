@@ -215,7 +215,8 @@ const Index = () => {
 
   const scrollToSpeeltuinen = () => {
     if (speeltuinenRef.current) {
-      const headerHeight = 80; // Hoogte van sticky header + wat extra ruimte
+      const headerHeight = 80;
+      const mapHeight = 400; // Estimated map height
       const offsetTop = speeltuinenRef.current.offsetTop - headerHeight;
       window.scrollTo({ top: offsetTop, behavior: 'smooth' });
     }

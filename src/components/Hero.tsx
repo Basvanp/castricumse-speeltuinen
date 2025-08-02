@@ -17,8 +17,7 @@ const Hero: React.FC<HeroProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQuery(value);
-    // Trigger instant search on every keystroke
-    onSearch(value);
+    // Remove instant search to prevent stuttering
   };
   return <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden -mt-16 z-10">
       {/* Background Image with Overlay */}
