@@ -3,6 +3,7 @@ import { Settings, Star, Home, MapPin } from 'lucide-react';
 import { NavigationMenu, NavigationMenuItem, NavigationMenuList, NavigationMenuLink } from './ui/navigation-menu';
 import { Button } from './ui/button';
 import AdminButton from './AdminButton';
+import ThemeToggle from './ThemeToggle';
 
 interface HeaderProps {
   siteName?: string;
@@ -31,17 +32,17 @@ const Header = ({
   return (
     <>
       {/* Sticky navigation bar */}
-      <nav className="sticky top-0 z-50 bg-white border-b border-[#e2e8f0] shadow-sm">
+      <nav className="sticky top-0 z-50 bg-background border-b border-border shadow-sm backdrop-blur-sm bg-background/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo section */}
             <div className="flex items-center gap-3">
               <PlaygroundLogo />
               <div>
-                <h1 className="text-lg font-semibold text-[#1a202c] leading-tight">
+                <h1 className="text-lg font-semibold text-foreground leading-tight">
                   {siteName}
                 </h1>
-                <p className="text-xs text-[#1a202c]/70 leading-tight">
+                <p className="text-xs text-muted-foreground leading-tight">
                   Gemeente Castricum
                 </p>
               </div>
@@ -52,39 +53,41 @@ const Header = ({
               <div className="flex items-center gap-2">
                 <button
                   onClick={onScrollToTop}
-                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-primary bg-primary/10 rounded-md hover:bg-primary/20 transition-colors"
                 >
                   <Home className="w-4 h-4" />
                   Home
                 </button>
                 <button
                   onClick={onScrollToSpeeltuinen}
-                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#1a202c]/70 hover:text-[#1a202c] hover:bg-[#1a202c]/5 rounded-md transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
                 >
                   Alle Speeltuinen
                 </button>
                 <button
                   onClick={onScrollToMap}
-                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#1a202c]/70 hover:text-[#1a202c] hover:bg-[#1a202c]/5 rounded-md transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
                 >
                   <MapPin className="w-4 h-4" />
                   Kaart
                 </button>
               </div>
 
+              {/* Theme Toggle */}
+              <ThemeToggle />
+
               {/* Admin button */}
               <AdminButton />
             </div>
 
             {/* Mobile menu button */}
-            <div className="md:hidden">
+            <div className="md:hidden flex items-center gap-2">
+              <ThemeToggle />
               <AdminButton />
             </div>
           </div>
         </div>
       </nav>
-
-
     </>
   );
 };

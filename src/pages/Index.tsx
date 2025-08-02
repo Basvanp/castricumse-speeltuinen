@@ -31,136 +31,29 @@ const Index = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const speeltuinenRef = useRef<HTMLDivElement>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filters, setFilters] = useState<SpeeltuinFilters>({
-    leeftijd: {
-      geschikt_peuters: false,
-      geschikt_kleuters: false,
-      geschikt_kinderen: false,
-    },
-    voorzieningen: {
-      heeft_glijbaan: false,
-      heeft_schommel: false,
-      heeft_zandbak: false,
-      heeft_klimtoestel: false,
-      heeft_kabelbaan: false,
-      heeft_water_pomp: false,
-      heeft_trapveld: false,
-      heeft_skatebaan: false,
-      heeft_basketbalveld: false,
-      heeft_wipwap: false,
-      heeft_duikelrek: false,
-    },
-    praktisch: {
-      heeft_parkeerplaats: false,
-      heeft_toilet: false,
-      is_omheind: false,
-      heeft_schaduw: false,
-      is_rolstoeltoegankelijk: false,
-    },
-    type: {
-      type_natuurspeeltuin: false,
-      type_buurtspeeltuin: false,
-      type_schoolplein: false,
-      type_speelbos: false,
-    },
-    grootte: {
-      klein: false,
-      middel: false,
-      groot: false,
-    },
-    ondergrond: {
-      ondergrond_zand: false,
-      ondergrond_gras: false,
-      ondergrond_rubber: false,
-      ondergrond_tegels: false,
-      ondergrond_kunstgras: false,
-    },
-  });
+  const [filters, setFilters] = useState<SpeeltuinFilters>({});
 
   const clearAllFilters = () => {
-    setFilters({
-      leeftijd: {
-        geschikt_peuters: false,
-        geschikt_kleuters: false,
-        geschikt_kinderen: false,
-      },
-      voorzieningen: {
-        heeft_glijbaan: false,
-        heeft_schommel: false,
-        heeft_zandbak: false,
-        heeft_klimtoestel: false,
-        heeft_kabelbaan: false,
-        heeft_water_pomp: false,
-        heeft_trapveld: false,
-        heeft_skatebaan: false,
-        heeft_basketbalveld: false,
-        heeft_wipwap: false,
-        heeft_duikelrek: false,
-      },
-      praktisch: {
-        heeft_parkeerplaats: false,
-        heeft_toilet: false,
-        is_omheind: false,
-        heeft_schaduw: false,
-        is_rolstoeltoegankelijk: false,
-      },
-      type: {
-        type_natuurspeeltuin: false,
-        type_buurtspeeltuin: false,
-        type_schoolplein: false,
-        type_speelbos: false,
-      },
-      grootte: {
-        klein: false,
-        middel: false,
-        groot: false,
-      },
-      ondergrond: {
-        ondergrond_zand: false,
-        ondergrond_gras: false,
-        ondergrond_rubber: false,
-        ondergrond_tegels: false,
-        ondergrond_kunstgras: false,
-      },
-    });
+    setFilters({});
   };
 
   const handleApplyFilters = () => {
-    if (isMobile) {
-      setSidebarCollapsed(true);
+    // Track filter usage
+    const activeFilters = Object.entries(filters).filter(([_, value]) => value === true);
+    if (activeFilters.length > 0) {
+      trackEvent('filter_used', undefined, {
+        filter_count: activeFilters.length,
+        filters: activeFilters.map(([key]) => key).join(',')
+      });
     }
   };
 
-  // Track page view on mount
-  useEffect(() => {
-    trackEvent('page_view');
-  }, [trackEvent]);
-
-  // Handle responsive sidebar behavior
-  useEffect(() => {
-    // On desktop, auto-expand sidebar; on mobile, keep collapsed
-    if (!isMobile && sidebarCollapsed) {
-      setSidebarCollapsed(false);
-    } else if (isMobile && !sidebarCollapsed) {
-      setSidebarCollapsed(true);
-    }
-  }, [isMobile]);
-
-  // Generate structured data
-  const structuredData = useMemo(() => {
-    const schemas = [
-      generateWebsiteSchema(settings),
-      generateOrganizationSchema(settings),
-      generateLocalBusinessSchema(settings)
-    ];
-    return schemas;
-  }, [settings]);
-
+  // Get current location
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
       toast({
-        title: "Geolocatie niet ondersteund",
-        description: "Uw browser ondersteunt geen geolocatie.",
+        title: "Locatie niet ondersteund",
+        description: "Je browser ondersteunt geen geolocatie.",
         variant: "destructive",
       });
       return;
@@ -169,429 +62,343 @@ const Index = () => {
     setIsLocating(true);
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        const newLocation: [number, number] = [
-          position.coords.latitude,
-          position.coords.longitude
-        ];
-        setUserLocation(newLocation);
+        const { latitude, longitude } = position.coords;
+        setUserLocation([latitude, longitude]);
         setIsLocating(false);
         toast({
-          title: "Locatie gevonden",
-          description: "De kaart is gecentreerd op uw locatie.",
+          title: "Locatie gevonden!",
+          description: "Je locatie is gebruikt om nabijgelegen speeltuinen te vinden.",
         });
       },
       (error) => {
         setIsLocating(false);
-        let message = "Er is een fout opgetreden bij het ophalen van uw locatie.";
-        if (error.code === error.PERMISSION_DENIED) {
-          message = "Locatietoegang geweigerd. U kunt dit wijzigen in uw browserinstellingen.";
+        let errorMessage = "Er is een fout opgetreden bij het ophalen van je locatie.";
+        
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = "Locatie toegang is geweigerd. Controleer je browser instellingen.";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = "Locatie informatie is niet beschikbaar.";
+            break;
+          case error.TIMEOUT:
+            errorMessage = "Het ophalen van je locatie duurde te lang.";
+            break;
         }
+        
         toast({
-          title: "Locatie niet beschikbaar",
-          description: message,
+          title: "Locatie fout",
+          description: errorMessage,
           variant: "destructive",
         });
       },
       {
         enableHighAccuracy: true,
         timeout: 10000,
-        maximumAge: 300000
+        maximumAge: 60000
       }
     );
   };
 
-  // Scroll-functies voor navigatie
+  // Scroll functions
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    topRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const scrollToMap = () => {
-    if (mapRef.current) {
-      const headerHeight = 80; // Hoogte van sticky header + wat extra ruimte
-      const offsetTop = mapRef.current.offsetTop - headerHeight;
-      window.scrollTo({ top: offsetTop, behavior: 'smooth' });
-    }
+    mapRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const scrollToSpeeltuinen = () => {
-    if (speeltuinenRef.current) {
-      const headerHeight = 80;
-      const heroHeight = window.innerHeight * 0.7; // Hero section is 70vh
-      const mapHeight = 500; // Geschatte kaart hoogte
-      const extraSpace = 100; // Extra ruimte
-      const offsetTop = speeltuinenRef.current.offsetTop - headerHeight;
-      window.scrollTo({ top: offsetTop, behavior: 'smooth' });
-    }
+    speeltuinenRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Keyword associations for fuzzy search
-  const keywordAssociations = {
-    koffie: ['horeca', 'cafe', 'restaurant', 'terras', 'eten', 'drinken'],
-    glij: ['glijbaan', 'slide', 'klimtoestel', 'glijden'],
-    wippen: ['wipwap', 'wip', 'seesaw', 'balanceren'],
-    schommelen: ['schommel', 'swing', 'schommels'],
-    klimmen: ['klimtoestel', 'klimrek', 'klimmuur', 'klimmen'],
-    water: ['waterspeelplaats', 'fontein', 'sproei', 'nat', 'spetteren'],
-    sport: ['voetbalveld', 'basketbal', 'fitness', 'sporten'],
-    baby: ['peuters', '0-4 jaar', 'zandbak', 'kleintjes'],
-    groot: ['12+', 'tieners', 'oudere kinderen'],
-    klein: ['0-4', '4-8', 'peuters', 'kleuters'],
-    parkeren: ['parking', 'auto', 'parkeerplaats'],
-    toilet: ['wc', 'sanitair', 'voorzieningen']
-  };
-
-  // Create searchable content for each playground
+  // Search functionality
   const createSearchableContent = (speeltuin: Speeltuin): string => {
-    const facilities = [];
-    if (speeltuin.heeft_glijbaan) facilities.push('glijbaan', 'slide', 'glijden');
-    if (speeltuin.heeft_schommel) facilities.push('schommel', 'swing', 'schommelen');
-    if (speeltuin.heeft_zandbak) facilities.push('zandbak', 'zand');
-    if (speeltuin.heeft_klimtoestel) facilities.push('klimtoestel', 'klimmen', 'klimrek');
-    if (speeltuin.heeft_kabelbaan) facilities.push('kabelbaan', 'kabel');
-    if (speeltuin.heeft_water_pomp) facilities.push('water', 'pomp', 'waterspeelplaats');
-    if (speeltuin.heeft_trapveld) facilities.push('trapveld', 'panakooi', 'voetbal');
-    if (speeltuin.heeft_skatebaan) facilities.push('skatebaan', 'skate', 'skaten');
-    if (speeltuin.heeft_basketbalveld) facilities.push('basketbal', 'basket', 'sport');
-    if (speeltuin.heeft_wipwap) facilities.push('wipwap', 'wip', 'seesaw', 'balanceren');
-    if (speeltuin.heeft_duikelrek) facilities.push('duikelrek', 'duikel', 'rekstok');
-
-    const amenities = [];
-    if (speeltuin.heeft_toilet) amenities.push('toilet', 'wc', 'sanitair');
-    if (speeltuin.heeft_parkeerplaats) amenities.push('parkeren', 'parking', 'auto', 'parkeerplaats');
-    if (speeltuin.heeft_horeca) amenities.push('horeca', 'koffie', 'cafe', 'restaurant', 'eten', 'drinken');
-    if (speeltuin.is_omheind) amenities.push('omheind', 'hek', 'veilig');
-    if (speeltuin.heeft_schaduw) amenities.push('schaduw', 'schaduwrijk', 'bomen');
-    if (speeltuin.is_rolstoeltoegankelijk) amenities.push('rolstoel', 'toegankelijk', 'mindervaliden');
-
-    const ageGroups = [];
-    if (speeltuin.geschikt_peuters) ageGroups.push('peuters', 'baby', 'kleintjes', '0-4');
-    if (speeltuin.geschikt_kleuters) ageGroups.push('kleuters', 'klein', '4-8');
-    if (speeltuin.geschikt_kinderen) ageGroups.push('kinderen', 'groot', '8-12', '12+');
-
-    const types = [];
-    if (speeltuin.type_natuurspeeltuin) types.push('natuur', 'natuurspeeltuin');
-    if (speeltuin.type_buurtspeeltuin) types.push('buurt', 'buurtspeeltuin', 'wijk');
-    if (speeltuin.type_schoolplein) types.push('school', 'schoolplein');
-    if (speeltuin.type_speelbos) types.push('speelbos', 'bos', 'natuur');
-
-    return [
+    const content = [
       speeltuin.naam,
       speeltuin.omschrijving || '',
-      ...facilities,
-      ...amenities,
-      ...ageGroups,
-      ...types,
-      speeltuin.grootte || '',
-      'castricum'
+      speeltuin.badge || '',
+      // Add facility names
+      speeltuin.heeft_glijbaan ? 'glijbaan' : '',
+      speeltuin.heeft_schommel ? 'schommel' : '',
+      speeltuin.heeft_zandbak ? 'zandbak' : '',
+      speeltuin.heeft_kabelbaan ? 'kabelbaan' : '',
+      speeltuin.heeft_bankjes ? 'bankjes' : '',
+      speeltuin.heeft_sportveld ? 'sportveld' : '',
+      speeltuin.heeft_water_pomp ? 'waterpomp' : '',
+      speeltuin.heeft_klimtoestel ? 'klimtoestel' : '',
+      speeltuin.heeft_skatebaan ? 'skatebaan' : '',
+      speeltuin.heeft_basketbalveld ? 'basketbalveld' : '',
+      speeltuin.heeft_trapveld ? 'trapveld' : '',
+      speeltuin.heeft_wipwap ? 'wipwap' : '',
+      speeltuin.heeft_duikelrek ? 'duikelrek' : '',
+      // Add type names
+      speeltuin.type_natuurspeeltuin ? 'natuurspeeltuin' : '',
+      speeltuin.type_buurtspeeltuin ? 'buurtspeeltuin' : '',
+      speeltuin.type_schoolplein ? 'schoolplein' : '',
+      speeltuin.type_speelbos ? 'speelbos' : '',
+      // Add practical features
+      speeltuin.heeft_parkeerplaats ? 'parkeerplaats' : '',
+      speeltuin.heeft_toilet ? 'toilet' : '',
+      speeltuin.heeft_horeca ? 'horeca' : '',
+      speeltuin.is_omheind ? 'omheind' : '',
+      speeltuin.heeft_schaduw ? 'schaduw' : '',
+      speeltuin.is_rolstoeltoegankelijk ? 'rolstoeltoegankelijk' : '',
+      // Add size
+      speeltuin.grootte,
     ].join(' ').toLowerCase();
+    
+    return content;
   };
 
-  // Fuzzy search function
   const fuzzySearch = (query: string, content: string): number => {
-    if (!query.trim()) return 0;
+    const queryWords = query.toLowerCase().split(' ').filter(word => word.length > 0);
+    const contentWords = content.split(' ');
     
-    const lowerQuery = query.toLowerCase().trim();
-    const lowerContent = content.toLowerCase();
+    let totalScore = 0;
     
-    // Exact match - highest weight
-    if (lowerContent.includes(lowerQuery)) return 100;
-    
-    // Check for keyword associations
-    let associationScore = 0;
-    Object.entries(keywordAssociations).forEach(([key, values]) => {
-      if (lowerQuery.includes(key)) {
-        values.forEach(value => {
-          if (lowerContent.includes(value)) {
-            associationScore = Math.max(associationScore, 50);
-          }
-        });
+    for (const queryWord of queryWords) {
+      let bestScore = 0;
+      
+      for (const contentWord of contentWords) {
+        if (contentWord.includes(queryWord)) {
+          bestScore = Math.max(bestScore, queryWord.length / contentWord.length);
+        }
       }
-    });
+      
+      totalScore += bestScore;
+    }
     
-    if (associationScore > 0) return associationScore;
-    
-    // Partial matches
-    const queryWords = lowerQuery.split(' ').filter(word => word.length > 0);
-    let partialScore = 0;
-    
-    queryWords.forEach(word => {
-      if (lowerContent.includes(word)) {
-        partialScore += 30;
-      } else {
-        // Check for partial word matches (fuzzy)
-        const contentWords = lowerContent.split(' ');
-        contentWords.forEach(contentWord => {
-          if (contentWord.includes(word) || word.includes(contentWord)) {
-            partialScore += 15;
-          }
-        });
-      }
-    });
-    
-    return partialScore;
+    return totalScore / queryWords.length;
   };
 
   const handleHeroSearch = (query: string) => {
     setSearchQuery(query);
-    
-    if (!query.trim()) {
-      clearAllFilters();
-    }
-
-    // Always scroll to results when search is performed
-    setTimeout(() => scrollToSpeeltuinen(), 100);
+    scrollToSpeeltuinen();
   };
 
   const handleCategoryClick = (category: string) => {
-    // Set filter for the selected category and scroll to results
-    const newFilters = { ...filters };
-    
-    // Map category names to filter properties
-    const categoryMap: { [key: string]: string } = {
-      'glijbaan': 'heeft_glijbaan',
-      'pandakooi': 'heeft_panakooi',
-      'waterpomp': 'heeft_water_pomp'
+    // Set appropriate filter based on category
+    const categoryFilters: Record<string, Partial<SpeeltuinFilters>> = {
+      'glijbanen': { hasGlijbaan: true },
+      'schommels': { hasSchommel: true },
+      'zandbakken': { hasZandbak: true },
+      'klimtoestellen': { hasKlimtoestel: true },
+      'natuurspeeltuinen': { typeNatuurspeeltuin: true },
+      'rolstoeltoegankelijk': { isRolstoeltoegankelijk: true },
     };
     
-    const filterKey = categoryMap[category];
-    if (filterKey) {
-      newFilters.voorzieningen[filterKey as keyof typeof newFilters.voorzieningen] = true;
-      setFilters(newFilters);
-      scrollToSpeeltuinen();
-    }
+    setFilters(categoryFilters[category] || {});
+    scrollToSpeeltuinen();
   };
 
-  // Calculate last updated date from speeltuinen data
-  const lastUpdated = useMemo(() => {
-    if (!speeltuinen.length) return null;
-    
-    const dates = speeltuinen
-      .map(s => s.updated_at || s.created_at)
-      .filter(Boolean)
-      .map(date => new Date(date))
-      .sort((a, b) => b.getTime() - a.getTime());
-    
-    return dates.length > 0 ? dates[0] : null;
-  }, [speeltuinen]);
-
+  // Filter and search speeltuinen
   const filteredSpeeltuinen = useMemo(() => {
-    // Create searchable content and scores for each playground
-    const speeltuinenWithScores = speeltuinen.map((speeltuin) => {
-      const searchableContent = createSearchableContent(speeltuin);
-      const searchScore = searchQuery.trim() ? fuzzySearch(searchQuery, searchableContent) : 0;
-      return { speeltuin, searchScore };
-    });
+    let filtered = speeltuinen;
 
-    // Filter based on search and filters
-    return speeltuinenWithScores
-      .filter(({ speeltuin, searchScore }) => {
-        // If there's a search query, only show results with a score > 0
-        if (searchQuery.trim() && searchScore === 0) {
-          return false;
-        }
+    // Apply search query
+    if (searchQuery.trim()) {
+      filtered = filtered.filter(speeltuin => {
+        const searchableContent = createSearchableContent(speeltuin);
+        const score = fuzzySearch(searchQuery, searchableContent);
+        return score > 0.3; // Threshold for relevance
+      });
+    }
 
-        // Check if any filters are active
-        const hasActiveFilters = Object.values(filters).some((category) =>
-          Object.values(category).some((value) => value)
-        );
+    // Apply filters
+    if (Object.keys(filters).length > 0) {
+      filtered = filtered.filter(speeltuin => {
+        return Object.entries(filters).every(([key, value]) => {
+          if (!value) return true;
+          
+          switch (key) {
+            case 'hasGlijbaan': return speeltuin.heeft_glijbaan;
+            case 'hasSchommel': return speeltuin.heeft_schommel;
+            case 'hasZandbak': return speeltuin.heeft_zandbak;
+            case 'hasKabelbaan': return speeltuin.heeft_kabelbaan;
+            case 'hasBankjes': return speeltuin.heeft_bankjes;
+            case 'hasSportveld': return speeltuin.heeft_sportveld;
+            case 'hasWaterPomp': return speeltuin.heeft_water_pomp;
+            case 'hasKlimtoestel': return speeltuin.heeft_klimtoestel;
+            case 'hasSkatebaan': return speeltuin.heeft_skatebaan;
+            case 'hasBasketbalveld': return speeltuin.heeft_basketbalveld;
+            case 'hasTrapveld': return speeltuin.heeft_trapveld;
+            case 'hasWipwap': return speeltuin.heeft_wipwap;
+            case 'hasDuikelrek': return speeltuin.heeft_duikelrek;
+            case 'typeNatuurspeeltuin': return speeltuin.type_natuurspeeltuin;
+            case 'typeBuurtspeeltuin': return speeltuin.type_buurtspeeltuin;
+            case 'typeSchoolplein': return speeltuin.type_schoolplein;
+            case 'typeSpeelbos': return speeltuin.type_speelbos;
+            case 'isRolstoeltoegankelijk': return speeltuin.is_rolstoeltoegankelijk;
+            case 'hasSchaduw': return speeltuin.heeft_schaduw;
+            case 'isOmheind': return speeltuin.is_omheind;
+            case 'hasParkeerplaats': return speeltuin.heeft_parkeerplaats;
+            case 'hasToilet': return speeltuin.heeft_toilet;
+            case 'hasHoreca': return speeltuin.heeft_horeca;
+            case 'grootte': return speeltuin.grootte === value;
+            default: return true;
+          }
+        });
+      });
+    }
 
-        if (!hasActiveFilters) return true;
+    return filtered;
+  }, [speeltuinen, searchQuery, filters]);
 
-        // Leeftijd filter
-        const leeftijdMatch = 
-          (!Object.values(filters.leeftijd).some(v => v)) ||
-          (filters.leeftijd.geschikt_peuters && speeltuin.geschikt_peuters) ||
-          (filters.leeftijd.geschikt_kleuters && speeltuin.geschikt_kleuters) ||
-          (filters.leeftijd.geschikt_kinderen && speeltuin.geschikt_kinderen);
-
-        // Type filter
-        const typeMatch = 
-          (!Object.values(filters.type).some(v => v)) ||
-          (filters.type.type_natuurspeeltuin && speeltuin.type_natuurspeeltuin) ||
-          (filters.type.type_buurtspeeltuin && speeltuin.type_buurtspeeltuin) ||
-          (filters.type.type_schoolplein && speeltuin.type_schoolplein) ||
-          (filters.type.type_speelbos && speeltuin.type_speelbos);
-
-        // Voorzieningen filter
-        const voorzieningenMatch = 
-          (!Object.values(filters.voorzieningen).some(v => v)) ||
-          (filters.voorzieningen.heeft_glijbaan && speeltuin.heeft_glijbaan) ||
-          (filters.voorzieningen.heeft_schommel && speeltuin.heeft_schommel) ||
-          (filters.voorzieningen.heeft_zandbak && speeltuin.heeft_zandbak) ||
-          (filters.voorzieningen.heeft_kabelbaan && speeltuin.heeft_kabelbaan) ||
-          (filters.voorzieningen.heeft_klimtoestel && speeltuin.heeft_klimtoestel) ||
-          (filters.voorzieningen.heeft_water_pomp && speeltuin.heeft_water_pomp) ||
-          (filters.voorzieningen.heeft_trapveld && speeltuin.heeft_trapveld) ||
-          (filters.voorzieningen.heeft_skatebaan && speeltuin.heeft_skatebaan) ||
-          (filters.voorzieningen.heeft_basketbalveld && speeltuin.heeft_basketbalveld) ||
-          (filters.voorzieningen.heeft_wipwap && speeltuin.heeft_wipwap) ||
-          (filters.voorzieningen.heeft_duikelrek && speeltuin.heeft_duikelrek);
-
-        // Praktische zaken filter
-        const praktischMatch = 
-          (!Object.values(filters.praktisch).some(v => v)) ||
-          (filters.praktisch.heeft_toilet && speeltuin.heeft_toilet) ||
-          (filters.praktisch.heeft_parkeerplaats && speeltuin.heeft_parkeerplaats) ||
-          (filters.praktisch.is_omheind && speeltuin.is_omheind) ||
-          (filters.praktisch.heeft_schaduw && speeltuin.heeft_schaduw) ||
-          (filters.praktisch.is_rolstoeltoegankelijk && speeltuin.is_rolstoeltoegankelijk);
-
-        // Ondergrond filter
-        const ondergrondMatch = 
-          (!Object.values(filters.ondergrond).some(v => v)) ||
-          (filters.ondergrond.ondergrond_zand && speeltuin.ondergrond_zand) ||
-          (filters.ondergrond.ondergrond_gras && speeltuin.ondergrond_gras) ||
-          (filters.ondergrond.ondergrond_rubber && speeltuin.ondergrond_rubber) ||
-          (filters.ondergrond.ondergrond_tegels && speeltuin.ondergrond_tegels) ||
-          (filters.ondergrond.ondergrond_kunstgras && speeltuin.ondergrond_kunstgras);
-
-        // Grootte filter
-        const grootteMatch = 
-          (!Object.values(filters.grootte).some(v => v)) ||
-          (filters.grootte.klein && speeltuin.grootte === 'klein') ||
-          (filters.grootte.middel && speeltuin.grootte === 'middel') ||
-          (filters.grootte.groot && speeltuin.grootte === 'groot');
-
-        return leeftijdMatch && typeMatch && voorzieningenMatch && praktischMatch && ondergrondMatch && grootteMatch;
-      })
-      .sort((a, b) => b.searchScore - a.searchScore) // Sort by search relevance
-      .map(({ speeltuin }) => speeltuin);
-  }, [speeltuinen, filters, searchQuery, createSearchableContent, fuzzySearch]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p>Speeltuinen laden...</p>
-        </div>
-      </div>
-    );
-  }
+  // Track page view
+  useEffect(() => {
+    trackEvent('page_view');
+  }, [trackEvent]);
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4 text-destructive">Fout bij het laden</h1>
-          <p className="text-muted-foreground">Er is een fout opgetreden bij het laden van de speeltuinen.</p>
+          <h1 className="text-2xl font-bold text-foreground mb-4">Er is een fout opgetreden</h1>
+          <p className="text-muted-foreground">Probeer de pagina te verversen.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div ref={topRef} className="min-h-screen bg-background">
-      <SEOHead 
-        title={settings.meta_title}
-        description={settings.meta_description}
-        keywords={settings.meta_keywords}
-        structuredData={structuredData}
+    <div className="min-h-screen bg-background">
+      <SEOHead
+        title={(settings as any).site_name || "Speeltuinen Castricum - Ontdek alle speeltuinen in Castricum"}
+        description={(settings as any).site_description || "Ontdek alle speeltuinen in Castricum en omgeving. Van kleine buurtpleintjes tot grotere speeltuinen voor uren speelplezier."}
+        keywords="speeltuinen, castricum, speeltuin, kinderen, spelen, buitenspelen, glijbaan, schommel, zandbak"
+        structuredData={[
+          generateOrganizationSchema(settings),
+          generateLocalBusinessSchema(settings),
+          generateWebsiteSchema(settings)
+        ]}
       />
       
-      <Header 
-        siteName={settings.site_name}
+      {/* Top section for scroll reference */}
+      <div ref={topRef} />
+      
+      {/* Header */}
+      <Header
+        siteName={(settings as any).site_name}
         onScrollToTop={scrollToTop}
         onScrollToMap={scrollToMap}
         onScrollToSpeeltuinen={scrollToSpeeltuinen}
       />
 
       {/* Hero Section */}
-      <Hero 
+      <Hero
         onSearch={handleHeroSearch}
+        settings={settings}
       />
 
+      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex gap-8 relative">
-          {/* Filters Sidebar */}
-          <div className={`transition-all duration-300 ease-in-out ${
-            sidebarCollapsed 
-              ? isMobile 
-                ? 'fixed inset-0 -translate-x-full opacity-0 pointer-events-none z-20' 
-                : '-ml-80 opacity-0 pointer-events-none'
-              : isMobile
-                ? 'fixed inset-0 translate-x-0 opacity-100 z-20 bg-background'
-                : 'ml-0 opacity-100'
-          } ${isMobile ? 'w-full' : 'w-80'} flex-shrink-0`}>
-            {isMobile && !sidebarCollapsed && (
-              <div className="absolute inset-0 bg-black/20" onClick={() => setSidebarCollapsed(true)} />
-            )}
-            <div className={`${isMobile ? 'w-80 bg-background shadow-lg' : 'w-full'} relative`}>
-              <SpeeltuinFiltersComponent 
-                filters={filters} 
-                onFiltersChange={setFilters}
-                onApplyFilters={handleApplyFilters}
-                onClearFilters={clearAllFilters}
-              />
-            </div>
+        {/* Map Section */}
+        <section ref={mapRef} className="mb-16">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-foreground mb-4">Speeltuinen Kaart</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Bekijk alle speeltuinen in Castricum op de interactieve kaart. 
+              Klik op een marker voor meer informatie.
+            </p>
           </div>
+          
+          <SpeeltuinKaart
+            speeltuinen={filteredSpeeltuinen as any}
+            onSpeeltuinSelect={setSelectedSpeeltuin}
+            userLocation={userLocation}
+            isLocating={isLocating}
+            onLocationRequest={getCurrentLocation}
+          />
+        </section>
 
-          {/* Toggle Button */}
-          <div className="absolute left-0 top-0 z-30">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className={`transition-all duration-300 ease-in-out ${
-                sidebarCollapsed ? 'translate-x-0' : isMobile ? 'translate-x-0' : 'translate-x-80'
-              } bg-white shadow-md hover:shadow-lg`}
-            >
-              {sidebarCollapsed ? (
-                <ChevronRight className="h-4 w-4" />
-              ) : (
-                <ChevronLeft className="h-4 w-4" />
-              )}
-            </Button>
-          </div>
-
-          {/* Main Content */}
-          <div className="flex-1 space-y-8">
-            {/* Map - Only show when sidebar is collapsed or on desktop */}
-            {(sidebarCollapsed || !isMobile) && (
-              <div ref={mapRef}>
-                <h2 className="text-xl font-semibold mb-4">Kaart</h2>
-                <SpeeltuinKaart 
-                  speeltuinen={speeltuinen} 
-                  onSpeeltuinSelect={setSelectedSpeeltuin}
-                  userLocation={userLocation}
-                  isLocating={isLocating}
-                  onLocationRequest={getCurrentLocation}
+        {/* Speeltuinen Section */}
+        <section ref={speeltuinenRef} className="mb-16">
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Filters Sidebar */}
+            <div className={`lg:w-80 transition-all duration-300 ${sidebarCollapsed ? 'lg:w-20' : ''}`}>
+              <div className="sticky top-24">
+                <SpeeltuinFiltersComponent
+                  filters={filters}
+                  onFiltersChange={setFilters}
+                  onApplyFilters={handleApplyFilters}
+                  onClearFilters={clearAllFilters}
                 />
               </div>
-            )}
-
-            {/* Selected Speeltuin */}
-            {selectedSpeeltuin && (
-              <div>
-                <h2 className="text-xl font-semibold mb-4">Geselecteerde speeltuin</h2>
-                <SpeeltuinCard speeltuin={selectedSpeeltuin} userLocation={userLocation} />
-              </div>
-            )}
+            </div>
 
             {/* Speeltuinen Grid */}
-            <div ref={speeltuinenRef}>
-              <h2 className="text-xl font-semibold mb-4">
-                Alle speeltuinen ({filteredSpeeltuinen.length})
-              </h2>
-              {filteredSpeeltuinen.length === 0 ? (
-                <div className="text-center py-12">
+            <div className="flex-1">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-3xl font-bold text-foreground mb-2">
+                    Alle Speeltuinen
+                  </h2>
                   <p className="text-muted-foreground">
-                    Geen speeltuinen gevonden met de huidige filters.
+                    {filteredSpeeltuinen.length} van {speeltuinen.length} speeltuinen
+                    {searchQuery && ` voor "${searchQuery}"`}
                   </p>
                 </div>
+                
+                {/* Mobile filter toggle */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                  className="lg:hidden"
+                >
+                  {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+                  Filters
+                </Button>
+              </div>
+
+              {isLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="bg-card border border-border rounded-lg p-6 animate-pulse">
+                      <div className="h-48 bg-muted rounded-lg mb-4"></div>
+                      <div className="h-4 bg-muted rounded mb-2"></div>
+                      <div className="h-3 bg-muted rounded w-2/3"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : filteredSpeeltuinen.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="text-6xl mb-4">🎪</div>
+                  <h3 className="text-xl font-semibold text-foreground mb-2">Geen speeltuinen gevonden</h3>
+                  <p className="text-muted-foreground mb-4">
+                    {searchQuery 
+                      ? `Geen speeltuinen gevonden voor "${searchQuery}". Probeer andere zoektermen.`
+                      : "Er zijn momenteel geen speeltuinen beschikbaar."
+                    }
+                  </p>
+                  {(searchQuery || Object.keys(filters).length > 0) && (
+                    <Button onClick={clearAllFilters} variant="outline">
+                      Alle filters wissen
+                    </Button>
+                  )}
+                </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredSpeeltuinen.map((speeltuin) => (
-                    <SpeeltuinCard key={speeltuin.id} speeltuin={speeltuin} userLocation={userLocation} />
+                    <SpeeltuinCard
+                      key={speeltuin.id}
+                      speeltuin={speeltuin as any}
+                      onSelect={setSelectedSpeeltuin}
+                      userLocation={userLocation}
+                      showDistance={true}
+                    />
                   ))}
                 </div>
               )}
             </div>
           </div>
-        </div>
+        </section>
       </main>
-      
-      <Footer lastUpdated={lastUpdated} />
+
+      {/* Footer */}
+      <Footer lastUpdated={(settings as any).last_updated} />
     </div>
   );
 };
