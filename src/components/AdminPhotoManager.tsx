@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import EditSpeeltuinDialog from '@/components/EditSpeeltuinDialog';
-import { useSpeeltuinen } from '@/hooks/useSpeeltuinen';
+import { useSpeeltuinen, useUpdateSpeeltuin } from '@/hooks/useSpeeltuinen';
 import { 
   Trash2, 
   Search, 
@@ -20,7 +20,9 @@ import {
   Upload,
   Edit,
   X,
-  ExternalLink
+  ExternalLink,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 
 interface PhotoAnalysis {
@@ -53,6 +55,7 @@ interface PhotoUsage {
 
 const AdminPhotoManager: React.FC = () => {
   const { data: speeltuinen = [] } = useSpeeltuinen();
+  const updateSpeeltuin = useUpdateSpeeltuin();
   const [analysis, setAnalysis] = useState<PhotoAnalysis | null>(null);
   const [speeltuinenWithPhotos, setSpeeltuinenWithPhotos] = useState<SpeeltuinWithPhotos[]>([]);
   const [orphanedPhotos, setOrphanedPhotos] = useState<OrphanedPhoto[]>([]);
@@ -152,6 +155,36 @@ const AdminPhotoManager: React.FC = () => {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleDeletePhoto = async (speeltuinId: string, photoIndex: number) => {
+    const speeltuin = speeltuinen.find(s => s.id === speeltuinId);
+    if (!speeltuin || !speeltuin.fotos) return;
+
+    const updatedFotos = [...speeltuin.fotos];
+    const deletedPhoto = updatedFotos.splice(photoIndex, 1)[0];
+
+    try {
+      await updateSpeeltuin.mutateAsync({
+        id: speeltuinId,
+        fotos: updatedFotos
+      });
+
+      toast({
+        title: "Foto verwijderd",
+        description: `Foto is succesvol verwijderd uit ${speeltuin.naam}`,
+      });
+
+      // Refresh data
+      analyzeDatabase();
+    } catch (error) {
+      console.error('Error deleting photo:', error);
+      toast({
+        title: "Fout bij verwijderen",
+        description: "Er is een fout opgetreden bij het verwijderen van de foto.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -320,6 +353,8 @@ const AdminPhotoManager: React.FC = () => {
                       {speeltuin.fotos.map((photo: any, index: number) => {
                         const url = photo.url || photo;
                         const filename = url.split('/').pop() || url;
+                        const isUsedInProduction = photo.used_in_production !== false; // Default to true if not specified
+                        
                         return (
                           <div key={index} className="relative group">
                             <img
@@ -327,30 +362,95 @@ const AdminPhotoManager: React.FC = () => {
                               alt={`${speeltuin.naam} foto ${index + 1}`}
                               className="w-full h-32 object-cover rounded-lg border"
                             />
+                            
+                            {/* Production usage indicator */}
+                            <div className="absolute top-2 left-2">
+                              <Badge 
+                                variant={isUsedInProduction ? "default" : "secondary"}
+                                className="text-xs"
+                              >
+                                {isUsedInProduction ? (
+                                  <>
+                                    <Eye className="h-3 w-3 mr-1" />
+                                    Productie
+                                  </>
+                                ) : (
+                                  <>
+                                    <EyeOff className="h-3 w-3 mr-1" />
+                                    Verborgen
+                                  </>
+                                )}
+                              </Badge>
+                            </div>
+                            
+                            {/* Delete button */}
                             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 rounded-lg flex items-center justify-center">
                               <Button
                                 size="sm"
                                 variant="destructive"
                                 className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                                onClick={() => {
-                                  // Remove photo from speeltuin
-                                  const fullSpeeltuin = speeltuinen.find(s => s.id === speeltuin.id);
-                                  if (fullSpeeltuin) {
-                                    const updatedFotos = fullSpeeltuin.fotos.filter((_: any, i: number) => i !== index);
-                                    // Here you would typically call an update function
-                                    toast({
-                                      title: "Foto verwijderd",
-                                      description: `Foto ${index + 1} is verwijderd uit ${speeltuin.naam}`,
-                                    });
-                                  }
-                                }}
+                                onClick={() => handleDeletePhoto(speeltuin.id, index)}
                               >
                                 <X className="h-4 w-4" />
                               </Button>
                             </div>
-                            <p className="text-xs text-muted-foreground mt-1 truncate" title={filename}>
-                              {filename}
-                            </p>
+                            
+                            <div className="mt-2 space-y-1">
+                              <p className="text-xs text-muted-foreground truncate" title={filename}>
+                                {filename}
+                              </p>
+                              <div className="flex gap-1">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="flex-1 text-xs"
+                                  onClick={() => window.open(url, '_blank')}
+                                >
+                                  <ExternalLink className="h-3 w-3 mr-1" />
+                                  Bekijk
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant={isUsedInProduction ? "outline" : "default"}
+                                  className="flex-1 text-xs"
+                                  onClick={async () => {
+                                    try {
+                                      await updateSpeeltuin.mutateAsync({
+                                        id: speeltuin.id,
+                                        fotos: speeltuin.fotos.map((p: any, i: number) => 
+                                          i === index ? { ...p, used_in_production: !isUsedInProduction } : p
+                                        )
+                                      });
+                                      
+                                      toast({
+                                        title: isUsedInProduction ? "Foto verborgen" : "Foto zichtbaar gemaakt",
+                                        description: `Foto is ${isUsedInProduction ? 'verborgen' : 'zichtbaar'} in productie`,
+                                      });
+                                      
+                                      analyzeDatabase();
+                                    } catch (error) {
+                                      toast({
+                                        title: "Fout",
+                                        description: "Er is een fout opgetreden bij het wijzigen van de foto status.",
+                                        variant: "destructive",
+                                      });
+                                    }
+                                  }}
+                                >
+                                  {isUsedInProduction ? (
+                                    <>
+                                      <EyeOff className="h-3 w-3 mr-1" />
+                                      Verberg
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Eye className="h-3 w-3 mr-1" />
+                                      Toon
+                                    </>
+                                  )}
+                                </Button>
+                              </div>
+                            </div>
                           </div>
                         );
                       })}
