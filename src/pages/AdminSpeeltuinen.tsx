@@ -9,6 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { MapPin, Search, Edit, Trash2, Eye, Download, Upload, FileText, Database, CheckSquare, Square } from 'lucide-react';
 import EditSpeeltuinDialog from '@/components/EditSpeeltuinDialog';
+import AdminPhotoManager from '@/components/AdminPhotoManager';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,6 +45,7 @@ const AdminSpeeltuinen = () => {
   const [editingSpeeltuin, setEditingSpeeltuin] = useState(null);
   const [selectedSpeeltuinen, setSelectedSpeeltuinen] = useState(new Set());
   const [selectAll, setSelectAll] = useState(false);
+  const [showPhotoManager, setShowPhotoManager] = useState(false);
 
   const filteredSpeeltuinen = speeltuinen.filter(speeltuin =>
     speeltuin.naam.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -292,6 +294,15 @@ const AdminSpeeltuinen = () => {
                   Backup maken
                 </Button>
 
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setShowPhotoManager(!showPhotoManager)}
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Foto Beheer
+                </Button>
+
                 <div className="relative">
                   <input
                     type="file"
@@ -308,6 +319,15 @@ const AdminSpeeltuinen = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Photo Manager */}
+        {showPhotoManager && (
+          <Card>
+            <CardContent className="pt-6">
+              <AdminPhotoManager />
+            </CardContent>
+          </Card>
+        )}
 
         {/* Speeltuinen List */}
         <div className="grid gap-4">
