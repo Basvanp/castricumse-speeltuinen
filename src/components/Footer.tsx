@@ -2,14 +2,30 @@ import React from 'react';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
 import { MapPin, Clock, Heart, ExternalLink, ArrowUp, Mail, Phone, Facebook, Instagram, Twitter } from 'lucide-react';
-import { usePublicSiteSettings } from '@/hooks/useSiteSettings';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
 
 interface FooterProps {
   lastUpdated?: string | Date;
 }
 
 const Footer = ({ lastUpdated }: FooterProps) => {
-  const { data: settings } = usePublicSiteSettings();
+  const { data: settings, isLoading, error } = useSiteSettings();
+
+  // Debug log to see what's being loaded
+  React.useEffect(() => {
+    console.log('Footer - Site Settings:', {
+      settings,
+      isLoading,
+      error,
+      hasContactEmail: !!settings?.contact_email,
+      hasContactPhone: !!settings?.contact_phone,
+      hasFacebook: !!settings?.facebook_url,
+      hasInstagram: !!settings?.instagram_url,
+      hasTwitter: !!settings?.twitter_url,
+      siteName: settings?.site_name,
+      siteDescription: settings?.site_description
+    });
+  }, [settings, isLoading, error]);
 
   const formatLastUpdated = (date: string | Date | undefined) => {
     if (!date) return 'Onbekend';
