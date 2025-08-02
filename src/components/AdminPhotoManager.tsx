@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import EditSpeeltuinDialog from '@/components/EditSpeeltuinDialog';
+import { useSpeeltuinen } from '@/hooks/useSpeeltuinen';
 import { 
   Trash2, 
   Search, 
@@ -41,6 +42,7 @@ interface OrphanedPhoto {
 }
 
 const AdminPhotoManager: React.FC = () => {
+  const { data: speeltuinen = [] } = useSpeeltuinen();
   const [analysis, setAnalysis] = useState<PhotoAnalysis | null>(null);
   const [speeltuinenWithPhotos, setSpeeltuinenWithPhotos] = useState<SpeeltuinWithPhotos[]>([]);
   const [orphanedPhotos, setOrphanedPhotos] = useState<OrphanedPhoto[]>([]);
@@ -52,30 +54,27 @@ const AdminPhotoManager: React.FC = () => {
   const analyzeDatabase = async () => {
     setIsLoading(true);
     try {
-      // Get basic statistics
-      const { data: statsData, error: statsError } = await supabase
-        .from('speeltuinen')
-        .select('fotos, afbeelding_url');
-
-      if (statsError) throw statsError;
-
+      // Calculate statistics from local data
       const stats = {
-        total_speeltuinen: statsData.length,
-        speeltuinen_met_fotos: statsData.filter(s => s.fotos && s.fotos.length > 0).length,
-        speeltuinen_met_oude_foto: statsData.filter(s => s.afbeelding_url && s.afbeelding_url !== '').length
+        total_speeltuinen: speeltuinen.length,
+        speeltuinen_met_fotos: speeltuinen.filter(s => s.fotos && s.fotos.length > 0).length,
+        speeltuinen_met_oude_foto: speeltuinen.filter(s => s.afbeelding_url && s.afbeelding_url !== '').length
       };
 
       setAnalysis(stats);
 
-      // Get speeltuinen with photos
-      const { data: photosData, error: photosError } = await supabase
-        .rpc('get_speeltuinen_with_photos');
+      // Create speeltuinen with photos data from local data
+      const photosData = speeltuinen
+        .filter(s => s.fotos && s.fotos.length > 0)
+        .map(s => ({
+          id: s.id,
+          naam: s.naam,
+          fotos: s.fotos,
+          aantal_fotos: Array.isArray(s.fotos) ? s.fotos.length : 0
+        }))
+        .sort((a, b) => b.aantal_fotos - a.aantal_fotos);
 
-      if (photosError) {
-        console.warn('Could not get detailed photo data:', photosError);
-      } else {
-        setSpeeltuinenWithPhotos(photosData || []);
-      }
+      setSpeeltuinenWithPhotos(photosData);
 
       toast({
         title: "Database geanalyseerd",
@@ -158,8 +157,10 @@ const AdminPhotoManager: React.FC = () => {
   };
 
   useEffect(() => {
-    analyzeDatabase();
-  }, []);
+    if (speeltuinen.length > 0) {
+      analyzeDatabase();
+    }
+  }, [speeltuinen]);
 
   return (
     <div className="space-y-6">
@@ -269,7 +270,11 @@ const AdminPhotoManager: React.FC = () => {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => setEditingSpeeltuin(speeltuin)}
+                    onClick={() => {
+                      // Find the full speeltuin data from the main data
+                      const fullSpeeltuin = speeltuinen.find(s => s.id === speeltuin.id);
+                      setEditingSpeeltuin(fullSpeeltuin);
+                    }}
                     className="w-full"
                   >
                     <Edit className="h-4 w-4 mr-2" />
