@@ -1,13 +1,16 @@
 import React from 'react';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
-import { MapPin, Clock, Heart, ExternalLink, ArrowUp } from 'lucide-react';
+import { MapPin, Clock, Heart, ExternalLink, ArrowUp, Mail, Phone, Facebook, Instagram, Twitter } from 'lucide-react';
+import { usePublicSiteSettings } from '@/hooks/useSiteSettings';
 
 interface FooterProps {
   lastUpdated?: string | Date;
 }
 
 const Footer = ({ lastUpdated }: FooterProps) => {
+  const { data: settings } = usePublicSiteSettings();
+
   const formatLastUpdated = (date: string | Date | undefined) => {
     if (!date) return 'Onbekend';
     
@@ -22,6 +25,12 @@ const Footer = ({ lastUpdated }: FooterProps) => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  // Check if we have any contact information
+  const hasContactInfo = settings?.contact_email || settings?.contact_phone;
+  
+  // Check if we have any social media links
+  const hasSocialMedia = settings?.facebook_url || settings?.instagram_url || settings?.twitter_url;
 
   return (
     <footer className="relative bg-gradient-to-t from-primary/5 via-background to-background border-t border-border/50 mt-16">
@@ -38,7 +47,7 @@ const Footer = ({ lastUpdated }: FooterProps) => {
               <div className="absolute -bottom-8 -right-4 text-6xl text-primary/20 font-serif">"</div>
               
               <blockquote className="text-xl lg:text-2xl font-medium text-foreground leading-relaxed italic">
-                Ontdek alle speeltuinen in Castricum en omgeving. Van kleine buurtpleintjes tot grotere speeltuinen voor uren speelplezier.
+                {settings?.site_description || 'Ontdek alle speeltuinen in Castricum en omgeving. Van kleine buurtpleintjes tot grotere speeltuinen voor uren speelplezier.'}
               </blockquote>
             </div>
           </div>
@@ -54,7 +63,68 @@ const Footer = ({ lastUpdated }: FooterProps) => {
             <div className="h-px bg-gradient-to-l from-transparent to-border w-20"></div>
           </div>
 
+          {/* Contact Information - Only show if we have contact data */}
+          {hasContactInfo && (
+            <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground flex-wrap">
+              {settings?.contact_email && (
+                <a 
+                  href={`mailto:${settings.contact_email}`}
+                  className="hover:text-foreground transition-colors flex items-center gap-2"
+                >
+                  <Mail className="w-4 h-4" />
+                  <span>{settings.contact_email}</span>
+                </a>
+              )}
+              {settings?.contact_phone && (
+                <a 
+                  href={`tel:${settings.contact_phone}`}
+                  className="hover:text-foreground transition-colors flex items-center gap-2"
+                >
+                  <Phone className="w-4 h-4" />
+                  <span>{settings.contact_phone}</span>
+                </a>
+              )}
+            </div>
+          )}
 
+          {/* Social Media Links - Only show if we have social media data */}
+          {hasSocialMedia && (
+            <div className="flex items-center justify-center gap-4">
+              {settings?.facebook_url && (
+                <a 
+                  href={settings.facebook_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-foreground transition-colors p-2 rounded-full hover:bg-primary/10"
+                  aria-label="Facebook"
+                >
+                  <Facebook className="w-5 h-5" />
+                </a>
+              )}
+              {settings?.instagram_url && (
+                <a 
+                  href={settings.instagram_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-foreground transition-colors p-2 rounded-full hover:bg-primary/10"
+                  aria-label="Instagram"
+                >
+                  <Instagram className="w-5 h-5" />
+                </a>
+              )}
+              {settings?.twitter_url && (
+                <a 
+                  href={settings.twitter_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-foreground transition-colors p-2 rounded-full hover:bg-primary/10"
+                  aria-label="Twitter"
+                >
+                  <Twitter className="w-5 h-5" />
+                </a>
+              )}
+            </div>
+          )}
 
           {/* Last updated section */}
           <div className="flex items-center justify-center gap-2 text-muted-foreground">
@@ -85,7 +155,7 @@ const Footer = ({ lastUpdated }: FooterProps) => {
           {/* Copyright section */}
           <div className="pt-4 border-t border-border/30">
             <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground flex-wrap">
-              <span>© 2025 Castricum Speeltuinen Gids</span>
+              <span>© 2025 {settings?.site_name || 'Castricum Speeltuinen Gids'}</span>
               <span>•</span>
               <span className="flex items-center gap-1">
                 Gemaakt met <Heart className="w-4 h-4 text-red-500 fill-current animate-pulse" /> voor families in Castricum
