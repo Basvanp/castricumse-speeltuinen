@@ -6,6 +6,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import EditSpeeltuinDialog from '@/components/EditSpeeltuinDialog';
 import { 
   Trash2, 
   Search, 
@@ -15,7 +16,8 @@ import {
   CheckCircle,
   RefreshCw,
   Download,
-  Upload
+  Upload,
+  Edit
 } from 'lucide-react';
 
 interface PhotoAnalysis {
@@ -44,6 +46,7 @@ const AdminPhotoManager: React.FC = () => {
   const [orphanedPhotos, setOrphanedPhotos] = useState<OrphanedPhoto[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isCleaning, setIsCleaning] = useState(false);
+  const [editingSpeeltuin, setEditingSpeeltuin] = useState<any>(null);
   const { toast } = useToast();
 
   const analyzeDatabase = async () => {
@@ -257,11 +260,21 @@ const AdminPhotoManager: React.FC = () => {
                   <CardTitle className="text-sm">{speeltuin.naam}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mb-3">
                     <span className="text-2xl font-bold">{speeltuin.aantal_fotos}</span>
                     <FileImage className="h-4 w-4 text-muted-foreground" />
                   </div>
-                  <p className="text-xs text-muted-foreground">foto's</p>
+                  <p className="text-xs text-muted-foreground mb-3">foto's</p>
+                  
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setEditingSpeeltuin(speeltuin)}
+                    className="w-full"
+                  >
+                    <Edit className="h-4 w-4 mr-2" />
+                    Bewerken
+                  </Button>
                 </CardContent>
               </Card>
             ))}
@@ -339,6 +352,18 @@ const AdminPhotoManager: React.FC = () => {
           )}
         </TabsContent>
       </Tabs>
+
+      {/* Edit Dialog */}
+      {editingSpeeltuin && (
+        <EditSpeeltuinDialog
+          speeltuin={editingSpeeltuin}
+          onClose={() => {
+            setEditingSpeeltuin(null);
+            // Refresh data after edit
+            analyzeDatabase();
+          }}
+        />
+      )}
     </div>
   );
 };
