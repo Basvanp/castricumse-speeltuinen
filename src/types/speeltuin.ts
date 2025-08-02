@@ -52,16 +52,13 @@ export interface Speeltuin {
   // Grootte (size)
   grootte: 'klein' | 'middel' | 'groot';
   
-  // Overig (other features) - existing
+  // Overig (other features)
   is_omheind: boolean;
   heeft_schaduw: boolean;
   is_rolstoeltoegankelijk: boolean;
   heeft_horeca: boolean;
   heeft_toilet: boolean;
   heeft_parkeerplaats: boolean;
-  heeft_horeca_aanwezig: boolean;
-  heeft_toilet_beschikbaar: boolean;
-  heeft_parkeerplaats_nabij: boolean;
   
   // Toegankelijkheid
   toegang_zichtbaar_omheind: boolean;

@@ -83,9 +83,6 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
     is_omheind: false,
     heeft_schaduw: false,
     is_rolstoeltoegankelijk: false,
-    heeft_horeca_aanwezig: false,
-    heeft_toilet_beschikbaar: false,
-    heeft_parkeerplaats_nabij: false,
   });
 
   const [dragOver, setDragOver] = useState(false);
@@ -150,9 +147,6 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
         is_omheind: speeltuin.is_omheind || false,
         heeft_schaduw: speeltuin.heeft_schaduw || false,
         is_rolstoeltoegankelijk: speeltuin.is_rolstoeltoegankelijk || false,
-        heeft_horeca_aanwezig: speeltuin.heeft_horeca_aanwezig || false,
-        heeft_toilet_beschikbaar: speeltuin.heeft_toilet_beschikbaar || false,
-        heeft_parkeerplaats_nabij: speeltuin.heeft_parkeerplaats_nabij || false,
       });
       setGpsFromPhoto(false);
     }
@@ -903,9 +897,6 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
                 { key: 'is_omheind', label: 'Omheind', id: 'over-omheind' },
                 { key: 'heeft_schaduw', label: 'Schaduw', id: 'over-schaduw' },
                 { key: 'is_rolstoeltoegankelijk', label: 'Rolstoeltoegankelijk', id: 'over-rolstoel' },
-                { key: 'heeft_horeca_aanwezig', label: 'Horeca aanwezig', id: 'over-horeca-aan' },
-                { key: 'heeft_toilet_beschikbaar', label: 'Toilet beschikbaar', id: 'over-toilet-besch' },
-                { key: 'heeft_parkeerplaats_nabij', label: 'Parkeerplaats nabij', id: 'over-parkeer-nabij' },
               ].map(({ key, label, id }) => (
                 <div key={key} className="flex items-center space-x-2">
                   <Checkbox
