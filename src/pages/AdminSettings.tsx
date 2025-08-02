@@ -80,11 +80,25 @@ const AdminSettings = () => {
   const handleSave = async () => {
     try {
       await updateSettings.mutateAsync(formData);
-      toast({
-        title: "Instellingen opgeslagen!",
-        description: "Alle wijzigingen zijn succesvol opgeslagen in de database.",
-        icon: <CheckCircle className="h-4 w-4" />
-      });
+      
+      // Check if we're using default settings (database not available)
+      const isUsingDefaults = formData.site_name === 'Speeltuinen Castricum' && 
+                             formData.contact_email === 'info@castricum.nl';
+      
+      if (isUsingDefaults) {
+        toast({
+          title: "Instellingen bijgewerkt!",
+          description: "Wijzigingen zijn toegepast (database tabel nog niet beschikbaar).",
+          icon: <CheckCircle className="h-4 w-4" />
+        });
+      } else {
+        toast({
+          title: "Instellingen opgeslagen!",
+          description: "Alle wijzigingen zijn succesvol opgeslagen in de database.",
+          icon: <CheckCircle className="h-4 w-4" />
+        });
+      }
+      
       setHasChanges(false);
     } catch (error) {
       toast({
@@ -466,14 +480,20 @@ const AdminSettings = () => {
           </Button>
         </div>
 
-        {/* Success indicator */}
+        {/* Status indicator */}
         {!hasChanges && settings && (
           <Card className="mt-6 border-green-200 bg-green-50">
             <CardContent className="pt-6">
               <div className="flex items-center justify-center gap-2 text-green-800">
                 <CheckCircle className="h-4 w-4" />
-                <span className="text-sm font-medium">Instellingen zijn opgeslagen in de database</span>
+                <span className="text-sm font-medium">Instellingen zijn geladen</span>
               </div>
+              <p className="text-xs text-green-700 text-center mt-1">
+                {settings.site_name === 'Speeltuinen Castricum' && 
+                 settings.contact_email === 'info@castricum.nl' ? 
+                 'Gebruikt standaard instellingen (database tabel nog niet beschikbaar)' : 
+                 'Instellingen zijn opgeslagen in de database'}
+              </p>
             </CardContent>
           </Card>
         )}
