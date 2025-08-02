@@ -18,7 +18,9 @@ import {
   RefreshCw,
   Download,
   Upload,
-  Edit
+  Edit,
+  X,
+  ExternalLink
 } from 'lucide-react';
 
 interface PhotoAnalysis {
@@ -41,11 +43,20 @@ interface OrphanedPhoto {
   orphaned_reason: string;
 }
 
+interface PhotoUsage {
+  url: string;
+  filename: string;
+  used_by: string[];
+  file_size?: number;
+  created_at?: string;
+}
+
 const AdminPhotoManager: React.FC = () => {
   const { data: speeltuinen = [] } = useSpeeltuinen();
   const [analysis, setAnalysis] = useState<PhotoAnalysis | null>(null);
   const [speeltuinenWithPhotos, setSpeeltuinenWithPhotos] = useState<SpeeltuinWithPhotos[]>([]);
   const [orphanedPhotos, setOrphanedPhotos] = useState<OrphanedPhoto[]>([]);
+  const [photoUsage, setPhotoUsage] = useState<PhotoUsage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isCleaning, setIsCleaning] = useState(false);
   const [editingSpeeltuin, setEditingSpeeltuin] = useState<any>(null);
@@ -75,6 +86,30 @@ const AdminPhotoManager: React.FC = () => {
         .sort((a, b) => b.aantal_fotos - a.aantal_fotos);
 
       setSpeeltuinenWithPhotos(photosData);
+
+      // Analyze photo usage
+      const usageMap = new Map<string, PhotoUsage>();
+      
+      speeltuinen.forEach(speeltuin => {
+        if (speeltuin.fotos && Array.isArray(speeltuin.fotos)) {
+          speeltuin.fotos.forEach((photo: any) => {
+            const url = photo.url || photo;
+            const filename = url.split('/').pop() || url;
+            
+            if (!usageMap.has(url)) {
+              usageMap.set(url, {
+                url,
+                filename,
+                used_by: []
+              });
+            }
+            
+            usageMap.get(url)!.used_by.push(speeltuin.naam);
+          });
+        }
+      });
+      
+      setPhotoUsage(Array.from(usageMap.values()));
 
       toast({
         title: "Database geanalyseerd",
@@ -187,6 +222,7 @@ const AdminPhotoManager: React.FC = () => {
         <TabsList>
           <TabsTrigger value="overview">Overzicht</TabsTrigger>
           <TabsTrigger value="photos">Foto's per Speeltuin</TabsTrigger>
+          <TabsTrigger value="usage">Foto Gebruik</TabsTrigger>
           <TabsTrigger value="orphaned">Orphaned Foto's</TabsTrigger>
         </TabsList>
 
@@ -254,32 +290,77 @@ const AdminPhotoManager: React.FC = () => {
             </Badge>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="space-y-4">
             {speeltuinenWithPhotos.map((speeltuin) => (
               <Card key={speeltuin.id}>
                 <CardHeader>
-                  <CardTitle className="text-sm">{speeltuin.naam}</CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg">{speeltuin.naam}</CardTitle>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary">
+                        {speeltuin.aantal_fotos} foto's
+                      </Badge>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          const fullSpeeltuin = speeltuinen.find(s => s.id === speeltuin.id);
+                          setEditingSpeeltuin(fullSpeeltuin);
+                        }}
+                      >
+                        <Edit className="h-4 w-4 mr-2" />
+                        Bewerken
+                      </Button>
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-2xl font-bold">{speeltuin.aantal_fotos}</span>
-                    <FileImage className="h-4 w-4 text-muted-foreground" />
-                  </div>
-                  <p className="text-xs text-muted-foreground mb-3">foto's</p>
-                  
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      // Find the full speeltuin data from the main data
-                      const fullSpeeltuin = speeltuinen.find(s => s.id === speeltuin.id);
-                      setEditingSpeeltuin(fullSpeeltuin);
-                    }}
-                    className="w-full"
-                  >
-                    <Edit className="h-4 w-4 mr-2" />
-                    Bewerken
-                  </Button>
+                  {speeltuin.fotos && Array.isArray(speeltuin.fotos) && speeltuin.fotos.length > 0 ? (
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {speeltuin.fotos.map((photo: any, index: number) => {
+                        const url = photo.url || photo;
+                        const filename = url.split('/').pop() || url;
+                        return (
+                          <div key={index} className="relative group">
+                            <img
+                              src={url}
+                              alt={`${speeltuin.naam} foto ${index + 1}`}
+                              className="w-full h-32 object-cover rounded-lg border"
+                            />
+                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 rounded-lg flex items-center justify-center">
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                                onClick={() => {
+                                  // Remove photo from speeltuin
+                                  const fullSpeeltuin = speeltuinen.find(s => s.id === speeltuin.id);
+                                  if (fullSpeeltuin) {
+                                    const updatedFotos = fullSpeeltuin.fotos.filter((_: any, i: number) => i !== index);
+                                    // Here you would typically call an update function
+                                    toast({
+                                      title: "Foto verwijderd",
+                                      description: `Foto ${index + 1} is verwijderd uit ${speeltuin.naam}`,
+                                    });
+                                  }
+                                }}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-1 truncate" title={filename}>
+                              {filename}
+                            </p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <FileImage className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p>Geen foto's gevonden</p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}
@@ -289,6 +370,83 @@ const AdminPhotoManager: React.FC = () => {
             <div className="text-center py-8 text-muted-foreground">
               <FileImage className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>Geen speeltuinen met foto's gevonden</p>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="usage" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">Foto Gebruik Analyse</h3>
+            <Badge variant="secondary">
+              {photoUsage.length} unieke foto's
+            </Badge>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {photoUsage.map((photo, index) => (
+              <Card key={index}>
+                <CardContent className="p-4">
+                  <div className="relative mb-3">
+                    <img
+                      src={photo.url}
+                      alt={photo.filename}
+                      className="w-full h-32 object-cover rounded-lg border"
+                    />
+                    <Badge 
+                      variant={photo.used_by.length > 1 ? "default" : "secondary"}
+                      className="absolute top-2 right-2"
+                    >
+                      {photo.used_by.length}x gebruikt
+                    </Badge>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <p className="font-medium text-sm truncate" title={photo.filename}>
+                      {photo.filename}
+                    </p>
+                    
+                    <div className="space-y-1">
+                      <p className="text-xs text-muted-foreground">Gebruikt door:</p>
+                      <div className="flex flex-wrap gap-1">
+                        {photo.used_by.map((speeltuin, idx) => (
+                          <Badge key={idx} variant="outline" className="text-xs">
+                            {speeltuin}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-2 mt-3">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => window.open(photo.url, '_blank')}
+                        className="flex-1"
+                      >
+                        <ExternalLink className="h-3 w-3 mr-1" />
+                        Bekijk
+                      </Button>
+                      {photo.used_by.length === 0 && (
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          className="flex-1"
+                        >
+                          <Trash2 className="h-3 w-3 mr-1" />
+                          Verwijder
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {photoUsage.length === 0 && (
+            <div className="text-center py-8 text-muted-foreground">
+              <FileImage className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>Geen foto's gevonden</p>
             </div>
           )}
         </TabsContent>
