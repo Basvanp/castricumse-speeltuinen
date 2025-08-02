@@ -145,3 +145,57 @@ export interface SpeeltuinFilters {
     ondergrond_kunstgras: boolean;
   };
 }
+
+// New types for additional features
+
+export interface Favorite {
+  id: string;
+  speeltuin_id: string;
+  user_id: string;
+  created_at: string;
+  speeltuin?: Speeltuin; // For joined queries
+}
+
+export interface Review {
+  id: string;
+  speeltuin_id: string;
+  user_id: string;
+  rating: number; // 1-5 stars
+  title: string;
+  content: string;
+  pros?: string; // Positive aspects
+  cons?: string; // Negative aspects
+  visit_date?: string; // When they visited
+  created_at: string;
+  updated_at: string;
+  is_verified: boolean; // Whether the review is verified
+  speeltuin?: Speeltuin; // For joined queries
+  user?: {
+    name: string;
+    avatar_url?: string;
+  };
+}
+
+export interface Notification {
+  id: string;
+  user_id: string;
+  type: 'new_speeltuin' | 'review_response' | 'favorite_update' | 'system';
+  title: string;
+  message: string;
+  speeltuin_id?: string;
+  review_id?: string;
+  is_read: boolean;
+  created_at: string;
+  speeltuin?: Speeltuin; // For joined queries
+}
+
+export interface UserPreferences {
+  user_id: string;
+  email_notifications: boolean;
+  push_notifications: boolean;
+  favorite_notifications: boolean;
+  review_notifications: boolean;
+  new_speeltuin_notifications: boolean;
+  created_at: string;
+  updated_at: string;
+}

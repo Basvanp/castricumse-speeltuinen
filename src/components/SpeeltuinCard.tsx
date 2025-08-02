@@ -2,19 +2,26 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ExternalLink, Copy, MapPin, Map, AlertCircle, ChevronLeft, ChevronRight, X, Lightbulb } from 'lucide-react';
+import { ExternalLink, Copy, MapPin, Map, AlertCircle, ChevronLeft, ChevronRight, X, Lightbulb, Heart } from 'lucide-react';
 import { Speeltuin } from '@/types/speeltuin';
 import { useToast } from '@/hooks/use-toast';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { calculateDistance } from '@/lib/utils';
 import SpeeltuinBadge, { BadgeType } from '@/components/SpeeltuinBadge';
+import { useAuth } from '@/hooks/useAuth';
+import { useIsFavorite, useAddFavorite, useRemoveFavorite } from '@/hooks/useSpeeltuinen';
 
 interface SpeeltuinCardProps {
   speeltuin: Speeltuin;
   userLocation?: [number, number] | null;
+  showFavoriteButton?: boolean;
 }
 
-const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin, userLocation }) => {
+const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin, userLocation, showFavoriteButton = true }) => {
+  const { user } = useAuth();
+  const { data: isFavorite = false } = useIsFavorite(speeltuin.id, user?.id);
+  const addFavorite = useAddFavorite();
+  const removeFavorite = useRemoveFavorite();
   const { toast } = useToast();
   const { trackEvent } = useAnalytics();
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
@@ -94,6 +101,47 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin, userLocation }
       const url = `https://www.google.com/maps/search/?api=1&query=${speeltuin.latitude},${speeltuin.longitude}`;
       window.open(url, '_blank');
       trackEvent('google_maps_opened', speeltuin.id);
+    }
+  };
+
+  const handleFavoriteClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    if (!user) {
+      toast({
+        title: "Inloggen vereist",
+        description: "Je moet ingelogd zijn om favorieten toe te voegen.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      if (isFavorite) {
+        await removeFavorite.mutateAsync({ 
+          speeltuinId: speeltuin.id, 
+          userId: user.id 
+        });
+        toast({
+          title: "Verwijderd uit favorieten",
+          description: `${speeltuin.naam} is verwijderd uit je favorieten.`,
+        });
+      } else {
+        await addFavorite.mutateAsync({ 
+          speeltuinId: speeltuin.id, 
+          userId: user.id 
+        });
+        toast({
+          title: "Toegevoegd aan favorieten",
+          description: `${speeltuin.naam} is toegevoegd aan je favorieten!`,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Fout",
+        description: "Er is een fout opgetreden. Probeer het opnieuw.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -335,6 +383,22 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({ speeltuin, userLocation }
             <AlertCircle size={18} />
             Probleem melden
           </Button>
+
+          {showFavoriteButton && (
+            <Button
+              onClick={handleFavoriteClick}
+              className={`w-full h-12 ${
+                isFavorite 
+                  ? 'bg-red-500 hover:bg-red-600 text-white' 
+                  : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+              } font-semibold rounded-lg py-3 px-4 flex items-center justify-center gap-2`}
+            >
+              <Heart 
+                className={`h-5 w-5 ${isFavorite ? 'fill-current' : ''}`} 
+              />
+              {isFavorite ? 'Verwijder uit favorieten' : 'Voeg toe aan favorieten'}
+            </Button>
+          )}
         </div>
 
         {/* Fixi Popup */}
