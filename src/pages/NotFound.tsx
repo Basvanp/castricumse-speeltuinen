@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import SEOHead from '@/components/SEOHead';
 
 const NotFound = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -8,93 +9,99 @@ const NotFound = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden px-4 playground-404">
-      {/* Background Gradient */}
-      <div className="absolute inset-0 playground-gradient"></div>
-      
-      {/* Floating Clouds */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="cloud cloud-1"></div>
-        <div className="cloud cloud-2"></div>
-        <div className="cloud cloud-3"></div>
-      </div>
-
-      {/* Main Content Container */}
-      <div className="relative z-10 max-w-4xl mx-auto text-center">
+    <>
+      <SEOHead 
+        title="404 - Pagina Niet Gevonden | Speeltuinen Castricum"
+        description="Deze speeltuin pagina bestaat niet. Ga terug naar de hoofdpagina om alle speeltuinen in Castricum te ontdekken."
+        keywords="404, pagina niet gevonden, speeltuinen, castricum, error"
+      />
+      <div className="min-h-screen flex items-center justify-center relative overflow-hidden px-4 playground-404">
+        {/* Background Gradient */}
+        <div className="absolute inset-0 playground-gradient"></div>
         
-        {/* 404 Error Code */}
-        <div className="mb-8">
-          <h1 
-            className="error-code"
-            style={{
-              animation: isLoaded ? 'bounce 2s infinite' : 'none'
-            }}
-          >
-            404
-          </h1>
+        {/* Floating Clouds */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="cloud cloud-1"></div>
+          <div className="cloud cloud-2"></div>
+          <div className="cloud cloud-3"></div>
         </div>
 
-        {/* Main Message */}
-        <div className="mb-8">
-          <h2 
-            className="main-message"
-            style={{
-              animation: isLoaded ? 'pulse 2s infinite' : 'none'
-            }}
-          >
-            Oeps! Deze speeltuin bestaat niet!
-          </h2>
-        </div>
-
-        {/* Subtitle */}
-        <div className="mb-12">
-          <p className="subtitle">
-            Het lijkt erop dat je bent verdwaald in onze digitale speeltuin! 🎪 
-            Geen zorgen, gebeurt de beste van ons. Laten we je terugbrengen naar 
-            de hoofdingang waar alle leuke spellen wachten!
-          </p>
-        </div>
-
-        {/* CTA Button */}
-        <div className="cta-container">
-          {/* 404 Image - Centered above button */}
-          <div className="mb-8 playground-illustration" style={{ marginLeft: '115px' }}>
-            <img 
-              src="/lovable-uploads/404-image.png" 
-              alt="404 Speeltuin schutting met kijkgat" 
-              className="playground-svg"
-              style={{
-                animation: isLoaded ? 'float 4s ease-in-out infinite' : 'none',
-                maxWidth: '400px',
-                height: 'auto'
-              }}
-            />
-          </div>
+        {/* Main Content Container */}
+        <div className="relative z-10 max-w-4xl mx-auto text-center">
           
-          <a 
-            href="/" 
-            className="cta-button"
-            onClick={(e) => {
-              // Confetti effect
-              const burst = document.createElement('div');
-              burst.className = 'absolute inset-0 pointer-events-none';
-              burst.innerHTML = Array.from({ length: 15 }).map((_, i) => 
-                `<div class="absolute w-2 h-2 rounded-full animate-ping" style="
-                  background-color: ${['#FF6B6B', '#4ECDC4', '#FFD93D', '#FFCCCB'][Math.floor(Math.random() * 4)]};
-                  left: ${50 + (Math.random() - 0.5) * 100}%;
-                  top: ${50 + (Math.random() - 0.5) * 100}%;
-                  animation-delay: ${Math.random() * 0.5}s;
-                  animation-duration: ${1 + Math.random()}s;
-                "></div>`
-              ).join('');
-              e.currentTarget.appendChild(burst);
-              setTimeout(() => burst.remove(), 2000);
-            }}
-          >
-            🏠 Terug naar alle speeltuinen
-          </a>
+          {/* 404 Error Code */}
+          <div className="mb-8">
+            <h1 
+              className="error-code"
+              style={{
+                animation: isLoaded ? 'bounce 2s infinite' : 'none'
+              }}
+            >
+              404
+            </h1>
+          </div>
+
+          {/* Main Message */}
+          <div className="mb-8">
+            <h2 
+              className="main-message"
+              style={{
+                animation: isLoaded ? 'pulse 2s infinite' : 'none'
+              }}
+            >
+              Oeps! Deze speeltuin bestaat niet!
+            </h2>
+          </div>
+
+          {/* Subtitle */}
+          <div className="mb-12">
+            <p className="subtitle">
+              Het lijkt erop dat je bent verdwaald in onze digitale speeltuin! 🎪 
+              Geen zorgen, gebeurt de beste van ons. Laten we je terugbrengen naar 
+              de hoofdingang waar alle leuke spellen wachten!
+            </p>
+          </div>
+
+          {/* CTA Button */}
+          <div className="cta-container">
+            {/* 404 Image - Centered above button */}
+            <div className="mb-8 playground-illustration" style={{ marginLeft: '115px' }}>
+              <img 
+                src="/lovable-uploads/404-image.png" 
+                alt="404 Speeltuin schutting met kijkgat" 
+                className="playground-svg"
+                style={{
+                  animation: isLoaded ? 'float 4s ease-in-out infinite' : 'none',
+                  maxWidth: '400px',
+                  height: 'auto'
+                }}
+              />
+            </div>
+            
+            <a 
+              href="/" 
+              className="cta-button"
+              onClick={(e) => {
+                // Confetti effect
+                const burst = document.createElement('div');
+                burst.className = 'absolute inset-0 pointer-events-none';
+                burst.innerHTML = Array.from({ length: 15 }).map((_, i) => 
+                  `<div class="absolute w-2 h-2 rounded-full animate-ping" style="
+                    background-color: ${['#FF6B6B', '#4ECDC4', '#FFD93D', '#FFCCCB'][Math.floor(Math.random() * 4)]};
+                    left: ${50 + (Math.random() - 0.5) * 100}%;
+                    top: ${50 + (Math.random() - 0.5) * 100}%;
+                    animation-delay: ${Math.random() * 0.5}s;
+                    animation-duration: ${1 + Math.random()}s;
+                  "></div>`
+                ).join('');
+                e.currentTarget.appendChild(burst);
+                setTimeout(() => burst.remove(), 2000);
+              }}
+            >
+              🏠 Terug naar alle speeltuinen
+            </a>
+          </div>
         </div>
-      </div>
 
       {/* Custom CSS */}
       <style>{`
@@ -308,7 +315,7 @@ const NotFound = () => {
           }
         }
       `}</style>
-    </div>
+    </>
   );
 };
 
