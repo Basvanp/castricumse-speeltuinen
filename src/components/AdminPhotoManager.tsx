@@ -186,7 +186,7 @@ const AdminPhotoManager: React.FC = () => {
         // Remove old photo by clearing afbeelding_url
         await updateSpeeltuin.mutateAsync({
           id: speeltuinId,
-          afbeelding_url: ''
+          updates: { afbeelding_url: '' }
         });
         
         toast({
@@ -202,7 +202,7 @@ const AdminPhotoManager: React.FC = () => {
         
         await updateSpeeltuin.mutateAsync({
           id: speeltuinId,
-          fotos: updatedFotos
+          updates: { fotos: updatedFotos }
         });
         
         toast({
@@ -504,7 +504,7 @@ const AdminPhotoManager: React.FC = () => {
                                              
                                              await updateSpeeltuin.mutateAsync({
                                                id: speeltuin.id,
-                                               fotos: updatedFotos
+                                               updates: { fotos: updatedFotos }
                                              });
                                              
                                              toast({
