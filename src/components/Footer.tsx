@@ -9,23 +9,7 @@ interface FooterProps {
 }
 
 const Footer = ({ lastUpdated }: FooterProps) => {
-  const { data: settings, isLoading, error } = useSiteSettings();
-
-  // Debug log to see what's being loaded
-  React.useEffect(() => {
-    console.log('Footer - Site Settings:', {
-      settings,
-      isLoading,
-      error,
-      hasContactEmail: !!settings?.contact_email,
-      hasContactPhone: !!settings?.contact_phone,
-      hasFacebook: !!settings?.facebook_url,
-      hasInstagram: !!settings?.instagram_url,
-      hasTwitter: !!settings?.twitter_url,
-      siteName: settings?.site_name,
-      siteDescription: settings?.site_description
-    });
-  }, [settings, isLoading, error]);
+  const { data: settings } = useSiteSettings();
 
   const formatLastUpdated = (date: string | Date | undefined) => {
     if (!date) return 'Onbekend';
