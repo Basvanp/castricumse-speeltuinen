@@ -3,9 +3,10 @@ import { Speeltuin } from '@/types/speeltuin';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MapPin, Star, Clock, Users, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MapPin, Star, Clock, Users, ExternalLink, ChevronLeft, ChevronRight, AlertTriangle, X, Copy } from 'lucide-react';
 import { calculateDistance } from '@/lib/utils';
 import { BadgeType } from '@/components/SpeeltuinBadge';
+import { useToast } from '@/hooks/use-toast';
 
 interface SpeeltuinCardProps {
   speeltuin: Speeltuin;
@@ -21,6 +22,8 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
   showDistance = true,
 }) => {
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+  const [isFixiPopupOpen, setIsFixiPopupOpen] = useState(false);
+  const { toast } = useToast();
 
   // Get photos array from speeltuin data (backwards compatible)
   const getPhotos = useCallback(() => {
@@ -57,10 +60,12 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
     setCurrentPhotoIndex(index);
   }, []);
 
-  // Keyboard navigation
+  // Keyboard navigation and popup escape handling
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (hasMultiplePhotos) {
+      if (e.key === 'Escape' && isFixiPopupOpen) {
+        setIsFixiPopupOpen(false);
+      } else if (hasMultiplePhotos && !isFixiPopupOpen) {
         if (e.key === 'ArrowLeft') {
           goToPrevious();
         } else if (e.key === 'ArrowRight') {
@@ -71,7 +76,18 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [hasMultiplePhotos, goToPrevious, goToNext]);
+  }, [hasMultiplePhotos, goToPrevious, goToNext, isFixiPopupOpen]);
+
+  const copyToClipboard = () => {
+    if (speeltuin.latitude && speeltuin.longitude) {
+      const coordinates = `${speeltuin.latitude},${speeltuin.longitude}`;
+      navigator.clipboard.writeText(coordinates);
+      toast({
+        title: "Gekopieerd!",
+        description: "Locatie is gekopieerd naar het klembord.",
+      });
+    }
+  };
 
   // Get a consistent placeholder image based on speeltuin name
   const getPlaceholderImage = () => {
@@ -190,141 +206,245 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
   };
 
   return (
-    <Card 
-      className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary/20"
-      onClick={() => onSelect?.(speeltuin)}
-    >
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <CardTitle className="text-lg font-semibold group-hover:text-primary transition-colors">
-            {speeltuin.naam}
-          </CardTitle>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleGoogleMapsClick}
-            className="opacity-0 group-hover:opacity-100 transition-opacity"
-          >
-            <ExternalLink className="h-4 w-4" />
-          </Button>
-        </div>
-        
-        {/* Location and distance */}
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <MapPin className="h-4 w-4" />
-          <span>
-            {speeltuin.latitude.toFixed(6)}, {speeltuin.longitude.toFixed(6)}
-          </span>
-          {distance && (
-            <>
-              <span>•</span>
-              <span>{distance < 1 ? `${Math.round(distance * 1000)}m` : `${distance.toFixed(1)}km`}</span>
-            </>
-          )}
-        </div>
-      </CardHeader>
+    <>
+      <Card 
+        className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary/20"
+        onClick={() => onSelect?.(speeltuin)}
+      >
+        <CardHeader className="pb-3">
+          <div className="flex items-start justify-between">
+            <CardTitle className="text-lg font-semibold group-hover:text-primary transition-colors">
+              {speeltuin.naam}
+            </CardTitle>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleGoogleMapsClick}
+              className="opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <ExternalLink className="h-4 w-4" />
+            </Button>
+          </div>
+          
+          {/* Location and distance */}
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <MapPin className="h-4 w-4" />
+            <span>
+              {speeltuin.latitude.toFixed(6)}, {speeltuin.longitude.toFixed(6)}
+            </span>
+            {distance && (
+              <>
+                <span>•</span>
+                <span>{distance < 1 ? `${Math.round(distance * 1000)}m` : `${distance.toFixed(1)}km`}</span>
+              </>
+            )}
+          </div>
+        </CardHeader>
 
-      <CardContent className="pt-0">
-        {/* Photo Carousel */}
-        <div className="relative h-48 w-full rounded-lg overflow-hidden shadow-lg mb-4">
-          {photos.length > 0 ? (
-            <>
+        <CardContent className="pt-0">
+          {/* Photo Carousel */}
+          <div className="relative h-48 w-full rounded-lg overflow-hidden shadow-lg mb-4">
+            {photos.length > 0 ? (
+              <>
+                <img
+                  src={photos[currentPhotoIndex]}
+                  alt={`${speeltuin.naam} - foto ${currentPhotoIndex + 1}`}
+                  className="w-full h-full object-cover transition-opacity duration-300"
+                  loading="lazy"
+                />
+                
+                {/* Navigation arrows - only show if multiple photos */}
+                {hasMultiplePhotos && (
+                  <>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        goToPrevious();
+                      }}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-1 rounded-full transition-all duration-200"
+                      aria-label="Vorige foto"
+                    >
+                      <ChevronLeft size={20} />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        goToNext();
+                      }}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-1 rounded-full transition-all duration-200"
+                      aria-label="Volgende foto"
+                    >
+                      <ChevronRight size={20} />
+                    </button>
+                  </>
+                )}
+                
+                {/* Photo counter - only show if multiple photos */}
+                {hasMultiplePhotos && (
+                  <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
+                    {currentPhotoIndex + 1} / {photos.length}
+                  </div>
+                )}
+              </>
+            ) : (
               <img
-                src={photos[currentPhotoIndex]}
-                alt={`${speeltuin.naam} - foto ${currentPhotoIndex + 1}`}
-                className="w-full h-full object-cover transition-opacity duration-300"
+                src={getPlaceholderImage()}
+                alt={speeltuin.naam}
+                className="w-full h-full object-cover"
                 loading="lazy"
               />
-              
-              {/* Navigation arrows - only show if multiple photos */}
-              {hasMultiplePhotos && (
-                <>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      goToPrevious();
-                    }}
-                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-1 rounded-full transition-all duration-200"
-                    aria-label="Vorige foto"
-                  >
-                    <ChevronLeft size={20} />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      goToNext();
-                    }}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-1 rounded-full transition-all duration-200"
-                    aria-label="Volgende foto"
-                  >
-                    <ChevronRight size={20} />
-                  </button>
-                </>
-              )}
-              
-              {/* Photo counter - only show if multiple photos */}
-              {hasMultiplePhotos && (
-                <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
-                  {currentPhotoIndex + 1} / {photos.length}
-                </div>
-              )}
-            </>
-          ) : (
-            <img
-              src={getPlaceholderImage()}
-              alt={speeltuin.naam}
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
+            )}
+          </div>
+          
+          {/* Dot indicators - only show if multiple photos */}
+          {hasMultiplePhotos && (
+            <div className="flex justify-center space-x-1 mb-4">
+              {photos.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    goToPhoto(index);
+                  }}
+                  className={`w-2 h-2 rounded-full transition-colors duration-200 ${
+                    index === currentPhotoIndex 
+                      ? 'bg-blue-500' 
+                      : 'bg-gray-300 hover:bg-gray-400'
+                  }`}
+                  aria-label={`Ga naar foto ${index + 1}`}
+                />
+              ))}
+            </div>
           )}
-        </div>
-        
-        {/* Dot indicators - only show if multiple photos */}
-        {hasMultiplePhotos && (
-          <div className="flex justify-center space-x-1 mb-4">
-            {photos.map((_, index) => (
+
+          {/* Description */}
+          {speeltuin.omschrijving && (
+            <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
+              {speeltuin.omschrijving}
+            </p>
+          )}
+
+          {/* Badges */}
+          <div className="flex flex-wrap gap-1 mb-4">
+            {badges.slice(0, 6).map(getBadgeHTML)}
+          </div>
+
+          {/* Quick stats */}
+          <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
+            <div className="flex items-center gap-1">
+              <Users className="h-3 w-3" />
+              <span>{speeltuin.grootte}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Clock className="h-3 w-3" />
+              <span>Altijd open</span>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col gap-2 pt-4">
+            {/* Google Maps button */}
+            {speeltuin.latitude && speeltuin.longitude && (
+              <Button 
+                onClick={handleGoogleMapsClick}
+                className="w-full h-12 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg py-3 px-4 flex items-center justify-center gap-2"
+              >
+                <MapPin className="text-white" />
+                Open in Google Maps
+              </Button>
+            )}
+            
+            {/* Probleem melden button */}
+            <Button 
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsFixiPopupOpen(true);
+              }}
+              className="w-full mb-3 bg-white hover:bg-gray-50 text-black px-4 py-2 rounded font-semibold border border-gray-300 flex items-center justify-center gap-2"
+            >
+              <AlertTriangle size={18} />
+              Probleem melden
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Fixi Popup */}
+      {isFixiPopupOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Probleem melden</h3>
               <button
-                key={index}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  goToPhoto(index);
-                }}
-                className={`w-2 h-2 rounded-full transition-colors duration-200 ${
-                  index === currentPhotoIndex 
-                    ? 'bg-blue-500' 
-                    : 'bg-gray-300 hover:bg-gray-400'
-                }`}
-                aria-label={`Ga naar foto ${index + 1}`}
-              />
-            ))}
+                onClick={() => setIsFixiPopupOpen(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label="Popup sluiten"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="space-y-4">
+              {/* Fixi explanation */}
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="text-blue-500 mt-1 flex-shrink-0" size={20} />
+                <div>
+                  <h4 className="font-medium mb-1">Over Fixi</h4>
+                  <p className="text-sm text-gray-600">
+                    Fixi is een app waarmee je snel en gemakkelijk problemen kunt melden aan de gemeente. 
+                    Van kapotte speeltoestellen tot onderhoud - jouw melding komt direct bij de juiste dienst terecht.
+                  </p>
+                </div>
+              </div>
+
+              {/* Location info */}
+              <div className="bg-gray-50 rounded-lg p-3">
+                <p className="text-sm font-medium">Locatie: {speeltuin.naam}</p>
+              </div>
+
+              {/* Action buttons */}
+              <div className="space-y-3">
+                <Button 
+                  asChild 
+                  className="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-lg font-medium"
+                >
+                  <a 
+                    href="https://www.fixi.nl" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2"
+                  >
+                    <ExternalLink size={18} />
+                    Probleem melden via Fixi
+                  </a>
+                </Button>
+
+                {speeltuin.latitude && speeltuin.longitude && (
+                  <Button 
+                    onClick={() => {
+                      copyToClipboard();
+                      setIsFixiPopupOpen(false);
+                    }}
+                    className="w-full bg-white hover:bg-gray-50 text-gray-700 px-4 py-3 rounded-lg border border-gray-300 flex items-center justify-center gap-2"
+                  >
+                    <Copy size={18} />
+                    Locatie kopiëren voor Fixi
+                  </Button>
+                )}
+              </div>
+
+              {/* Help text */}
+              <div className="flex items-start gap-2 text-sm text-gray-500 pt-2">
+                <span>💡</span>
+                <span>Geef toestemming voor je locatie in Fixi voor automatisch inzoomen</span>
+              </div>
+            </div>
           </div>
-        )}
-
-        {/* Description */}
-        {speeltuin.omschrijving && (
-          <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
-            {speeltuin.omschrijving}
-          </p>
-        )}
-
-        {/* Badges */}
-        <div className="flex flex-wrap gap-1 mb-4">
-          {badges.slice(0, 6).map(getBadgeHTML)}
         </div>
-
-        {/* Quick stats */}
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <div className="flex items-center gap-1">
-            <Users className="h-3 w-3" />
-            <span>{speeltuin.grootte}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Clock className="h-3 w-3" />
-            <span>Altijd open</span>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+      )}
+    </>
   );
 };
 
