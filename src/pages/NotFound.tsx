@@ -103,218 +103,214 @@ const NotFound = () => {
           </div>
         </div>
 
-      {/* Custom CSS */}
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
-        
-        .playground-404 {
-          font-family: 'Nunito', sans-serif;
-          animation: fadeInUp 1s ease-out;
-        }
-        
-        .playground-gradient {
-          background: linear-gradient(135deg, #FFE5B4 0%, #FFCCCB 25%, #E6E6FA 50%, #B0E0E6 75%, #FFE5B4 100%);
-          background-size: 400% 400%;
-          animation: gradientShift 8s ease-in-out infinite;
-        }
-        
-        .error-code {
-          font-size: 8rem;
-          font-weight: 800;
-          color: #FF6B6B;
-          text-shadow: 4px 4px 0px #FFD93D, 8px 8px 0px rgba(255, 107, 107, 0.3);
-          margin: 0;
-          line-height: 1;
-        }
-        
-        .main-message {
-          font-size: 2.5rem;
-          font-weight: 700;
-          color: #4ECDC4;
-          text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
-          margin: 0;
-          line-height: 1.2;
-        }
-        
-        .subtitle {
-          font-size: 1.2rem;
-          font-weight: 400;
-          color: #666;
-          line-height: 1.6;
-          max-width: 600px;
-          margin: 0 auto;
-        }
-        
-        .playground-illustration {
-          filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
-        }
-        
-        .playground-svg {
-          max-width: 100%;
-          height: auto;
-          border-radius: 20px;
-          box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-          transition: all 0.3s ease;
-        }
-        
-        .playground-svg:hover {
-          transform: scale(1.02);
-          box-shadow: 0 20px 45px rgba(0,0,0,0.15);
-        }
-        
-        .cta-button {
-          display: inline-block;
-          background: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 100%);
-          color: white;
-          font-size: 1.2rem;
-          font-weight: 700;
-          padding: 16px 32px;
-          border-radius: 50px;
-          text-decoration: none;
-          box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
-          transition: all 0.3s ease;
-          position: relative;
-          overflow: hidden;
-        }
-        
-        .cta-button:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 12px 35px rgba(255, 107, 107, 0.4);
-          background: linear-gradient(135deg, #FF5252 0%, #26A69A 100%);
-        }
-        
-        .cta-button:active {
-          transform: translateY(-1px);
-        }
-        
-        /* Cloud Animations */
-        .cloud {
-          position: absolute;
-          background: white;
-          border-radius: 50px;
-          opacity: 0.8;
-        }
-        
-        .cloud-1 {
-          width: 80px;
-          height: 30px;
-          top: 20%;
-          left: -100px;
-          animation: translate 12s linear infinite;
-        }
-        
-        .cloud-2 {
-          width: 60px;
-          height: 25px;
-          top: 40%;
-          left: -100px;
-          animation: translate 8s linear infinite;
-          animation-delay: 2s;
-        }
-        
-        .cloud-3 {
-          width: 100px;
-          height: 35px;
-          top: 60%;
-          left: -100px;
-          animation: translate 15s linear infinite;
-          animation-delay: 5s;
-        }
-        
-        /* Keyframe Animations */
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
+        {/* Custom CSS */}
+        <style>{`
+          /* Import Google Fonts */
+          @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+          
+          /* Base Styles */
+          .playground-404 {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #FFE5B4 0%, #FFCCCB 25%, #E6E6FA 50%, #B0E0E6 75%, #FFE5B4 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
           }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        @keyframes gradientShift {
-          0%, 100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-        }
-        
-        @keyframes bounce {
-          0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-          40% { transform: translateY(-20px); }
-          60% { transform: translateY(-10px); }
-        }
-        
-        @keyframes pulse {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.05); }
-        }
-        
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
-        }
-        
-        @keyframes swing {
-          0%, 100% { transform: rotate(-5deg); }
-          50% { transform: rotate(5deg); }
-        }
-        
-        @keyframes rotate {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        
-        @keyframes translate {
-          from { transform: translateX(0px); }
-          to { transform: translateX(calc(100vw + 100px)); }
-        }
-        
-        @keyframes slideGlow {
-          0%, 100% { filter: brightness(1); }
-          50% { filter: brightness(1.2); }
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 768px) {
+          
+          /* Error Code */
           .error-code {
-            font-size: 6rem;
+            font-size: 8rem;
+            font-weight: 800;
+            color: #FF6B6B;
+            text-shadow: 4px 4px 0px #FFD93D;
+            margin: 0;
+            line-height: 1;
           }
           
+          /* Main Message */
           .main-message {
-            font-size: 2rem;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #4A5568;
+            margin: 0;
+            line-height: 1.2;
           }
           
+          /* Subtitle */
           .subtitle {
-            font-size: 1rem;
-            padding: 0 20px;
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: #718096;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto;
           }
           
-          .playground-svg {
-            width: 300px;
-            height: 225px;
-          }
-          
+          /* CTA Button */
           .cta-button {
-            font-size: 1rem;
-            padding: 14px 28px;
-          }
-        }
-        
-        @media (max-width: 480px) {
-          .error-code {
-            font-size: 4rem;
+            display: inline-block;
+            background: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 100%);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
           }
           
-          .main-message {
-            font-size: 1.5rem;
+          .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 107, 107, 0.4);
+            background: linear-gradient(135deg, #FF5252 0%, #26A69A 100%);
           }
           
+          .cta-button:active {
+            transform: translateY(-1px);
+          }
+          
+          /* Playground SVG */
           .playground-svg {
-            width: 250px;
-            height: 188px;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
+            transition: all 0.3s ease;
           }
-        }
-      `}</style>
+          
+          .playground-svg:hover {
+            filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.15));
+            transform: scale(1.05);
+          }
+          
+          /* Clouds */
+          .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50px;
+            opacity: 0.7;
+          }
+          
+          .cloud-1 {
+            width: 100px;
+            height: 40px;
+            top: 20%;
+            left: -100px;
+            animation: translate 12s linear infinite;
+          }
+          
+          .cloud-2 {
+            width: 80px;
+            height: 30px;
+            top: 40%;
+            left: -80px;
+            animation: translate 8s linear infinite;
+            animation-delay: 2s;
+          }
+          
+          .cloud-3 {
+            width: 120px;
+            height: 50px;
+            top: 60%;
+            left: -120px;
+            animation: translate 15s linear infinite;
+            animation-delay: 5s;
+          }
+          
+          /* Keyframe Animations */
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          
+          @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+          }
+          
+          @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+          }
+          
+          @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+          }
+          
+          @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+          }
+          
+          @keyframes swing {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+          }
+          
+          @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+          
+          @keyframes translate {
+            from { transform: translateX(0px); }
+            to { transform: translateX(calc(100vw + 100px)); }
+          }
+          
+          @keyframes slideGlow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
+          }
+          
+          /* Responsive Design */
+          @media (max-width: 768px) {
+            .error-code {
+              font-size: 6rem;
+            }
+            
+            .main-message {
+              font-size: 2rem;
+            }
+            
+            .subtitle {
+              font-size: 1rem;
+              padding: 0 20px;
+            }
+            
+            .playground-svg {
+              width: 300px;
+              height: 225px;
+            }
+            
+            .cta-button {
+              font-size: 1rem;
+              padding: 14px 28px;
+            }
+          }
+          
+          @media (max-width: 480px) {
+            .error-code {
+              font-size: 4rem;
+            }
+            
+            .main-message {
+              font-size: 1.5rem;
+            }
+            
+            .playground-svg {
+              width: 250px;
+              height: 188px;
+            }
+          }
+        `}</style>
+      </div>
     </>
   );
 };
