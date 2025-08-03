@@ -25,18 +25,11 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
   const [isFixiPopupOpen, setIsFixiPopupOpen] = useState(false);
   const { toast } = useToast();
 
-  // Get photos array from speeltuin data (backwards compatible)
+  // Get photos array from speeltuin data
   const getPhotos = useCallback(() => {
-    // Check if speeltuin has a fotos property (new format)
-    if (speeltuin.fotos && Array.isArray(speeltuin.fotos) && speeltuin.fotos.length > 0) {
-      return speeltuin.fotos.map(foto => typeof foto === 'string' ? foto : foto.url);
-    }
-    // Fall back to single afbeelding_url (old format)
-    if (speeltuin.afbeelding_url) {
-      return [speeltuin.afbeelding_url];
-    }
-    // No photos available
-    return [];
+    return Array.isArray(speeltuin.fotos) && speeltuin.fotos.length > 0
+      ? speeltuin.fotos
+      : [];
   }, [speeltuin]);
 
   const photos = getPhotos();
@@ -112,29 +105,42 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
 
   const getBadgeHTML = (badgeType: BadgeType) => {
     const badgeConfig = {
-      'natuurspeeltuin': { text: 'Natuurspeeltuin', color: 'bg-green-100 text-green-800' },
-      'buurtspeeltuin': { text: 'Buurtspeeltuin', color: 'bg-blue-100 text-blue-800' },
-      'schoolplein': { text: 'Schoolplein', color: 'bg-purple-100 text-purple-800' },
-      'speelbos': { text: 'Speelbos', color: 'bg-orange-100 text-orange-800' },
-      'rolstoeltoegankelijk': { text: 'Rolstoeltoegankelijk', color: 'bg-red-100 text-red-800' },
-      'waterpomp': { text: 'Waterpomp', color: 'bg-cyan-100 text-cyan-800' },
-      'klimtoestel': { text: 'Klimtoestel', color: 'bg-indigo-100 text-indigo-800' },
-      'kabelbaan': { text: 'Kabelbaan', color: 'bg-pink-100 text-pink-800' },
-      'skatebaan': { text: 'Skatebaan', color: 'bg-gray-100 text-gray-800' },
-      'basketbalveld': { text: 'Basketbalveld', color: 'bg-amber-100 text-amber-800' },
-      'trapveld': { text: 'Trapveld', color: 'bg-lime-100 text-lime-800' },
-      'wipwap': { text: 'Wipwap', color: 'bg-emerald-100 text-emerald-800' },
-      'duikelrek': { text: 'Duikelrek', color: 'bg-teal-100 text-teal-800' },
+      // Voorzieningen
       'zandbak': { text: 'Zandbak', color: 'bg-yellow-100 text-yellow-800' },
       'glijbaan': { text: 'Glijbaan', color: 'bg-green-100 text-green-800' },
       'schommel': { text: 'Schommel', color: 'bg-orange-100 text-orange-800' },
+      'kabelbaan': { text: 'Kabelbaan', color: 'bg-pink-100 text-pink-800' },
       'bankjes': { text: 'Bankjes', color: 'bg-brown-100 text-brown-800' },
       'sportveld': { text: 'Sportveld', color: 'bg-red-100 text-red-800' },
+      'klimtoestel': { text: 'Klimtoestel', color: 'bg-indigo-100 text-indigo-800' },
+      'water_pomp': { text: 'Water/Pomp', color: 'bg-cyan-100 text-cyan-800' },
+      'panakooi': { text: 'Panakooi', color: 'bg-purple-100 text-purple-800' },
+      'skatebaan': { text: 'Skatebaan', color: 'bg-gray-100 text-gray-800' },
+      'basketbalveld': { text: 'Basketbalveld', color: 'bg-amber-100 text-amber-800' },
+      'wipwap': { text: 'Wipwap', color: 'bg-emerald-100 text-emerald-800' },
+      'duikelrek': { text: 'Duikelrek', color: 'bg-teal-100 text-teal-800' },
+      'toilet': { text: 'Toilet', color: 'bg-purple-100 text-purple-800' },
+      'parkeerplaats': { text: 'Parkeerplaats', color: 'bg-gray-100 text-gray-800' },
+      'horeca': { text: 'Horeca', color: 'bg-pink-100 text-pink-800' },
+      
+      // Ondergrond
+      'ondergrond_zand': { text: 'Zand', color: 'bg-yellow-100 text-yellow-800' },
+      'ondergrond_gras': { text: 'Gras', color: 'bg-green-100 text-green-800' },
+      'ondergrond_rubber': { text: 'Rubber', color: 'bg-red-100 text-red-800' },
+      'ondergrond_tegels': { text: 'Tegels', color: 'bg-gray-100 text-gray-800' },
+      'ondergrond_kunstgras': { text: 'Kunstgras', color: 'bg-green-100 text-green-800' },
+      
+      // Leeftijd
+      'geschikt_peuters': { text: 'Peuters', color: 'bg-pink-100 text-pink-800' },
+      'geschikt_kleuters': { text: 'Kleuters', color: 'bg-blue-100 text-blue-800' },
+      'geschikt_kinderen': { text: 'Kinderen', color: 'bg-green-100 text-green-800' },
+      
+      // Overige kenmerken
       'omheind': { text: 'Omheind', color: 'bg-gray-100 text-gray-800' },
       'schaduw': { text: 'Schaduw', color: 'bg-blue-100 text-blue-800' },
-      'parkeerplaats': { text: 'Parkeerplaats', color: 'bg-gray-100 text-gray-800' },
-      'toilet': { text: 'Toilet', color: 'bg-purple-100 text-purple-800' },
-      'horeca': { text: 'Horeca', color: 'bg-pink-100 text-pink-800' },
+      'rolstoeltoegankelijk': { text: 'Rolstoeltoegankelijk', color: 'bg-red-100 text-red-800' },
+      
+      // Grootte
       'klein': { text: 'Klein', color: 'bg-gray-100 text-gray-800' },
       'middel': { text: 'Middel', color: 'bg-blue-100 text-blue-800' },
       'groot': { text: 'Groot', color: 'bg-green-100 text-green-800' },
@@ -150,45 +156,27 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
     );
   };
 
-  // Determine badges to show
+  // Determine badges to show (alleen de belangrijkste)
   const badges: BadgeType[] = [];
   
-  // Type badges
-  if (speeltuin.type_natuurspeeltuin) badges.push('natuurspeeltuin');
-  if (speeltuin.type_buurtspeeltuin) badges.push('buurtspeeltuin');
-  if (speeltuin.type_schoolplein) badges.push('schoolplein');
-  if (speeltuin.type_speelbos) badges.push('speelbos');
-  
-  // Accessibility badges
-  if (speeltuin.is_rolstoeltoegankelijk) badges.push('rolstoeltoegankelijk');
-  if (speeltuin.heeft_schaduw) badges.push('schaduw');
-  if (speeltuin.is_omheind) badges.push('omheind');
-  
-  // Facility badges (top 3 most important)
-  if (speeltuin.heeft_water_pomp) badges.push('waterpomp');
-  if (speeltuin.heeft_klimtoestel) badges.push('klimtoestel');
-  if (speeltuin.heeft_kabelbaan) badges.push('kabelbaan');
-  if (speeltuin.heeft_skatebaan) badges.push('skatebaan');
-  if (speeltuin.heeft_basketbalveld) badges.push('basketbalveld');
-  if (speeltuin.heeft_trapveld) badges.push('trapveld');
-  if (speeltuin.heeft_wipwap) badges.push('wipwap');
-  if (speeltuin.heeft_duikelrek) badges.push('duikelrek');
-  if (speeltuin.heeft_zandbak) badges.push('zandbak');
+  // Basis voorzieningen
   if (speeltuin.heeft_glijbaan) badges.push('glijbaan');
   if (speeltuin.heeft_schommel) badges.push('schommel');
+  if (speeltuin.heeft_zandbak) badges.push('zandbak');
+  if (speeltuin.heeft_kabelbaan) badges.push('kabelbaan');
   if (speeltuin.heeft_bankjes) badges.push('bankjes');
   if (speeltuin.heeft_sportveld) badges.push('sportveld');
   
-  // Practical badges
-  if (speeltuin.heeft_parkeerplaats) badges.push('parkeerplaats');
-  if (speeltuin.heeft_toilet) badges.push('toilet');
-  if (speeltuin.heeft_horeca) badges.push('horeca');
+  // Overige kenmerken
+  if (speeltuin.is_omheind) badges.push('omheind');
+  if (speeltuin.heeft_schaduw) badges.push('schaduw');
+      // is_rolstoeltoegankelijk removed
   
-  // Size badge
+  // Grootte badge
   badges.push(speeltuin.grootte);
 
-  // Calculate distance if user location is provided
-  const distance = userLocation && showDistance
+  // Calculate distance if user location is provided and speeltuin has coordinates
+  const distance = userLocation && showDistance && speeltuin.latitude && speeltuin.longitude
     ? calculateDistance(
         userLocation[0],
         userLocation[1],
@@ -199,10 +187,18 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
 
   const handleGoogleMapsClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    window.open(
-      `https://www.google.com/maps?q=${speeltuin.latitude},${speeltuin.longitude}`,
-      '_blank'
-    );
+    if (speeltuin.latitude && speeltuin.longitude) {
+      window.open(
+        `https://www.google.com/maps?q=${speeltuin.latitude},${speeltuin.longitude}`,
+        '_blank'
+      );
+    } else {
+      toast({
+        title: "Locatie niet beschikbaar",
+        description: "Deze speeltuin heeft geen coördinaten.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -216,23 +212,28 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
             <CardTitle className="text-lg font-semibold group-hover:text-primary transition-colors">
               {speeltuin.naam}
             </CardTitle>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleGoogleMapsClick}
-              className="opacity-0 group-hover:opacity-100 transition-opacity"
-            >
-              <ExternalLink className="h-4 w-4" />
-            </Button>
+            {speeltuin.latitude && speeltuin.longitude && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleGoogleMapsClick}
+                className="opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <ExternalLink className="h-4 w-4" />
+              </Button>
+            )}
           </div>
           
           {/* Location and distance */}
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <MapPin className="h-4 w-4" />
             <span>
-              {speeltuin.latitude.toFixed(6)}, {speeltuin.longitude.toFixed(6)}
+              {speeltuin.latitude && speeltuin.longitude 
+                ? `${speeltuin.latitude.toFixed(6)}, ${speeltuin.longitude.toFixed(6)}`
+                : 'Locatie niet beschikbaar'
+              }
             </span>
-            {distance && (
+            {distance && distance !== Infinity && (
               <>
                 <span>•</span>
                 <span>{distance < 1 ? `${Math.round(distance * 1000)}m` : `${distance.toFixed(1)}km`}</span>
@@ -333,10 +334,6 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
 
             {/* Quick stats */}
             <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
-              <div className="flex items-center gap-1">
-                <Users className="h-3 w-3" />
-                <span>{speeltuin.grootte}</span>
-              </div>
               <div className="flex items-center gap-1">
                 <Clock className="h-3 w-3" />
                 <span>Altijd open</span>

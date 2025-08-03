@@ -61,7 +61,7 @@ export const generateSpeeltuinSchema = (speeltuin: Speeltuin, settings: Record<s
     "name": speeltuin.naam,
     "description": speeltuin.omschrijving || `Speeltuin ${speeltuin.naam} in Castricum`,
     "url": `${window.location.origin}/#speeltuin-${speeltuin.id}`,
-    "image": speeltuin.afbeelding_url || "/placeholder.svg",
+    "image": (speeltuin.fotos && speeltuin.fotos.length > 0) ? speeltuin.fotos[0] : "/placeholder.svg",
     "geo": {
       "@type": "GeoCoordinates",
       "latitude": speeltuin.latitude?.toString() || "",
@@ -93,11 +93,7 @@ export const generateSpeeltuinSchema = (speeltuin: Speeltuin, settings: Record<s
         "name": "Bankjes",
         "value": true
       },
-      speeltuin.is_rolstoeltoegankelijk && {
-        "@type": "LocationFeatureSpecification",
-        "name": "Rolstoeltoegankelijk",
-        "value": true
-      },
+      // is_rolstoeltoegankelijk removed
       speeltuin.heeft_toilet && {
         "@type": "LocationFeatureSpecification",
         "name": "Toilet",

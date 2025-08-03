@@ -368,9 +368,9 @@ const AdminSpeeltuinen = () => {
                       />
 
                       {/* Image */}
-                      {speeltuin.afbeelding_url && (
+                      {speeltuin.fotos && speeltuin.fotos.length > 0 && (
                         <img
-                          src={speeltuin.afbeelding_url}
+                          src={speeltuin.fotos[0]}
                           alt={speeltuin.naam}
                           className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
                         />
@@ -406,9 +406,9 @@ const AdminSpeeltuinen = () => {
                                   </DialogDescription>
                                 </DialogHeader>
                                 <div className="space-y-4">
-                                  {speeltuin.afbeelding_url && (
+                                  {speeltuin.fotos && speeltuin.fotos.length > 0 && (
                                     <img
-                                      src={speeltuin.afbeelding_url}
+                                      src={speeltuin.fotos[0]}
                                       alt={speeltuin.naam}
                                       className="w-full h-48 object-cover rounded-lg"
                                     />

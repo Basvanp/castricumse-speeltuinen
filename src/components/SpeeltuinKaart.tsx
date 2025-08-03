@@ -189,7 +189,7 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
         if (speeltuin.type_speelbos) badges.push('speelbos');
         
         // Accessibility badges
-        if (speeltuin.is_rolstoeltoegankelijk) badges.push('rolstoeltoegankelijk');
+        // is_rolstoeltoegankelijk removed
         if (speeltuin.heeft_schaduw) badges.push('schaduw');
         if (speeltuin.is_omheind) badges.push('omheind');
         
@@ -199,7 +199,7 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
         if (speeltuin.heeft_kabelbaan) badges.push('kabelbaan');
         if (speeltuin.heeft_skatebaan) badges.push('skatebaan');
         if (speeltuin.heeft_basketbalveld) badges.push('basketbalveld');
-        if (speeltuin.heeft_trapveld) badges.push('trapveld');
+        // heeft_panakooi badge removed
         if (speeltuin.heeft_wipwap) badges.push('wipwap');
         if (speeltuin.heeft_duikelrek) badges.push('duikelrek');
         if (speeltuin.heeft_zandbak) badges.push('zandbak');
@@ -229,9 +229,12 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
               <button onclick="window.selectSpeeltuin('${speeltuin.id}')" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">
                 Bekijk details
               </button>
-              <button onclick="window.openGoogleMaps(${speeltuin.latitude}, ${speeltuin.longitude})" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm">
-                Open in Maps
-              </button>
+              ${speeltuin.latitude && speeltuin.longitude ? 
+                `<button onclick="window.openGoogleMaps(${speeltuin.latitude}, ${speeltuin.longitude})" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm">
+                  Open in Maps
+                </button>` 
+                : ''
+              }
             </div>
           </div>
         `;
@@ -303,8 +306,10 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
         }
       };
 
-      (window as any).openGoogleMaps = (lat: number, lng: number) => {
-        window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
+      (window as any).openGoogleMaps = (lat: number | null, lng: number | null) => {
+        if (lat && lng) {
+          window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
+        }
       };
     }
   }, [speeltuinen, onSpeeltuinSelect]);

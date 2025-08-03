@@ -8,6 +8,8 @@ import AdminSpeeltuinen from "./pages/AdminSpeeltuinen";
 import AdminStats from "./pages/AdminStats";
 import AdminUsers from "./pages/AdminUsers";
 import AdminSettings from "./pages/AdminSettings";
+import AdminFotos from "./pages/AdminFotos";
+import AdminImport from "./pages/AdminImport";
 import NotFound from "./pages/NotFound";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
@@ -40,6 +42,8 @@ const App = () => (
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin/toevoegen" element={<AdminAdd />} />
           <Route path="/admin/speeltuinen" element={<AdminSpeeltuinen />} />
+          <Route path="/admin/fotos" element={<AdminFotos />} />
+        <Route path="/admin/import" element={<AdminImport />} />
           <Route path="/admin/stats" element={<AdminStats />} />
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/settings" element={<AdminSettings />} />

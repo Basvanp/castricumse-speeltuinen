@@ -45,13 +45,18 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
     latitude: null as number | null,
     longitude: null as number | null,
     omschrijving: '',
-    afbeelding_url: '',
+
     fotos: [] as FotoItem[],
     selected_badge: '' as BadgeType | '',
     // Bouwjaar
     bouwjaar: null as number | null,
     // Grootte
     grootte: 'middel' as 'klein' | 'middel' | 'groot',
+    // Type speeltuin
+    type_natuurspeeltuin: false,
+    type_buurtspeeltuin: false,
+    type_schoolplein: false,
+    type_speelbos: false,
     // Voorzieningen
     heeft_glijbaan: false,
     heeft_schommel: false,
@@ -61,7 +66,7 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
     heeft_sportveld: false,
     heeft_klimtoestel: false,
     heeft_water_pomp: false,
-    heeft_trapveld: false,
+    heeft_panakooi: false,
     heeft_skatebaan: false,
     heeft_basketbalveld: false,
     heeft_wipwap: false,
@@ -75,14 +80,22 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
     ondergrond_rubber: false,
     ondergrond_tegels: false,
     ondergrond_kunstgras: false,
-    // Leeftijd
+    // Leeftijd - existing
     geschikt_peuters: false,
     geschikt_kleuters: false,
     geschikt_kinderen: false,
+    // Leeftijd - new specific
+    leeftijd_0_2_jaar: false,
+    leeftijd_2_6_jaar: false,
+    leeftijd_6_12_jaar: false,
+    leeftijd_12_plus_jaar: false,
     // Overig
     is_omheind: false,
     heeft_schaduw: false,
-    is_rolstoeltoegankelijk: false,
+    // Toegankelijkheid fields removed
+    // Veiligheid & toezicht fields removed
+
+
   });
 
   const [dragOver, setDragOver] = useState(false);
@@ -115,7 +128,7 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
         latitude: speeltuin.latitude || null,
         longitude: speeltuin.longitude || null,
         omschrijving: speeltuin.omschrijving || '',
-        afbeelding_url: speeltuin.afbeelding_url || '',
+
         fotos: fotosArray,
         selected_badge: (speeltuin.badge as BadgeType) || '',
         bouwjaar: speeltuin.bouwjaar || null,
@@ -128,7 +141,7 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
         heeft_sportveld: speeltuin.heeft_sportveld || false,
         heeft_klimtoestel: speeltuin.heeft_klimtoestel || false,
         heeft_water_pomp: speeltuin.heeft_water_pomp || false,
-        heeft_trapveld: speeltuin.heeft_trapveld || false,
+        heeft_panakooi: speeltuin.heeft_panakooi || false,
         heeft_skatebaan: speeltuin.heeft_skatebaan || false,
         heeft_basketbalveld: speeltuin.heeft_basketbalveld || false,
         heeft_wipwap: speeltuin.heeft_wipwap || false,
@@ -136,17 +149,33 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
         heeft_toilet: speeltuin.heeft_toilet || false,
         heeft_parkeerplaats: speeltuin.heeft_parkeerplaats || false,
         heeft_horeca: speeltuin.heeft_horeca || false,
+        // Type speeltuin
+        type_natuurspeeltuin: speeltuin.type_natuurspeeltuin || false,
+        type_buurtspeeltuin: speeltuin.type_buurtspeeltuin || false,
+        type_schoolplein: speeltuin.type_schoolplein || false,
+        type_speelbos: speeltuin.type_speelbos || false,
+        // Ondergrond
         ondergrond_zand: speeltuin.ondergrond_zand || false,
         ondergrond_gras: speeltuin.ondergrond_gras || false,
         ondergrond_rubber: speeltuin.ondergrond_rubber || false,
         ondergrond_tegels: speeltuin.ondergrond_tegels || false,
         ondergrond_kunstgras: speeltuin.ondergrond_kunstgras || false,
+        // Leeftijd - existing
         geschikt_peuters: speeltuin.geschikt_peuters || false,
         geschikt_kleuters: speeltuin.geschikt_kleuters || false,
         geschikt_kinderen: speeltuin.geschikt_kinderen || false,
+        // Leeftijd - new specific
+        leeftijd_0_2_jaar: speeltuin.leeftijd_0_2_jaar || false,
+        leeftijd_2_6_jaar: speeltuin.leeftijd_2_6_jaar || false,
+        leeftijd_6_12_jaar: speeltuin.leeftijd_6_12_jaar || false,
+        leeftijd_12_plus_jaar: speeltuin.leeftijd_12_plus_jaar || false,
+        // Overig
         is_omheind: speeltuin.is_omheind || false,
         heeft_schaduw: speeltuin.heeft_schaduw || false,
-        is_rolstoeltoegankelijk: speeltuin.is_rolstoeltoegankelijk || false,
+        // Toegankelijkheid fields removed
+        // Veiligheid & toezicht fields removed
+
+
       });
       setGpsFromPhoto(false);
     }
@@ -227,7 +256,7 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
             setGpsFromPhoto(true);
             toast({
               title: "GPS-locatie gevonden!",
-              description: `Coördinaten automatisch ingesteld: ${latitude!.toFixed(6)}, ${longitude!.toFixed(6)}`,
+              description: `Coördinaten automatisch ingesteld: ${latitude?.toFixed(6)}, ${longitude?.toFixed(6)}`,
             });
           }
         }
@@ -309,7 +338,6 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
           return {
             ...prev,
             fotos: newFotos,
-            afbeelding_url: newFotos.length > 0 ? newFotos[0].url : '', // Keep first photo as main
           };
         } else {
           // Add as new photo
@@ -317,7 +345,6 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
           return {
             ...prev,
             fotos: newFotos,
-            afbeelding_url: prev.fotos.length === 0 ? publicUrl : prev.afbeelding_url, // Set as main if first
           };
         }
       });
@@ -369,7 +396,6 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
       return {
         ...prev,
         fotos: newFotos,
-        afbeelding_url: newFotos.length > 0 ? newFotos[0].url : '', // Update main image
       };
     });
     toast({
@@ -417,7 +443,6 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
       return { 
         ...prev, 
         fotos: newFotos,
-        afbeelding_url: newFotos.length > 0 ? newFotos[0].url : '', // Update main image
       };
     });
 
@@ -501,17 +526,19 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
     // Convert fotos to URL array and save badge to database
     const { selected_badge, fotos, ...speeltuinData } = formData;
     const fotosUrls = fotos.map(foto => foto.url);
-    const afbeelding_url = fotos.length > 0 ? fotos[0].url : '';
     const badge = selected_badge || undefined;
 
-    updateSpeeltuin({
+    // Log the data being sent for debugging
+    const speeltuinToUpdate = {
       id: speeltuin.id,
       ...speeltuinData,
-      afbeelding_url,
       fotos: fotosUrls,
       badge,
       fixi_copy_tekst: fixiText,
-    }, {
+    };
+    console.log('Updating speeltuin with data:', speeltuinToUpdate);
+
+    updateSpeeltuin(speeltuinToUpdate, {
       onSuccess: () => {
         toast({
           title: "Speeltuin bijgewerkt!",
@@ -815,7 +842,7 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
                 { key: 'heeft_sportveld', label: 'Sportveld', id: 'voorz-sportveld' },
                 { key: 'heeft_klimtoestel', label: 'Klimtoestel', id: 'voorz-klimtoestel' },
                 { key: 'heeft_water_pomp', label: 'Water / pomp', id: 'voorz-water-pomp' },
-                { key: 'heeft_trapveld', label: 'Panakooi', id: 'voorz-panakooi' },
+                { key: 'heeft_panakooi', label: 'Panakooi', id: 'voorz-panakooi' },
                 { key: 'heeft_skatebaan', label: 'Skatebaan', id: 'voorz-skatebaan' },
                 { key: 'heeft_basketbalveld', label: 'Basketbalveld', id: 'voorz-basketbal' },
                 { key: 'heeft_wipwap', label: 'Wipwap', id: 'voorz-wipwap' },
@@ -896,7 +923,6 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
               {[
                 { key: 'is_omheind', label: 'Omheind', id: 'over-omheind' },
                 { key: 'heeft_schaduw', label: 'Schaduw', id: 'over-schaduw' },
-                { key: 'is_rolstoeltoegankelijk', label: 'Rolstoeltoegankelijk', id: 'over-rolstoel' },
               ].map(({ key, label, id }) => (
                 <div key={key} className="flex items-center space-x-2">
                   <Checkbox
@@ -912,6 +938,64 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
               ))}
             </div>
           </div>
+
+          {/* Type Speeltuin */}
+          <div className="space-y-3">
+            <Label className="text-sm font-medium text-gray-700">Type Speeltuin</Label>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { key: 'type_natuurspeeltuin', label: 'Natuurspeeltuin', id: 'type-natuur' },
+                { key: 'type_buurtspeeltuin', label: 'Buurt speeltuin', id: 'type-buurt' },
+                { key: 'type_schoolplein', label: 'Schoolplein', id: 'type-school' },
+                { key: 'type_speelbos', label: 'Speelbos', id: 'type-bos' },
+              ].map(({ key, label, id }) => (
+                <div key={key} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={id}
+                    checked={formData[key as keyof typeof formData] as boolean}
+                    onCheckedChange={(checked) =>
+                      setFormData(prev => ({ ...prev, [key]: checked }))
+                    }
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <Label htmlFor={id} className="text-sm">{label}</Label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Leeftijdsgroep (Specifiek) */}
+          <div className="space-y-3">
+            <Label className="text-sm font-medium text-gray-700">Leeftijdsgroep (Specifiek)</Label>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { key: 'leeftijd_0_2_jaar', label: '0-2 jaar', id: 'leeftijd-0-2' },
+                { key: 'leeftijd_2_6_jaar', label: '2-6 jaar', id: 'leeftijd-2-6' },
+                { key: 'leeftijd_6_12_jaar', label: '6-12 jaar', id: 'leeftijd-6-12' },
+                { key: 'leeftijd_12_plus_jaar', label: '12+ jaar', id: 'leeftijd-12-plus' },
+              ].map(({ key, label, id }) => (
+                <div key={key} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={id}
+                    checked={formData[key as keyof typeof formData] as boolean}
+                    onCheckedChange={(checked) =>
+                      setFormData(prev => ({ ...prev, [key]: checked }))
+                    }
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <Label htmlFor={id} className="text-sm">{label}</Label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Toegankelijkheid section removed */}
+
+          {/* Veiligheid & Toezicht section removed */}
+
+
+
+
 
           {/* Badge Selectie */}
           <div className="space-y-3 mb-6">

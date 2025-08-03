@@ -15,7 +15,7 @@ const AdminDashboard = () => {
 
   const stats = {
     total: speeltuinen.length,
-    withImages: speeltuinen.filter(s => s.afbeelding_url).length,
+    withImages: speeltuinen.filter(s => s.fotos && s.fotos.length > 0).length,
     recentlyAdded: speeltuinen.filter(s => {
       const oneWeekAgo = new Date();
       oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
@@ -110,9 +110,9 @@ const AdminDashboard = () => {
                   className="flex items-center justify-between p-3 bg-muted/30 rounded-lg"
                 >
                   <div className="flex items-center gap-3">
-                    {speeltuin.afbeelding_url && (
+                    {speeltuin.fotos && speeltuin.fotos.length > 0 && (
                       <img
-                        src={speeltuin.afbeelding_url}
+                        src={speeltuin.fotos[0]}
                         alt={speeltuin.naam}
                         className="w-12 h-12 object-cover rounded"
                       />

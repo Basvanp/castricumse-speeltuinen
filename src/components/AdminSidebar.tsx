@@ -8,7 +8,9 @@ import {
   BarChart3,
   PlusCircle,
   LogOut,
-  Home
+  Home,
+  Image,
+  Upload
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -62,6 +64,16 @@ const AdminSidebar = () => {
       title: 'Toevoegen', 
       url: '/admin/toevoegen', 
       icon: PlusCircle 
+    },
+    { 
+      title: 'Foto Toewijzer', 
+      url: '/admin/fotos', 
+      icon: Image 
+    },
+    { 
+      title: 'Foto Import', 
+      url: '/admin/import', 
+      icon: Upload 
     },
     { 
       title: 'Statistieken', 

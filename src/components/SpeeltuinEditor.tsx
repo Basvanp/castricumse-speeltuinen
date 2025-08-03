@@ -43,7 +43,7 @@ const SpeeltuinEditor = () => {
     // Voorzieningen - new
     heeft_klimtoestel: false,
     heeft_water_pomp: false,
-    heeft_trapveld: false,
+    heeft_panakooi: false,
     heeft_skatebaan: false,
     heeft_basketbalveld: false,
     heeft_wipwap: false,
@@ -68,33 +68,14 @@ const SpeeltuinEditor = () => {
     // Overig - existing
     is_omheind: false,
     heeft_schaduw: false,
-    is_rolstoeltoegankelijk: false,
     heeft_horeca: false,
     heeft_toilet: false,
     heeft_parkeerplaats: false,
-    // Toegankelijkheid
-    toegang_zichtbaar_omheind: false,
-    toegang_zonder_drempel: false,
-    speeltoestellen_voor_beperking: false,
-    // Veiligheid & toezicht
-    veiligheid_in_zicht_huizen: false,
-    veiligheid_rustige_ligging: false,
-    veiligheid_verkeersluw: false,
-    // Voorzieningen voor ouders
-    ouders_picknicktafels: false,
-    ouders_horeca_buurt: false,
-    ouders_wc_buurt: false,
-    // Ligging / omgeving
-    ligging_woonwijk: false,
-    ligging_bos_natuur: false,
-    ligging_bij_school: false,
-    ligging_fietspad: false,
-    ligging_parkeerplaats: false,
-    // Extra's
-    extra_waterpomp: false,
-    extra_educatief: false,
-    extra_kunstwerk_thema: false,
-    extra_buurtinitiatief: false,
+    // Toegankelijkheid fields removed
+    // Veiligheid & toezicht fields removed
+
+
+    
     // Badge selectie (vereenvoudigd)
     selected_badge: '' as BadgeType | '',
   });
@@ -430,7 +411,7 @@ const SpeeltuinEditor = () => {
         const dateInfo = photoDate ? ` (foto: ${new Date(photoDate).toLocaleString()})` : '';
         toast({
           title: "📍 GPS-locatie gevonden!",
-          description: `Coördinaten: ${latitude!.toFixed(6)}, ${longitude!.toFixed(6)}${dateInfo}`,
+          description: `Coördinaten: ${latitude?.toFixed(6)}, ${longitude?.toFixed(6)}${dateInfo}`,
         });
       } else if (isFirstPhoto) {
         // Handle cases for first photo without GPS
@@ -672,18 +653,14 @@ const SpeeltuinEditor = () => {
   const getActiveBadges = (): BadgeType[] => {
     const badges: BadgeType[] = [];
     
-    // Toegankelijkheid
-    if (formData.is_rolstoeltoegankelijk) badges.push('rolstoelvriendelijk');
-    if (formData.geschikt_peuters) badges.push('babytoegankelijk');
-    
     // Type speeltuin
-    if (formData.type_natuurspeeltuin) badges.push('natuurspeeltuin');
-    if (formData.heeft_water_pomp) badges.push('waterspeeltuin');
+    if (formData.type_natuurspeeltuin) badges.push('natuurspeeltuin' as BadgeType);
+    if (formData.heeft_water_pomp) badges.push('waterspeeltuin' as BadgeType);
     
     // Voorzieningen
-    if (formData.heeft_toilet) badges.push('toiletten');
-    if (formData.heeft_parkeerplaats) badges.push('parkeren');
-    if (formData.heeft_horeca) badges.push('horeca');
+    if (formData.heeft_toilet) badges.push('toiletten' as BadgeType);
+    if (formData.heeft_parkeerplaats) badges.push('parkeren' as BadgeType);
+    if (formData.heeft_horeca) badges.push('horeca' as BadgeType);
     
     // Return only the first badge for clean design
     return badges.slice(0, 1);
@@ -709,15 +686,19 @@ const SpeeltuinEditor = () => {
     // Save selected_badge to database
     const { selected_badge, fotos, ...speeltuinData } = formData;
     
-    // Use first photo as main image, or empty string if no photos
-    const afbeelding_url = fotos.length > 0 ? fotos[0].url : '';
-    const badge = selected_badge || undefined;
+    const fotosUrls = fotos.map(foto => foto.url);
+    const badge = (selected_badge || 'geen') as 'rolstoelvriendelijk' | 'babytoegankelijk' | 'natuurspeeltuin' | 'waterspeeltuin' | 'avonturenspeeltuin' | 'toiletten' | 'parkeren' | 'horeca' | 'geen';
     
-    createSpeeltuin({
+    // Log the data being sent for debugging
+    const speeltuinToCreate = {
       ...speeltuinData,
-      afbeelding_url,
+      fotos: fotosUrls,
+      badge,
       fixi_copy_tekst: fixiText,
-    }, {
+    };
+    console.log('Creating speeltuin with data:', speeltuinToCreate);
+    
+    createSpeeltuin(speeltuinToCreate, {
       onSuccess: () => {
         toast({
           title: "Speeltuin toegevoegd!",
@@ -748,7 +729,7 @@ const SpeeltuinEditor = () => {
           // Voorzieningen - new
           heeft_klimtoestel: false,
           heeft_water_pomp: false,
-          heeft_trapveld: false,
+          heeft_panakooi: false,
           heeft_skatebaan: false,
           heeft_basketbalveld: false,
           heeft_wipwap: false,
@@ -773,33 +754,17 @@ const SpeeltuinEditor = () => {
           // Overig - existing
           is_omheind: false,
           heeft_schaduw: false,
-          is_rolstoeltoegankelijk: false,
           heeft_horeca: false,
           heeft_toilet: false,
           heeft_parkeerplaats: false,
-          // Toegankelijkheid
-          toegang_zichtbaar_omheind: false,
-          toegang_zonder_drempel: false,
-          speeltoestellen_voor_beperking: false,
-          // Veiligheid & toezicht
-          veiligheid_in_zicht_huizen: false,
-          veiligheid_rustige_ligging: false,
-          veiligheid_verkeersluw: false,
-          // Voorzieningen voor ouders
-          ouders_picknicktafels: false,
-          ouders_horeca_buurt: false,
-          ouders_wc_buurt: false,
-          // Ligging / omgeving
-          ligging_woonwijk: false,
-          ligging_bos_natuur: false,
-          ligging_bij_school: false,
-          ligging_fietspad: false,
-          ligging_parkeerplaats: false,
-          // Extra's
-          extra_waterpomp: false,
-          extra_educatief: false,
-          extra_kunstwerk_thema: false,
-          extra_buurtinitiatief: false,
+          // Toegankelijkheid fields removed
+          // Veiligheid & toezicht fields removed
+
+
+          
+  
+  
+  
           // Badge selectie (vereenvoudigd)
           selected_badge: '' as BadgeType | '',
         });
@@ -1099,7 +1064,7 @@ const SpeeltuinEditor = () => {
                 { key: 'heeft_sportveld', label: 'Sportveld' },
                 { key: 'heeft_klimtoestel', label: 'Klimtoestel' },
                 { key: 'heeft_water_pomp', label: 'Water / pomp' },
-                { key: 'heeft_trapveld', label: 'Panakooi' },
+                { key: 'heeft_panakooi', label: 'Panakooi' },
                 { key: 'heeft_skatebaan', label: 'Skatebaan' },
                 { key: 'heeft_basketbalveld', label: 'Basketbalveld' },
                 { key: 'heeft_wipwap', label: 'Wipwap' },
@@ -1229,6 +1194,89 @@ const SpeeltuinEditor = () => {
           </CardContent>
         </Card>
 
+        {/* Type Speeltuin */}
+        <Card>
+          <CardContent className="pt-6">
+            <h3 className="font-medium mb-4">Type Speeltuin</h3>
+            <div className="space-y-3">
+              {[
+                { key: 'type_natuurspeeltuin', label: 'Natuurspeeltuin' },
+                { key: 'type_buurtspeeltuin', label: 'Buurt speeltuin' },
+                { key: 'type_schoolplein', label: 'Schoolplein' },
+                { key: 'type_speelbos', label: 'Speelbos' },
+              ].map(({ key, label }) => (
+                <div key={key} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={key}
+                    checked={formData[key as keyof typeof formData] as boolean}
+                    onCheckedChange={(checked) =>
+                      setFormData(prev => ({ ...prev, [key]: checked }))
+                    }
+                  />
+                  <Label htmlFor={key}>{label}</Label>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Leeftijdsgroep (Specifiek) */}
+        <Card>
+          <CardContent className="pt-6">
+            <h3 className="font-medium mb-4">Leeftijdsgroep (Specifiek)</h3>
+            <div className="space-y-3">
+              {[
+                { key: 'leeftijd_0_2_jaar', label: '0-2 jaar' },
+                { key: 'leeftijd_2_6_jaar', label: '2-6 jaar' },
+                { key: 'leeftijd_6_12_jaar', label: '6-12 jaar' },
+                { key: 'leeftijd_12_plus_jaar', label: '12+ jaar' },
+              ].map(({ key, label }) => (
+                <div key={key} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={key}
+                    checked={formData[key as keyof typeof formData] as boolean}
+                    onCheckedChange={(checked) =>
+                      setFormData(prev => ({ ...prev, [key]: checked }))
+                    }
+                  />
+                  <Label htmlFor={key}>{label}</Label>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Toegankelijkheid */}
+        <Card>
+          <CardContent className="pt-6">
+            <h3 className="font-medium mb-4">Toegankelijkheid</h3>
+            <div className="space-y-3">
+              {[
+                { key: 'toegang_zichtbaar_omheind', label: 'Zichtbaar omheind' },
+                { key: 'toegang_zonder_drempel', label: 'Zonder drempel' },
+                { key: 'speeltoestellen_voor_beperking', label: 'Speeltoestellen voor beperking' },
+              ].map(({ key, label }) => (
+                <div key={key} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={key}
+                    checked={formData[key as keyof typeof formData] as boolean}
+                    onCheckedChange={(checked) =>
+                      setFormData(prev => ({ ...prev, [key]: checked }))
+                    }
+                  />
+                  <Label htmlFor={key}>{label}</Label>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Veiligheid & Toezicht section removed */}
+
+
+
+
+
         {/* Badge Selectie (vereenvoudigd) */}
         <Card>
           <CardContent className="pt-6">
@@ -1238,10 +1286,6 @@ const SpeeltuinEditor = () => {
             </p>
             <div className="space-y-3">
               {[
-                // Toegankelijkheid
-                { key: 'rolstoelvriendelijk', label: 'Rolstoelvriendelijk', description: 'Voor toegankelijke speeltuinen' },
-                { key: 'babytoegankelijk', label: 'Babytoegankelijk', description: 'Voor peuters en baby\'s' },
-                
                 // Type speeltuin
                 { key: 'natuurspeeltuin', label: 'Natuurspeeltuin', description: 'Voor speeltuinen met natuurlijke elementen' },
                 { key: 'waterspeeltuin', label: 'Waterspeeltuin', description: 'Voor speeltuinen met waterelementen' },

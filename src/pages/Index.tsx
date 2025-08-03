@@ -129,7 +129,7 @@ const Index = () => {
       speeltuin.heeft_klimtoestel ? 'klimtoestel' : '',
       speeltuin.heeft_skatebaan ? 'skatebaan' : '',
       speeltuin.heeft_basketbalveld ? 'basketbalveld' : '',
-      speeltuin.heeft_trapveld ? 'trapveld' : '',
+              speeltuin.heeft_panakooi ? 'panakooi' : '',
       speeltuin.heeft_wipwap ? 'wipwap' : '',
       speeltuin.heeft_duikelrek ? 'duikelrek' : '',
       // Add type names
@@ -143,7 +143,7 @@ const Index = () => {
       speeltuin.heeft_horeca ? 'horeca' : '',
       speeltuin.is_omheind ? 'omheind' : '',
       speeltuin.heeft_schaduw ? 'schaduw' : '',
-      speeltuin.is_rolstoeltoegankelijk ? 'rolstoeltoegankelijk' : '',
+              // is_rolstoeltoegankelijk removed
       // Add size
       speeltuin.grootte,
     ].join(' ').toLowerCase();
@@ -222,14 +222,14 @@ const Index = () => {
             case 'hasKlimtoestel': return speeltuin.heeft_klimtoestel;
             case 'hasSkatebaan': return speeltuin.heeft_skatebaan;
             case 'hasBasketbalveld': return speeltuin.heeft_basketbalveld;
-            case 'hasTrapveld': return speeltuin.heeft_trapveld;
+            case 'hasPanakooi': return speeltuin.heeft_panakooi;
             case 'hasWipwap': return speeltuin.heeft_wipwap;
             case 'hasDuikelrek': return speeltuin.heeft_duikelrek;
             case 'typeNatuurspeeltuin': return speeltuin.type_natuurspeeltuin;
             case 'typeBuurtspeeltuin': return speeltuin.type_buurtspeeltuin;
             case 'typeSchoolplein': return speeltuin.type_schoolplein;
             case 'typeSpeelbos': return speeltuin.type_speelbos;
-            case 'isRolstoeltoegankelijk': return speeltuin.is_rolstoeltoegankelijk;
+            case 'isRolstoeltoegankelijk': return false; // is_rolstoeltoegankelijk removed
             case 'hasSchaduw': return speeltuin.heeft_schaduw;
             case 'isOmheind': return speeltuin.is_omheind;
             case 'hasParkeerplaats': return speeltuin.heeft_parkeerplaats;

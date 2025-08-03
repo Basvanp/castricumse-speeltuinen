@@ -40,32 +40,16 @@ export const useSpeeltuinen = (filters?: SpeeltuinFilters) => {
         query = query.eq('heeft_sportveld', true);
       }
 
-      if (filters?.typeNatuurspeeltuin) {
-        query = query.eq('type_natuurspeeltuin', true);
-      }
-
-      if (filters?.typeBuurtspeeltuin) {
-        query = query.eq('type_buurtspeeltuin', true);
-      }
-
-      if (filters?.typeSchoolplein) {
-        query = query.eq('type_schoolplein', true);
-      }
-
-      if (filters?.typeSpeelbos) {
-        query = query.eq('type_speelbos', true);
-      }
-
-      if (filters?.isRolstoeltoegankelijk) {
-        query = query.eq('is_rolstoeltoegankelijk', true);
+      if (filters?.hasKlimtoestel) {
+        query = query.eq('heeft_klimtoestel', true);
       }
 
       if (filters?.hasWaterPomp) {
         query = query.eq('heeft_water_pomp', true);
       }
 
-      if (filters?.hasKlimtoestel) {
-        query = query.eq('heeft_klimtoestel', true);
+      if (filters?.hasPanakooi) {
+        query = query.eq('heeft_panakooi', true);
       }
 
       if (filters?.hasSkatebaan) {
@@ -76,10 +60,6 @@ export const useSpeeltuinen = (filters?: SpeeltuinFilters) => {
         query = query.eq('heeft_basketbalveld', true);
       }
 
-      if (filters?.hasTrapveld) {
-        query = query.eq('heeft_trapveld', true);
-      }
-
       if (filters?.hasWipwap) {
         query = query.eq('heeft_wipwap', true);
       }
@@ -88,28 +68,117 @@ export const useSpeeltuinen = (filters?: SpeeltuinFilters) => {
         query = query.eq('heeft_duikelrek', true);
       }
 
-      if (filters?.hasSchaduw) {
-        query = query.eq('heeft_schaduw', true);
-      }
-
-      if (filters?.isOmheind) {
-        query = query.eq('is_omheind', true);
+      if (filters?.hasToilet) {
+        query = query.eq('heeft_toilet', true);
       }
 
       if (filters?.hasParkeerplaats) {
         query = query.eq('heeft_parkeerplaats', true);
       }
 
-      if (filters?.hasToilet) {
-        query = query.eq('heeft_toilet', true);
-      }
-
       if (filters?.hasHoreca) {
         query = query.eq('heeft_horeca', true);
       }
 
+
+
+      // Type speeltuin filters
+      if (filters?.isTypeNatuurspeeltuin) {
+        query = query.eq('type_natuurspeeltuin', true);
+      }
+
+      if (filters?.isTypeBuurtspeeltuin) {
+        query = query.eq('type_buurtspeeltuin', true);
+      }
+
+      if (filters?.isTypeSchoolplein) {
+        query = query.eq('type_schoolplein', true);
+      }
+
+      if (filters?.isTypeSpeelbos) {
+        query = query.eq('type_speelbos', true);
+      }
+
+      // Leeftijdsgroep filters
+      if (filters?.isLeeftijd0_2) {
+        query = query.eq('leeftijd_0_2_jaar', true);
+      }
+
+      if (filters?.isLeeftijd2_6) {
+        query = query.eq('leeftijd_2_6_jaar', true);
+      }
+
+      if (filters?.isLeeftijd6_12) {
+        query = query.eq('leeftijd_6_12_jaar', true);
+      }
+
+      if (filters?.isLeeftijd12Plus) {
+        query = query.eq('leeftijd_12_plus_jaar', true);
+      }
+
+      if (filters?.hasOndergrondZand) {
+        query = query.eq('ondergrond_zand', true);
+      }
+
+      if (filters?.hasOndergrondGras) {
+        query = query.eq('ondergrond_gras', true);
+      }
+
+      if (filters?.hasOndergrondRubber) {
+        query = query.eq('ondergrond_rubber', true);
+      }
+
+      if (filters?.hasOndergrondTegels) {
+        query = query.eq('ondergrond_tegels', true);
+      }
+
+      if (filters?.hasOndergrondKunstgras) {
+        query = query.eq('ondergrond_kunstgras', true);
+      }
+
+      if (filters?.isGeschiktPeuters) {
+        query = query.eq('geschikt_peuters', true);
+      }
+
+      if (filters?.isGeschiktKleuters) {
+        query = query.eq('geschikt_kleuters', true);
+      }
+
+      if (filters?.isGeschiktKinderen) {
+        query = query.eq('geschikt_kinderen', true);
+      }
+
+      if (filters?.isOmheind) {
+        query = query.eq('is_omheind', true);
+      }
+
+      if (filters?.hasSchaduw) {
+        query = query.eq('heeft_schaduw', true);
+      }
+
+      // Toegankelijkheid filters removed
+
+      // Veiligheid filters removed
+
+
+
+
+
+      // Extra filters
+
+
+
+
+
+
+
+
       if (filters?.grootte) {
         query = query.eq('grootte', filters.grootte);
+      }
+
+      if (filters?.badge && filters.badge !== 'geen') {
+        query = query.eq('badge', filters.badge);
       }
 
       const { data, error } = await query;
@@ -127,7 +196,7 @@ export const useSpeeltuinen = (filters?: SpeeltuinFilters) => {
             speeltuin.latitude,
             speeltuin.longitude
           );
-          return distance <= filters.maxDistance!;
+          return distance !== Infinity && distance <= filters.maxDistance!;
         });
         return filteredData;
       }
@@ -142,16 +211,20 @@ export const useCreateSpeeltuin = () => {
   
   return useMutation({
     mutationFn: async (speeltuin: Omit<Speeltuin, 'id' | 'created_at' | 'updated_at'>) => {
+      // Ensure all fields are properly included
+      const speeltuinData = {
+        ...speeltuin,
+        toegevoegd_door: (await supabase.auth.getUser()).data.user?.id
+      };
+      
       const { data, error } = await supabase
         .from('speeltuinen')
-        .insert([{
-          ...speeltuin,
-          toegevoegd_door: (await supabase.auth.getUser()).data.user?.id
-        }])
+        .insert([speeltuinData])
         .select()
         .single();
       
       if (error) {
+        console.error('Error creating speeltuin:', error);
         throw error;
       }
       
@@ -216,6 +289,7 @@ export const useUpdateSpeeltuin = () => {
         .single();
 
       if (error) {
+        console.error('Error updating speeltuin:', error);
         throw error;
       }
 
@@ -237,7 +311,7 @@ export const useReviews = (speeltuinId?: string) => {
         .from('reviews')
         .select(`
           *,
-          speeltuin:speeltuinen(id, naam, afbeelding_url)
+          speeltuin:speeltuinen(id, naam, fotos)
         `)
         .order('created_at', { ascending: false });
 
@@ -335,7 +409,7 @@ export const useNotifications = (userId?: string) => {
         .from('notifications')
         .select(`
           *,
-          speeltuin:speeltuinen(id, naam, afbeelding_url)
+          speeltuin:speeltuinen(id, naam, fotos)
         `)
         .eq('user_id', userId!)
         .order('created_at', { ascending: false });
@@ -460,7 +534,10 @@ export const useUpdateUserPreferences = () => {
 };
 
 // Helper function for distance calculation
-function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+function calculateDistance(lat1: number, lon1: number, lat2: number | null, lon2: number | null): number {
+  if (!lat2 || !lon2) {
+    return Infinity; // Return infinity for speeltuinen without coordinates
+  }
   const R = 6371; // Radius of the Earth in kilometers
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
