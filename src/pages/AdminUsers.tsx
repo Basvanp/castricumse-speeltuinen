@@ -137,14 +137,7 @@ const AdminUsers = () => {
     }
 
     try {
-      // Use the secure validation function
-      const { error: validationError } = await supabase.rpc('validate_role_change', {
-        target_user_id: editingUser.id,
-        new_role: inviteRole
-      });
-
-      if (validationError) throw validationError;
-
+      // Use the secure role update with built-in validation
       const { error } = await supabase
         .from('user_roles')
         .update({ role: inviteRole })

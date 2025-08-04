@@ -28,9 +28,13 @@ const SecurityGuard: React.FC<SecurityGuardProps> = ({
           'Je sessie verloopt binnenkort. Wil je je sessie verlengen?'
         );
         if (shouldExtend) {
-          // Simple activity to refresh the session
-          fetch(window.location.href, { method: 'HEAD' });
-          setSessionTimeout(null);
+          // Simple activity to refresh the session  
+          try {
+            fetch(window.location.href, { method: 'HEAD' });
+            setSessionTimeout(null);
+          } catch (error) {
+            console.error('Failed to refresh session:', error);
+          }
         }
       }, 50 * 60 * 1000); // 50 minutes
 
