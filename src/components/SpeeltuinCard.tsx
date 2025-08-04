@@ -320,11 +320,45 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
 
           {/* Content area that grows to fill space */}
           <div className="flex flex-col flex-1">
-            {/* Description */}
+            {/* Description with URL parsing */}
             {speeltuin.omschrijving && (
-              <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
-                {speeltuin.omschrijving}
-              </p>
+              <div className="text-sm text-muted-foreground mb-4">
+                {(() => {
+                  const text = speeltuin.omschrijving;
+                  const urlRegex = /(https?:\/\/[^\s]+)/g;
+                  const parts = text.split(urlRegex);
+                  
+                  return parts.map((part, index) => {
+                    if (urlRegex.test(part)) {
+                      // This is a URL
+                      const cleanUrl = part.trim();
+                      const displayUrl = cleanUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
+                      
+                      return (
+                        <div key={index} className="my-1">
+                          <a
+                            href={cleanUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-primary hover:text-primary/80 underline transition-colors"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                            {displayUrl}
+                          </a>
+                        </div>
+                      );
+                    } else {
+                      // This is regular text
+                      return part ? (
+                        <span key={index} className="line-clamp-3">
+                          {part}
+                        </span>
+                      ) : null;
+                    }
+                  });
+                })()}
+              </div>
             )}
 
             {/* Badges */}
