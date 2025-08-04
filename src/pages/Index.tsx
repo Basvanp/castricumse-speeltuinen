@@ -184,7 +184,7 @@ const Index = () => {
       'schommels': { hasSchommel: true },
       'zandbakken': { hasZandbak: true },
       'klimtoestellen': { hasKlimtoestel: true },
-      'natuurspeeltuinen': { typeNatuurspeeltuin: true },
+      'natuurspeeltuinen': { isTypeNatuurspeeltuin: true },
       'rolstoeltoegankelijk': { isRolstoeltoegankelijk: true },
     };
     
@@ -288,7 +288,6 @@ const Index = () => {
       {/* Hero Section */}
       <Hero
         onSearch={handleHeroSearch}
-        settings={settings}
       />
 
       {/* Main Content */}

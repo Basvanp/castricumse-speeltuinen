@@ -105,7 +105,7 @@ const AdminSpeeltuinen = () => {
 
     // Delete each selected speeltuin
     selectedIds.forEach(id => {
-      deleteSpeeltuin.mutate(id);
+      deleteSpeeltuin.mutate(String(id));
     });
 
     setSelectedSpeeltuinen(new Set());
@@ -193,7 +193,7 @@ const AdminSpeeltuinen = () => {
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const backup = JSON.parse(e.target.result);
+        const backup = JSON.parse(String(e.target.result));
         if (backup.speeltuinen && Array.isArray(backup.speeltuinen)) {
           // Here you would implement the restore logic
           // For now, just show a success message
@@ -483,7 +483,8 @@ const AdminSpeeltuinen = () => {
         {editingSpeeltuin && (
           <EditSpeeltuinDialog
             speeltuin={editingSpeeltuin}
-            onClose={() => setEditingSpeeltuin(null)}
+            open={!!editingSpeeltuin}
+            onOpenChange={() => setEditingSpeeltuin(null)}
           />
         )}
       </div>

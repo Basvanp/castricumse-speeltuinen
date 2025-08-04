@@ -117,7 +117,7 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
         if (Array.isArray(speeltuin.fotos)) {
           fotosArray = speeltuin.fotos.map((foto, index) => ({
             id: Date.now() + index,
-            url: typeof foto === 'string' ? foto : foto.url,
+            url: typeof foto === 'string' ? foto : String(foto),
             naam: `Foto ${index + 1}`,
           }));
         }
@@ -538,7 +538,7 @@ const EditSpeeltuinDialog: React.FC<EditSpeeltuinDialogProps> = ({
     };
     console.log('Updating speeltuin with data:', speeltuinToUpdate);
 
-    updateSpeeltuin(speeltuinToUpdate, {
+    updateSpeeltuin({ id: speeltuin.id, updates: speeltuinToUpdate as any }, {
       onSuccess: () => {
         toast({
           title: "Speeltuin bijgewerkt!",

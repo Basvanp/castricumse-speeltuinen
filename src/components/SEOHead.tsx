@@ -23,9 +23,9 @@ const SEOHead: React.FC<SEOHeadProps> = ({
 }) => {
   const { data: settings = {} } = useSiteSettings();
   
-  const pageTitle = title || settings.meta_title || settings.site_name || 'Castricum Speeltuinen Gids';
-  const pageDescription = description || settings.meta_description || settings.site_description || '';
-  const pageKeywords = keywords || settings.meta_keywords || '';
+  const pageTitle = title || 'Castricum Speeltuinen Gids';
+  const pageDescription = description || 'Ontdek de beste speeltuinen in Castricum';
+  const pageKeywords = keywords || 'speeltuinen, castricum, kinderen, spelen';
   const currentUrl = url || window.location.href;
   const defaultImage = '/placeholder.svg'; // fallback image
   const pageImage = image || defaultImage;
@@ -43,7 +43,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({
       <meta property="og:type" content={type} />
       <meta property="og:url" content={currentUrl} />
       <meta property="og:image" content={pageImage} />
-      <meta property="og:site_name" content={settings.site_name || 'Castricum Speeltuinen Gids'} />
+      <meta property="og:site_name" content="Castricum Speeltuinen Gids" />
       
       {/* Twitter Card Tags */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -53,7 +53,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({
       
       {/* Additional SEO Meta Tags */}
       <meta name="robots" content="index, follow" />
-      <meta name="author" content={settings.organization_name || 'Gemeente Castricum'} />
+      <meta name="author" content="Gemeente Castricum" />
       <link rel="canonical" href={currentUrl} />
       
       {/* Structured Data */}

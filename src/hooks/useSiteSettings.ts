@@ -64,7 +64,7 @@ export const useSiteSettings = () => {
             value = value.replace(/^"|"$/g, '');
           }
           
-          settings[key] = value;
+          (settings as any)[key] = value;
         });
 
         // Merge with defaults to ensure all required fields exist
@@ -118,7 +118,7 @@ export const usePublicSiteSettings = () => {
             value = value.replace(/^"|"$/g, '');
           }
           
-          settings[key] = value;
+          (settings as any)[key] = value;
         });
 
         // Merge with defaults to ensure all required fields exist

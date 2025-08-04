@@ -89,13 +89,12 @@ const AdminSettings = () => {
         toast({
           title: "Instellingen bijgewerkt!",
           description: "Wijzigingen zijn toegepast (database tabel nog niet beschikbaar).",
-          icon: <CheckCircle className="h-4 w-4" />
         });
       } else {
         toast({
           title: "Instellingen opgeslagen!",
           description: "Alle wijzigingen zijn succesvol opgeslagen in de database.",
-          icon: <CheckCircle className="h-4 w-4" />
+          
         });
       }
       

@@ -23,7 +23,7 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({
 }) => {
   const { trackEvent } = useAnalytics();
 
-  const updateFilter = (key: string, value: boolean) => {
+  const updateFilter = (key: string, value: boolean | string) => {
     const newFilters = {
       ...filters,
       [key]: value,
@@ -169,8 +169,8 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="typeNatuurspeeltuin"
-                checked={filters.typeNatuurspeeltuin || false}
-                onCheckedChange={(checked) => updateFilter('typeNatuurspeeltuin', checked as boolean)}
+                checked={filters.isTypeNatuurspeeltuin || false}
+                onCheckedChange={(checked) => updateFilter('isTypeNatuurspeeltuin', checked as boolean)}
               />
               <Label htmlFor="typeNatuurspeeltuin" className="flex items-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
@@ -183,8 +183,8 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="typeBuurtspeeltuin"
-                checked={filters.typeBuurtspeeltuin || false}
-                onCheckedChange={(checked) => updateFilter('typeBuurtspeeltuin', checked as boolean)}
+                checked={filters.isTypeBuurtspeeltuin || false}
+                onCheckedChange={(checked) => updateFilter('isTypeBuurtspeeltuin', checked as boolean)}
               />
               <Label htmlFor="typeBuurtspeeltuin" className="flex items-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
@@ -199,8 +199,8 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="typeSchoolplein"
-                checked={filters.typeSchoolplein || false}
-                onCheckedChange={(checked) => updateFilter('typeSchoolplein', checked as boolean)}
+                checked={filters.isTypeSchoolplein || false}
+                onCheckedChange={(checked) => updateFilter('isTypeSchoolplein', checked as boolean)}
               />
               <Label htmlFor="typeSchoolplein" className="flex items-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
@@ -216,8 +216,8 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="typeSpeelbos"
-                checked={filters.typeSpeelbos || false}
-                onCheckedChange={(checked) => updateFilter('typeSpeelbos', checked as boolean)}
+                checked={filters.isTypeSpeelbos || false}
+                onCheckedChange={(checked) => updateFilter('isTypeSpeelbos', checked as boolean)}
               />
               <Label htmlFor="typeSpeelbos" className="flex items-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
@@ -317,7 +317,7 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({
               <Checkbox
                 id="grootte-klein"
                 checked={filters.grootte === 'klein'}
-                onCheckedChange={(checked) => updateFilter('grootte', checked ? 'klein' : undefined)}
+                onCheckedChange={(checked) => updateFilter('grootte', checked ? 'klein' : '')}
               />
               <Label htmlFor="grootte-klein">Klein</Label>
             </div>
@@ -326,7 +326,7 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({
               <Checkbox
                 id="grootte-middel"
                 checked={filters.grootte === 'middel'}
-                onCheckedChange={(checked) => updateFilter('grootte', checked ? 'middel' : undefined)}
+                onCheckedChange={(checked) => updateFilter('grootte', checked ? 'middel' : '')}
               />
               <Label htmlFor="grootte-middel">Middel</Label>
             </div>
@@ -335,7 +335,7 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({
               <Checkbox
                 id="grootte-groot"
                 checked={filters.grootte === 'groot'}
-                onCheckedChange={(checked) => updateFilter('grootte', checked ? 'groot' : undefined)}
+                onCheckedChange={(checked) => updateFilter('grootte', checked ? 'groot' : '')}
               />
               <Label htmlFor="grootte-groot">Groot</Label>
             </div>
