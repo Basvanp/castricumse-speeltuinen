@@ -547,6 +547,16 @@ export type Database = {
           last_occurrence: string
         }[]
       }
+      get_security_events: {
+        Args: { days_back?: number }
+        Returns: {
+          event_time: string
+          event_type: string
+          table_name: string
+          user_id: string
+          details: Json
+        }[]
+      }
       get_user_role: {
         Args: { user_uuid: string }
         Returns: string
