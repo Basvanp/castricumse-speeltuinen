@@ -244,7 +244,7 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
 
         <CardContent className="pt-0 flex flex-col flex-1">
           {/* Photo Carousel */}
-          <div className="relative h-48 w-full rounded-lg overflow-hidden shadow-lg mb-4">
+          <div className="relative aspect-square w-full rounded-lg overflow-hidden shadow-lg mb-4">
             {photos.length > 0 ? (
               <>
                 <img
