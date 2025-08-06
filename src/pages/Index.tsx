@@ -11,7 +11,8 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Hero from '@/components/Hero';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { ChevronLeft, ChevronRight, Filter, ChevronDown } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import SEOHead from '@/components/SEOHead';
 import { generateOrganizationSchema, generateLocalBusinessSchema, generateWebsiteSchema } from '@/utils/structuredData';
@@ -31,6 +32,7 @@ const Index = () => {
   const speeltuinenRef = useRef<HTMLDivElement>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState<SpeeltuinFilters>({});
+  const [isFiltersOpen, setIsFiltersOpen] = useState(!isMobile);
 
   const clearAllFilters = () => {
     setFilters({});
@@ -302,26 +304,56 @@ const Index = () => {
             </p>
           </div>
           
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Filters Sidebar */}
-            <div className="lg:w-80 flex-shrink-0">
-              <SpeeltuinFiltersComponent
-                filters={filters}
-                onFiltersChange={setFilters}
-                onApplyFilters={handleApplyFilters}
-                onClearFilters={clearAllFilters}
-              />
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* Mobile Filters Toggle */}
+            <div className="lg:hidden mb-4">
+              <Collapsible open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
+                <CollapsibleTrigger asChild>
+                  <Button variant="outline" className="w-full justify-between">
+                    <div className="flex items-center gap-2">
+                      <Filter className="h-4 w-4" />
+                      Filters
+                      {Object.values(filters).some(v => v) && (
+                        <span className="bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full">
+                          {Object.values(filters).filter(v => v).length}
+                        </span>
+                      )}
+                    </div>
+                    <ChevronDown className={`h-4 w-4 transition-transform ${isFiltersOpen ? 'rotate-180' : ''}`} />
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="mt-4">
+                  <SpeeltuinFiltersComponent
+                    filters={filters}
+                    onFiltersChange={setFilters}
+                    onApplyFilters={handleApplyFilters}
+                    onClearFilters={clearAllFilters}
+                  />
+                </CollapsibleContent>
+              </Collapsible>
             </div>
 
-            {/* Map */}
-            <div className="flex-1">
-              <SpeeltuinKaart
-                speeltuinen={filteredSpeeltuinen as any}
-                onSpeeltuinSelect={setSelectedSpeeltuin}
-                userLocation={userLocation}
-                isLocating={isLocating}
-                onLocationRequest={getCurrentLocation}
-              />
+            <div className="flex flex-col lg:flex-row gap-6">
+              {/* Desktop Filters Sidebar */}
+              <div className="hidden lg:block lg:w-72 xl:w-80 flex-shrink-0">
+                <SpeeltuinFiltersComponent
+                  filters={filters}
+                  onFiltersChange={setFilters}
+                  onApplyFilters={handleApplyFilters}
+                  onClearFilters={clearAllFilters}
+                />
+              </div>
+
+              {/* Map */}
+              <div className="flex-1 min-h-[400px] lg:min-h-[500px]">
+                <SpeeltuinKaart
+                  speeltuinen={filteredSpeeltuinen as any}
+                  onSpeeltuinSelect={setSelectedSpeeltuin}
+                  userLocation={userLocation}
+                  isLocating={isLocating}
+                  onLocationRequest={getCurrentLocation}
+                />
+              </div>
             </div>
           </div>
         </section>
