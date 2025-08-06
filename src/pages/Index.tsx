@@ -281,7 +281,6 @@ const Index = () => {
       
       {/* Header */}
       <Header
-        siteName={(settings as any).site_name}
         onScrollToTop={scrollToTop}
         onScrollToMap={scrollToMap}
         onScrollToSpeeltuinen={scrollToSpeeltuinen}

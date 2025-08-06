@@ -4,9 +4,9 @@ import { NavigationMenu, NavigationMenuItem, NavigationMenuList, NavigationMenuL
 import { Button } from './ui/button';
 import AdminButton from './AdminButton';
 import ThemeToggle from './ThemeToggle';
+import { usePublicSiteSettings } from '@/hooks/useSiteSettings';
 
 interface HeaderProps {
-  siteName?: string;
   onScrollToTop?: () => void;
   onScrollToMap?: () => void;
   onScrollToSpeeltuinen?: () => void;
@@ -24,11 +24,12 @@ const PlaygroundLogo = () => (
 );
 
 const Header = ({ 
-  siteName = 'Castricum Speeltuinen Gids', 
   onScrollToTop,
   onScrollToMap,
   onScrollToSpeeltuinen
 }: HeaderProps) => {
+  const { data: settings } = usePublicSiteSettings();
+  const siteName = settings?.site_name || 'Castricum Speeltuinen Gids';
   return (
     <>
       {/* Sticky navigation bar */}

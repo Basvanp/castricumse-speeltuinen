@@ -1,6 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
+import { SiteSettings } from '@/types/siteSettings';
 
 interface SEOHeadProps {
   title?: string;
@@ -21,14 +22,16 @@ const SEOHead: React.FC<SEOHeadProps> = ({
   type = 'website',
   structuredData
 }) => {
-  const { data: settings = {} } = useSiteSettings();
+  const { data: settings } = useSiteSettings();
   
-  const pageTitle = title || 'Castricum Speeltuinen Gids';
-  const pageDescription = description || 'Ontdek de beste speeltuinen in Castricum';
-  const pageKeywords = keywords || 'speeltuinen, castricum, kinderen, spelen';
-  const currentUrl = url || window.location.href;
+  // Use site settings with fallbacks
+  const pageTitle = title || settings?.meta_title || settings?.site_name || 'Castricum Speeltuinen Gids';
+  const pageDescription = description || settings?.meta_description || settings?.site_description || 'Ontdek de beste speeltuinen in Castricum';
+  const pageKeywords = keywords || settings?.keywords || 'speeltuinen, castricum, kinderen, spelen';
+  const currentUrl = url || (typeof window !== 'undefined' ? window.location.href : '');
   const defaultImage = '/placeholder.svg'; // fallback image
   const pageImage = image || defaultImage;
+  const siteName = settings?.site_name || 'Castricum Speeltuinen Gids';
 
   return (
     <Helmet>
@@ -43,7 +46,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({
       <meta property="og:type" content={type} />
       <meta property="og:url" content={currentUrl} />
       <meta property="og:image" content={pageImage} />
-      <meta property="og:site_name" content="Castricum Speeltuinen Gids" />
+      <meta property="og:site_name" content={siteName} />
       
       {/* Twitter Card Tags */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -53,7 +56,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({
       
       {/* Additional SEO Meta Tags */}
       <meta name="robots" content="index, follow" />
-      <meta name="author" content="Gemeente Castricum" />
+      <meta name="author" content={settings?.contact_email ? settings.contact_email.split('@')[1] : 'Gemeente Castricum'} />
       <link rel="canonical" href={currentUrl} />
       
       {/* Structured Data */}

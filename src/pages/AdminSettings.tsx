@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { useSiteSettings, useUpdateSiteSettings } from '@/hooks/useSiteSettings';
 import { SiteSettingsFormData } from '@/types/siteSettings';
+import { useBackup } from '@/hooks/useBackup';
 import { 
   Settings, 
   Globe, 
@@ -29,6 +30,7 @@ const AdminSettings = () => {
   const { toast } = useToast();
   const { data: settings, isLoading, error } = useSiteSettings();
   const updateSettings = useUpdateSiteSettings();
+  const { exportSpeeltuinenCSV, createBackup, isExporting, isBackingUp } = useBackup();
   const [formData, setFormData] = useState<SiteSettingsFormData>({
     site_name: '',
     site_description: '',
@@ -362,9 +364,13 @@ const AdminSettings = () => {
                     <h4 className="font-medium">Export Speeltuinen Data</h4>
                     <p className="text-sm text-muted-foreground">Download alle speeltuin gegevens als CSV</p>
                   </div>
-                  <Button variant="outline">
+                  <Button 
+                    variant="outline" 
+                    onClick={exportSpeeltuinenCSV}
+                    disabled={isExporting}
+                  >
                     <Download className="h-4 w-4 mr-2" />
-                    Export CSV
+                    {isExporting ? 'Exporteren...' : 'Export CSV'}
                   </Button>
                 </div>
                 <div className="flex items-center justify-between">
@@ -372,9 +378,13 @@ const AdminSettings = () => {
                     <h4 className="font-medium">Backup Database</h4>
                     <p className="text-sm text-muted-foreground">Maak een volledige backup van de database</p>
                   </div>
-                  <Button variant="outline">
+                  <Button 
+                    variant="outline"
+                    onClick={createBackup}
+                    disabled={isBackingUp}
+                  >
                     <Download className="h-4 w-4 mr-2" />
-                    Backup Nu
+                    {isBackingUp ? 'Backup maken...' : 'Backup Nu'}
                   </Button>
                 </div>
               </CardContent>
