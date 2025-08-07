@@ -59,10 +59,10 @@ const Hero: React.FC<HeroProps> = ({
                 onChange={handleInputChange}
                 autoComplete="off"
                 spellCheck="false"
-                className="w-full px-4 py-3 text-lg bg-white/90 backdrop-blur-sm border-0 rounded-xl text-gray-900 placeholder-gray-600 focus:ring-2 focus:ring-orange-400 focus:bg-white transition-all duration-300" 
+                className="w-full px-4 py-4 text-lg bg-white/90 backdrop-blur-sm border-0 rounded-xl text-gray-900 placeholder-gray-600 focus:ring-2 focus:ring-orange-400 focus:bg-white transition-all duration-300 touch-target" 
               />
             </div>
-            <Button type="submit" className="px-8 py-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2">
+            <Button type="submit" className="px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2 touch-target">
               <Search className="w-5 h-5" />
               Zoeken
             </Button>

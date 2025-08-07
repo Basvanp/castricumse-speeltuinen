@@ -210,7 +210,7 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
   return (
     <>
       <Card 
-        className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary/20 flex flex-col h-full"
+        className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary/20 flex flex-col h-full touch-target"
         onClick={() => onSelect?.(speeltuin)}
       >
         <CardHeader className="pb-3">
@@ -229,7 +229,7 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
             </div>
             
             {/* Top right controls - Route and Problem Report buttons */}
-            <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
               {speeltuin.latitude && speeltuin.longitude && (
                 <GoogleMapsRouteButton
                   href={generateGoogleMapsUrl({
@@ -278,7 +278,7 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
                         e.stopPropagation();
                         goToPrevious();
                       }}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-1 rounded-full transition-all duration-200"
+                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-3 rounded-full transition-all duration-200 touch-target"
                       aria-label="Vorige foto"
                     >
                       <ChevronLeft size={20} />
@@ -288,7 +288,7 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
                         e.stopPropagation();
                         goToNext();
                       }}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-1 rounded-full transition-all duration-200"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-3 rounded-full transition-all duration-200 touch-target"
                       aria-label="Volgende foto"
                     >
                       <ChevronRight size={20} />
@@ -315,7 +315,7 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
           
           {/* Dot indicators - only show if multiple photos */}
           {hasMultiplePhotos && (
-            <div className="flex justify-center space-x-1 mb-4">
+            <div className="flex justify-center space-x-2 mb-4">
               {photos.map((_, index) => (
                 <button
                   key={index}
@@ -323,7 +323,7 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
                     e.stopPropagation();
                     goToPhoto(index);
                   }}
-                  className={`w-2 h-2 rounded-full transition-colors duration-200 ${
+                  className={`w-3 h-3 rounded-full transition-colors duration-200 touch-target ${
                     index === currentPhotoIndex 
                       ? 'bg-blue-500' 
                       : 'bg-gray-300 hover:bg-gray-400'

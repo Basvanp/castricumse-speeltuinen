@@ -82,7 +82,7 @@ const Header = ({
             </div>
 
             {/* Mobile menu button */}
-            <div className="md:hidden flex items-center gap-2">
+            <div className="md:hidden flex items-center gap-3">
               <ThemeToggle />
               <AdminButton />
             </div>

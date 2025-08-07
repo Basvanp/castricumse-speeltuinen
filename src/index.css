@@ -98,6 +98,65 @@ All colors MUST be HSL.
   * {
     @apply border-border;
   }
+  
+  /* Mobile Optimization - Base Font Size */
+  html {
+    font-size: 16px; /* Base font size for mobile */
+  }
+  
+  /* Ensure minimum font size for accessibility */
+  body {
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%; /* Prevent iOS zoom on input focus */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Minimum touch target size for mobile */
+  button, a, input, select, textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Touch-friendly spacing */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 8px;
+  }
+  
+  /* Prevent horizontal scroll on mobile */
+  body, html {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+  
+  /* Responsive images */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* Mobile-friendly hover states */
+  @media (hover: hover) {
+    /* Desktop hover effects */
+    .hover\:scale-105:hover {
+      transform: scale(1.05);
+    }
+  }
+  
+  @media (hover: none) {
+    /* Touch device optimizations */
+    .hover\:scale-105:hover {
+      transform: none;
+    }
+    
+    /* Active states for touch devices */
+    button:active, a:active {
+      transform: scale(0.98);
+    }
+  }
 
   /* Hero Animations */
   @keyframes fade-in-up {
