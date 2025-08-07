@@ -33,8 +33,10 @@ export interface GoogleMapsButtonProps
   rel?: string
 }
 
-const GoogleMapsButton = React.forwardRef<HTMLButtonElement, GoogleMapsButtonProps>(
-  ({ className, variant, size, href, target = "_blank", rel = "noopener noreferrer", children, ...props }, ref) => {
+const GoogleMapsButton = React.forwardRef<
+  HTMLButtonElement | HTMLAnchorElement,
+  GoogleMapsButtonProps
+>(({ className, variant, size, href, target = "_blank", rel = "noopener noreferrer", children, ...props }, ref) => {
     const LocationIcon = () => (
       <svg
         width="16"
@@ -72,7 +74,7 @@ const GoogleMapsButton = React.forwardRef<HTMLButtonElement, GoogleMapsButtonPro
     return (
       <button
         className={cn(googleMapsButtonVariants({ variant, size, className }))}
-        ref={ref}
+        ref={ref as React.Ref<HTMLButtonElement>}
         {...props}
       >
         {buttonContent}
