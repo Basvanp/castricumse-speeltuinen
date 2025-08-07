@@ -30,8 +30,8 @@ INSERT INTO site_settings (setting_key, setting_value, setting_type, description
 -- Site Information
 ('site_name', '"Speeltuinen Castricum"', 'string', 'Site naam', 'site', true),
 ('site_description', '"Ontdek alle speeltuinen in Castricum"', 'string', 'Site beschrijving', 'site', true),
-('contact_email', '"info@castricum.nl"', 'string', 'Contact email', 'site', true),
-('contact_phone', '"0251-656565"', 'string', 'Telefoonnummer', 'site', true),
+('contact_email', '"hallo@speeltuincastricum.nl"', 'string', 'Contact email', 'site', true),
+('contact_phone', '"volgt nog"', 'string', 'Telefoonnummer', 'site', true),
 
 -- Social Media
 ('facebook_url', '""', 'string', 'Facebook URL', 'social', true),

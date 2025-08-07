@@ -6,8 +6,8 @@ import { SiteSetting, SiteSettings, SiteSettingsFormData } from '@/types/siteSet
 const DEFAULT_SITE_SETTINGS: SiteSettings = {
   site_name: 'Speeltuinen Castricum',
   site_description: 'Ontdek alle speeltuinen in Castricum! Complete gids met interactieve kaart, leeftijdsfilters en foto\'s. Van peuterspeeltuinen tot grote speelparken - vind de ideale speelplek voor jouw gezin in Castricum, Noord-Holland.',
-  contact_email: 'info@castricum.nl',
-  contact_phone: '0251-656565',
+  contact_email: 'hallo@speeltuincastricum.nl',
+  contact_phone: 'volgt nog',
   facebook_url: '',
   instagram_url: '',
   twitter_url: '',

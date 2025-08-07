@@ -49,8 +49,8 @@ BEGIN
         INSERT INTO public.site_settings (setting_key, setting_value, setting_type, description, category, is_public) VALUES
         ('site_name', 'Speeltuinen Castricum', 'string', 'Naam van de website', 'site', true),
         ('site_description', 'Ontdek de beste speeltuinen in Castricum. Een complete gids voor ouders en kinderen.', 'string', 'Beschrijving van de website', 'site', true),
-        ('contact_email', 'info@castricum.nl', 'string', 'Contact email adres', 'site', true),
-        ('contact_phone', '+31 (0)251-259911', 'string', 'Contact telefoonnummer', 'site', true),
+        ('contact_email', 'hallo@speeltuincastricum.nl', 'string', 'Contact email adres', 'site', true),
+        ('contact_phone', 'volgt nog', 'string', 'Contact telefoonnummer', 'site', true),
         ('facebook_url', '', 'string', 'Facebook pagina URL', 'social', true),
         ('instagram_url', '', 'string', 'Instagram pagina URL', 'social', true),
         ('twitter_url', '', 'string', 'Twitter/X pagina URL', 'social', true),
