@@ -120,6 +120,11 @@ export interface SpeeltuinFilters {
   isGeschiktKleuters?: boolean;
   isGeschiktKinderen?: boolean;
   
+  // Age category filters (new)
+  peuters?: boolean;
+  kleuters?: boolean;
+  kinderen?: boolean;
+  
   // Toegankelijkheid filters removed
   
   // Veiligheid filters removed
