@@ -165,6 +165,13 @@ All colors MUST be HSL.
   
   .filter-items .flex {
     gap: 8px;
+    align-items: center;
+  }
+  
+  .filter-items .flex > div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
   
   .filter-items .space-y-2 > * + * {
@@ -176,6 +183,17 @@ All colors MUST be HSL.
     background-color: #f8f9fa;
     border-radius: 8px;
     margin-bottom: 8px;
+    font-weight: 600;
+    color: #374151;
+    border: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .section-header:hover {
+    background-color: #e5e7eb;
   }
   
   .active-filters-counter {
