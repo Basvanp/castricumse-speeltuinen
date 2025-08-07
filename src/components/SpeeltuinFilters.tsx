@@ -50,255 +50,260 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({
       </CardHeader>
       <CardContent className="space-y-4 overflow-y-auto overscroll-contain touch-pan-y flex-1 min-h-0">
         
-        {/* Geschikt voor leeftijd */}
-        <Collapsible defaultOpen>
-          <CollapsibleTrigger className="flex w-full items-center justify-between">
-            <h3 className="font-medium">Geschikt voor leeftijd</h3>
-            <ChevronDown className="h-4 w-4" />
-          </CollapsibleTrigger>
-          <CollapsibleContent className="mt-3 space-y-3">
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="peuters"
-                checked={filters.peuters || false}
-                onCheckedChange={(checked) => updateFilter('peuters', checked as boolean)}
-              />
-              <Label htmlFor="peuters" className="flex items-center cursor-pointer">
-                <Baby className="w-4 h-4 mr-3 text-yellow-500" />
-                Peuters (0-2 jaar)
-              </Label>
-            </div>
-
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="kleuters"
-                checked={filters.kleuters || false}
-                onCheckedChange={(checked) => updateFilter('kleuters', checked as boolean)}
-              />
-              <Label htmlFor="kleuters" className="flex items-center cursor-pointer">
-                <User className="w-4 h-4 mr-3 text-green-500" />
-                Kleuters (3-5 jaar)
-              </Label>
-            </div>
-
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="kinderen"
-                checked={filters.kinderen || false}
-                onCheckedChange={(checked) => updateFilter('kinderen', checked as boolean)}
-              />
-              <Label htmlFor="kinderen" className="flex items-center cursor-pointer">
-                <Users className="w-4 h-4 mr-3 text-blue-500" />
-                Kinderen (6+ jaar)
-              </Label>
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
-
         {/* Voorzieningen */}
-        <Collapsible defaultOpen>
-          <CollapsibleTrigger className="flex w-full items-center justify-between">
-            <h3 className="font-medium">Voorzieningen</h3>
-            <ChevronDown className="h-4 w-4" />
-          </CollapsibleTrigger>
-          <CollapsibleContent className="mt-3 space-y-3">
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="hasGlijbaan"
-                checked={filters.hasGlijbaan || false}
-                onCheckedChange={(checked) => updateFilter('hasGlijbaan', checked as boolean)}
-              />
-              <Label htmlFor="hasGlijbaan" className="flex items-center cursor-pointer">
-                <div className="w-4 h-4 mr-3 bg-orange-400 rounded-sm flex items-center justify-center">
-                  <div className="w-2 h-1 bg-white rounded-full"></div>
-                </div>
-                Glijbaan
-              </Label>
-            </div>
+        <div className="voorzieningen-filter-section">
+          <Collapsible defaultOpen>
+            <CollapsibleTrigger className="flex w-full items-center justify-between section-header">
+              <h3 className="font-medium">Voorzieningen</h3>
+              <ChevronDown className="h-4 w-4" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-3 space-y-3 filter-items">
+              <div className="flex items-center space-x-3">
+                <Checkbox
+                  id="hasGlijbaan"
+                  checked={filters.hasGlijbaan || false}
+                  onCheckedChange={(checked) => updateFilter('hasGlijbaan', checked as boolean)}
+                  className="checkbox-with-emoji"
+                />
+                <Label htmlFor="hasGlijbaan" className="flex items-center cursor-pointer">
+                  🛝 Glijbaan
+                </Label>
+              </div>
 
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="hasSchommel"
-                checked={filters.hasSchommel || false}
-                onCheckedChange={(checked) => updateFilter('hasSchommel', checked as boolean)}
-              />
-              <Label htmlFor="hasSchommel" className="flex items-center cursor-pointer">
-                <div className="w-4 h-4 mr-3 bg-yellow-500 rounded-sm flex items-center justify-center">
-                  <div className="w-1 h-2 bg-white rounded"></div>
-                </div>
-                Schommel
-              </Label>
-            </div>
+              <div className="flex items-center space-x-3">
+                <Checkbox
+                  id="hasSchommel"
+                  checked={filters.hasSchommel || false}
+                  onCheckedChange={(checked) => updateFilter('hasSchommel', checked as boolean)}
+                  className="checkbox-with-emoji"
+                />
+                <Label htmlFor="hasSchommel" className="flex items-center cursor-pointer">
+                  ⚡ Schommel
+                </Label>
+              </div>
 
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="hasZandbak"
-                checked={filters.hasZandbak || false}
-                onCheckedChange={(checked) => updateFilter('hasZandbak', checked as boolean)}
-              />
-              <Label htmlFor="hasZandbak" className="flex items-center cursor-pointer">
-                <div className="w-4 h-4 mr-3 bg-yellow-600 rounded-sm"></div>
-                Zandbak
-              </Label>
-            </div>
+              <div className="flex items-center space-x-3">
+                <Checkbox
+                  id="hasZandbak"
+                  checked={filters.hasZandbak || false}
+                  onCheckedChange={(checked) => updateFilter('hasZandbak', checked as boolean)}
+                  className="checkbox-with-emoji"
+                />
+                <Label htmlFor="hasZandbak" className="flex items-center cursor-pointer">
+                  🏖️ Zandbak
+                </Label>
+              </div>
 
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="hasKlimtoestel"
-                checked={filters.hasKlimtoestel || false}
-                onCheckedChange={(checked) => updateFilter('hasKlimtoestel', checked as boolean)}
-              />
-              <Label htmlFor="hasKlimtoestel" className="flex items-center cursor-pointer">
-                <div className="w-4 h-4 mr-3 bg-green-500 rounded-sm flex items-center justify-center">
-                  <div className="w-2 h-3 border border-white rounded-sm"></div>
-                </div>
-                Klimtoestel
-              </Label>
-            </div>
+              <div className="flex items-center space-x-3">
+                <Checkbox
+                  id="hasKlimtoestel"
+                  checked={filters.hasKlimtoestel || false}
+                  onCheckedChange={(checked) => updateFilter('hasKlimtoestel', checked as boolean)}
+                  className="checkbox-with-emoji"
+                />
+                <Label htmlFor="hasKlimtoestel" className="flex items-center cursor-pointer">
+                  🏗️ Klimtoestel
+                </Label>
+              </div>
 
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="hasKabelbaan"
-                checked={filters.hasKabelbaan || false}
-                onCheckedChange={(checked) => updateFilter('hasKabelbaan', checked as boolean)}
-              />
-              <Label htmlFor="hasKabelbaan" className="flex items-center cursor-pointer">
-                <div className="w-4 h-4 mr-3 bg-gray-600 rounded-sm flex items-center justify-center">
-                  <div className="w-3 h-0.5 bg-white rounded"></div>
-                </div>
-                Kabelbaan
-              </Label>
-            </div>
+              <div className="flex items-center space-x-3">
+                <Checkbox
+                  id="hasKabelbaan"
+                  checked={filters.hasKabelbaan || false}
+                  onCheckedChange={(checked) => updateFilter('hasKabelbaan', checked as boolean)}
+                  className="checkbox-with-emoji"
+                />
+                <Label htmlFor="hasKabelbaan" className="flex items-center cursor-pointer">
+                  🚡 Kabelbaan
+                </Label>
+              </div>
 
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="hasWaterPomp"
-                checked={filters.hasWaterPomp || false}
-                onCheckedChange={(checked) => updateFilter('hasWaterPomp', checked as boolean)}
-              />
-              <Label htmlFor="hasWaterPomp" className="flex items-center cursor-pointer">
-                <div className="w-4 h-4 mr-3 bg-blue-400 rounded-sm flex items-center justify-center">
-                  <div className="w-1 h-2 bg-white rounded-full"></div>
-                </div>
-                Water / pomp
-              </Label>
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
+              <div className="flex items-center space-x-3">
+                <Checkbox
+                  id="hasWaterPomp"
+                  checked={filters.hasWaterPomp || false}
+                  onCheckedChange={(checked) => updateFilter('hasWaterPomp', checked as boolean)}
+                  className="checkbox-with-emoji"
+                />
+                <Label htmlFor="hasWaterPomp" className="flex items-center cursor-pointer">
+                  💧 Waterpomp
+                </Label>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+        </div>
 
         {/* Type Speeltuin */}
-        <Collapsible defaultOpen>
-          <CollapsibleTrigger className="flex w-full items-center justify-between">
-            <h3 className="font-medium">Type Speeltuin</h3>
-            <ChevronDown className="h-4 w-4" />
-          </CollapsibleTrigger>
-          <CollapsibleContent className="mt-3 space-y-3">
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="typeNatuurspeeltuin"
-                checked={filters.isTypeNatuurspeeltuin || false}
-                onCheckedChange={(checked) => updateFilter('isTypeNatuurspeeltuin', checked as boolean)}
-              />
-              <Label htmlFor="typeNatuurspeeltuin" className="flex items-center cursor-pointer">
-                <div className="w-4 h-4 mr-3 bg-green-600 rounded-sm"></div>
-                Natuurspeeltuin
-              </Label>
-            </div>
+        <div className="type-speeltuin-filter-section">
+          <Collapsible defaultOpen>
+            <CollapsibleTrigger className="flex w-full items-center justify-between section-header">
+              <h3 className="font-medium">Type Speeltuin</h3>
+              <ChevronDown className="h-4 w-4" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-3 space-y-3 filter-items">
+              <div className="flex items-center space-x-3">
+                <Checkbox
+                  id="typeNatuurspeeltuin"
+                  checked={filters.isTypeNatuurspeeltuin || false}
+                  onCheckedChange={(checked) => updateFilter('isTypeNatuurspeeltuin', checked as boolean)}
+                  className="checkbox-with-emoji"
+                />
+                <Label htmlFor="typeNatuurspeeltuin" className="flex items-center cursor-pointer">
+                  🌳 Natuurspeeltuin
+                </Label>
+              </div>
 
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="typeBuurtspeeltuin"
-                checked={filters.isTypeBuurtspeeltuin || false}
-                onCheckedChange={(checked) => updateFilter('isTypeBuurtspeeltuin', checked as boolean)}
-              />
-              <Label htmlFor="typeBuurtspeeltuin" className="flex items-center cursor-pointer">
-                <div className="w-4 h-4 mr-3 bg-blue-600 rounded-sm"></div>
-                Buurtspeeltuin
-              </Label>
-            </div>
+              <div className="flex items-center space-x-3">
+                <Checkbox
+                  id="typeBuurtspeeltuin"
+                  checked={filters.isTypeBuurtspeeltuin || false}
+                  onCheckedChange={(checked) => updateFilter('isTypeBuurtspeeltuin', checked as boolean)}
+                  className="checkbox-with-emoji"
+                />
+                <Label htmlFor="typeBuurtspeeltuin" className="flex items-center cursor-pointer">
+                  🏘️ Buurtspeeltuin
+                </Label>
+              </div>
 
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="typeSchoolplein"
-                checked={filters.isTypeSchoolplein || false}
-                onCheckedChange={(checked) => updateFilter('isTypeSchoolplein', checked as boolean)}
-              />
-              <Label htmlFor="typeSchoolplein" className="flex items-center cursor-pointer">
-                <div className="w-4 h-4 mr-3 bg-yellow-600 rounded-sm"></div>
-                Schoolplein
-              </Label>
-            </div>
+              <div className="flex items-center space-x-3">
+                <Checkbox
+                  id="typeSchoolplein"
+                  checked={filters.isTypeSchoolplein || false}
+                  onCheckedChange={(checked) => updateFilter('isTypeSchoolplein', checked as boolean)}
+                  className="checkbox-with-emoji"
+                />
+                <Label htmlFor="typeSchoolplein" className="flex items-center cursor-pointer">
+                  🎓 Schoolplein
+                </Label>
+              </div>
 
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="typeSpeelbos"
-                checked={filters.isTypeSpeelbos || false}
-                onCheckedChange={(checked) => updateFilter('isTypeSpeelbos', checked as boolean)}
-              />
-              <Label htmlFor="typeSpeelbos" className="flex items-center cursor-pointer">
-                <div className="w-4 h-4 mr-3 bg-green-700 rounded-sm"></div>
-                Speelbos
-              </Label>
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
+              <div className="flex items-center space-x-3">
+                <Checkbox
+                  id="typeSpeelbos"
+                  checked={filters.isTypeSpeelbos || false}
+                  onCheckedChange={(checked) => updateFilter('isTypeSpeelbos', checked as boolean)}
+                  className="checkbox-with-emoji"
+                />
+                <Label htmlFor="typeSpeelbos" className="flex items-center cursor-pointer">
+                  🌲 Speelbos
+                </Label>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+        </div>
 
         {/* Praktische Zaken */}
-        <Collapsible defaultOpen>
-          <CollapsibleTrigger className="flex w-full items-center justify-between">
-            <h3 className="font-medium">Praktische Zaken</h3>
-            <ChevronDown className="h-4 w-4" />
-          </CollapsibleTrigger>
-          <CollapsibleContent className="mt-3 space-y-3">
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="isRolstoeltoegankelijk"
-                checked={filters.isRolstoeltoegankelijk || false}
-                onCheckedChange={(checked) => updateFilter('isRolstoeltoegankelijk', checked as boolean)}
-              />
-              <Label htmlFor="isRolstoeltoegankelijk" className="flex items-center cursor-pointer">
-                <div className="w-4 h-4 mr-3 bg-purple-500 rounded-sm"></div>
-                Rolstoeltoegankelijk
-              </Label>
-            </div>
+        <div className="praktische-zaken-filter-section">
+          <Collapsible defaultOpen>
+            <CollapsibleTrigger className="flex w-full items-center justify-between section-header">
+              <h3 className="font-medium">Praktische Zaken</h3>
+              <ChevronDown className="h-4 w-4" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-3 space-y-3 filter-items">
+              <div className="flex items-center space-x-3">
+                <Checkbox
+                  id="isRolstoeltoegankelijk"
+                  checked={filters.isRolstoeltoegankelijk || false}
+                  onCheckedChange={(checked) => updateFilter('isRolstoeltoegankelijk', checked as boolean)}
+                  className="checkbox-with-emoji"
+                />
+                <Label htmlFor="isRolstoeltoegankelijk" className="flex items-center cursor-pointer">
+                  ♿ Rolstoeltoegankelijk
+                </Label>
+              </div>
 
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="hasSchaduw"
-                checked={filters.hasSchaduw || false}
-                onCheckedChange={(checked) => updateFilter('hasSchaduw', checked as boolean)}
-              />
-              <Label htmlFor="hasSchaduw" className="flex items-center cursor-pointer">
-                <div className="w-4 h-4 mr-3 bg-green-400 rounded-sm"></div>
-                Schaduw
-              </Label>
-            </div>
+              <div className="flex items-center space-x-3">
+                <Checkbox
+                  id="hasSchaduw"
+                  checked={filters.hasSchaduw || false}
+                  onCheckedChange={(checked) => updateFilter('hasSchaduw', checked as boolean)}
+                  className="checkbox-with-emoji"
+                />
+                <Label htmlFor="hasSchaduw" className="flex items-center cursor-pointer">
+                  🌳 Schaduw
+                </Label>
+              </div>
 
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="hasParkeerplaats"
-                checked={filters.hasParkeerplaats || false}
-                onCheckedChange={(checked) => updateFilter('hasParkeerplaats', checked as boolean)}
-              />
-              <Label htmlFor="hasParkeerplaats" className="flex items-center cursor-pointer">
-                <div className="w-4 h-4 mr-3 bg-gray-500 rounded-sm"></div>
-                Parkeerplaats
-              </Label>
-            </div>
+              <div className="flex items-center space-x-3">
+                <Checkbox
+                  id="hasParkeerplaats"
+                  checked={filters.hasParkeerplaats || false}
+                  onCheckedChange={(checked) => updateFilter('hasParkeerplaats', checked as boolean)}
+                  className="checkbox-with-emoji"
+                />
+                <Label htmlFor="hasParkeerplaats" className="flex items-center cursor-pointer">
+                  🚗 Parkeerplaats
+                </Label>
+              </div>
 
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="hasToilet"
-                checked={filters.hasToilet || false}
-                onCheckedChange={(checked) => updateFilter('hasToilet', checked as boolean)}
-              />
-              <Label htmlFor="hasToilet" className="flex items-center cursor-pointer">
-                <div className="w-4 h-4 mr-3 bg-indigo-500 rounded-sm"></div>
-                Toilet
-              </Label>
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
+              <div className="flex items-center space-x-3">
+                <Checkbox
+                  id="hasToilet"
+                  checked={filters.hasToilet || false}
+                  onCheckedChange={(checked) => updateFilter('hasToilet', checked as boolean)}
+                  className="checkbox-with-emoji"
+                />
+                <Label htmlFor="hasToilet" className="flex items-center cursor-pointer">
+                  🚻 Toilet
+                </Label>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+        </div>
+
+        {/* Grootte */}
+        <div className="grootte-filter-section">
+          <Collapsible defaultOpen>
+            <CollapsibleTrigger className="flex w-full items-center justify-between section-header">
+              <h3 className="font-medium">Grootte</h3>
+              <ChevronDown className="h-4 w-4" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-3 space-y-3 filter-items">
+              <div className="flex items-center space-x-3">
+                <Checkbox
+                  id="grootteKlein"
+                  checked={filters.grootte === 'klein'}
+                  onCheckedChange={(checked) => updateFilter('grootte', checked ? 'klein' : undefined)}
+                  className="checkbox-with-emoji"
+                />
+                <Label htmlFor="grootteKlein" className="flex items-center cursor-pointer">
+                  🔸 Klein
+                </Label>
+              </div>
+
+              <div className="flex items-center space-x-3">
+                <Checkbox
+                  id="grootteMiddel"
+                  checked={filters.grootte === 'middel'}
+                  onCheckedChange={(checked) => updateFilter('grootte', checked ? 'middel' : undefined)}
+                  className="checkbox-with-emoji"
+                />
+                <Label htmlFor="grootteMiddel" className="flex items-center cursor-pointer">
+                  🔶 Middel
+                </Label>
+              </div>
+
+              <div className="flex items-center space-x-3">
+                <Checkbox
+                  id="grootteGroot"
+                  checked={filters.grootte === 'groot'}
+                  onCheckedChange={(checked) => updateFilter('grootte', checked ? 'groot' : undefined)}
+                  className="checkbox-with-emoji"
+                />
+                <Label htmlFor="grootteGroot" className="flex items-center cursor-pointer">
+                  🔵 Groot
+                </Label>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+        </div>
+
+        {/* Filter Footer */}
+        <div className="filter-footer">
+          <div className="active-filters-counter">
+            Actieve filters: <span className="count">{Object.values(filters).filter(v => v === true || (typeof v === 'string' && v)).length}</span>
+          </div>
+        </div>
 
         {/* Action Buttons */}
         <div className="flex flex-col gap-2 pt-4 border-t">
