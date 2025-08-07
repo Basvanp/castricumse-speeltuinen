@@ -9,7 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { MapPin, Search, Edit, Trash2, Eye, Download, Upload, FileText, Database, CheckSquare, Square } from 'lucide-react';
 import EditSpeeltuinDialog from '@/components/EditSpeeltuinDialog';
-import AdminPhotoManager from '@/components/AdminPhotoManager';
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -324,7 +324,7 @@ const AdminSpeeltuinen = () => {
         {showPhotoManager && (
           <Card>
             <CardContent className="pt-6">
-              <AdminPhotoManager />
+      
             </CardContent>
           </Card>
         )}

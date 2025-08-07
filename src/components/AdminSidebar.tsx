@@ -65,11 +65,7 @@ const AdminSidebar = () => {
       url: '/admin/toevoegen', 
       icon: PlusCircle 
     },
-    { 
-      title: 'Foto Toewijzer', 
-      url: '/admin/fotos', 
-      icon: Image 
-    },
+
     { 
       title: 'Foto Import', 
       url: '/admin/import', 
