@@ -157,6 +157,40 @@ All colors MUST be HSL.
       transform: scale(0.98);
     }
   }
+  
+  /* Filter styling improvements */
+  .checkbox-with-emoji {
+    margin-right: 8px;
+  }
+  
+  .filter-items .flex {
+    gap: 8px;
+  }
+  
+  .filter-items .space-y-2 > * + * {
+    margin-top: 8px;
+  }
+  
+  .section-header {
+    padding: 12px 16px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+  
+  .active-filters-counter {
+    padding: 8px 12px;
+    background-color: #e3f2fd;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #1976d2;
+    text-align: center;
+    margin: 16px 0;
+  }
+  
+  .active-filters-counter .count {
+    font-weight: 600;
+  }
 
   /* Hero Animations */
   @keyframes fade-in-up {
