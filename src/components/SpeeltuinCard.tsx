@@ -315,7 +315,7 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
           
           {/* Dot indicators - only show if multiple photos */}
           {hasMultiplePhotos && (
-            <div className="flex justify-center space-x-2 mb-4">
+            <div className="flex justify-center space-x-3 py-6 bg-gray-50">
               {photos.map((_, index) => (
                 <button
                   key={index}
@@ -323,11 +323,29 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
                     e.stopPropagation();
                     goToPhoto(index);
                   }}
-                  className={`w-3 h-3 rounded-full transition-colors duration-200 touch-target ${
-                    index === currentPhotoIndex 
-                      ? 'bg-blue-500' 
-                      : 'bg-gray-300 hover:bg-gray-400'
-                  }`}
+                  className="w-4 h-4 rounded-full cursor-pointer"
+                  style={{
+                    width: '16px',
+                    height: '16px',
+                    borderRadius: '50%',
+                    backgroundColor: index === currentPhotoIndex ? '#3b82f6' : '#d1d5db',
+                    minWidth: '16px',
+                    maxWidth: '16px',
+                    minHeight: '16px',
+                    maxHeight: '16px',
+                    transition: 'all 0.2s ease',
+                    boxShadow: index === currentPhotoIndex ? '0 2px 4px rgba(59, 130, 246, 0.3)' : 'none'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (index !== currentPhotoIndex) {
+                      e.currentTarget.style.backgroundColor = '#9ca3af';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (index !== currentPhotoIndex) {
+                      e.currentTarget.style.backgroundColor = '#d1d5db';
+                    }
+                  }}
                   aria-label={`Ga naar foto ${index + 1}`}
                 />
               ))}
