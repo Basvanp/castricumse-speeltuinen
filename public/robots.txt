@@ -7,7 +7,7 @@ Sitemap: https://speeltuincastricum.nl/sitemap.xml
 # Allow crawling of all public content
 Allow: /
 
-# Block admin areas (optional security measure)
+# Block admin areas (security measure)
 Disallow: /admin/
 Disallow: /auth/
 
@@ -20,3 +20,17 @@ Allow: /*.jpeg
 Allow: /*.gif
 Allow: /*.svg
 Allow: /*.webp
+
+# Specific crawl delays for different bots
+User-agent: Googlebot
+Crawl-delay: 1
+
+User-agent: Bingbot
+Crawl-delay: 1
+
+# Block specific bots that might cause issues
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /

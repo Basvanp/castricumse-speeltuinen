@@ -3,12 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Speeltuinen Castricum - Complete Gids met Kaart | Vind de Beste Speeltuin</title>
-    <meta name="description" content="🎠 Ontdek de 4 mooiste speeltuinen in Castricum! Interactieve kaart met filters op leeftijd en voorzieningen. Van kleine buurtspeeltuinen tot grote speelparken - vind de perfecte plek voor jouw kinderen." />
+    <title>🎠 Speeltuinen Castricum - Vind de Perfecte Speeltuin voor Jouw Kinderen</title>
+    <meta name="description" content="Ontdek alle speeltuinen in Castricum! Complete gids met interactieve kaart, leeftijdsfilters en foto's. Van peuterspeeltuinen tot grote speelparken - vind de ideale speelplek voor jouw gezin in Castricum, Noord-Holland." />
     <meta name="author" content="Speeltuinen Castricum" />
-    <meta name="keywords" content="speeltuinen Castricum, playground Castricum, kinderen spelen, speeltuin kaart, Albertshoeve, De Oude Keuken" />
+    <meta name="keywords" content="speeltuinen Castricum, speeltuin Castricum, kinderen spelen Castricum, speelplaats Castricum, buitenspelen Castricum, peuterspeeltuin Castricum, speelpark Castricum, Noord-Holland speeltuinen, familie uitje Castricum, kindvriendelijk Castricum" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://speeltuincastricum.nl" />
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Local SEO -->
+    <meta name="geo.region" content="NL-NH" />
+    <meta name="geo.placename" content="Castricum" />
+    <meta name="geo.position" content="52.5455;4.6583" />
+    <meta name="ICBM" content="52.5455, 4.6583" />
+    
     <!-- Favicons for all platforms -->
     <link rel="icon" href="/lovable-uploads/2ea4b2d6-5537-43cf-a522-d1571d0f5108.png" type="image/png">
     <link rel="apple-touch-icon" href="/lovable-uploads/2ea4b2d6-5537-43cf-a522-d1571d0f5108.png">
@@ -16,24 +24,26 @@
     <!-- Mobile and platform specific -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Castricum Speeltuinen">
+    <meta name="apple-mobile-web-app-title" content="Speeltuinen Castricum">
     <meta name="theme-color" content="#10b981">
     
     <!-- Microsoft Tiles -->
     <meta name="msapplication-TileImage" content="/lovable-uploads/2ea4b2d6-5537-43cf-a522-d1571d0f5108.png">
     <meta name="msapplication-TileColor" content="#10b981">
 
-    <meta property="og:title" content="🎠 Speeltuinen Castricum - Complete Gids met Kaart" />
-    <meta property="og:description" content="Ontdek de 4 mooiste speeltuinen in Castricum! Interactieve kaart met filters - vind de perfecte speelplek voor jouw kinderen." />
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="🎠 Speeltuinen Castricum - Vind de Perfecte Speeltuin voor Jouw Kinderen" />
+    <meta property="og:description" content="Ontdek alle speeltuinen in Castricum! Complete gids met interactieve kaart, leeftijdsfilters en foto's. Van peuterspeeltuinen tot grote speelparken - vind de ideale speelplek voor jouw gezin." />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="/lovable-uploads/2ea4b2d6-5537-43cf-a522-d1571d0f5108.png" />
     <meta property="og:url" content="https://speeltuincastricum.nl" />
     <meta property="og:locale" content="nl_NL" />
+    <meta property="og:site_name" content="Speeltuinen Castricum" />
 
-
+    <!-- Twitter Card Tags -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="🎠 Speeltuinen Castricum - Complete Gids met Kaart" />
-    <meta name="twitter:description" content="Ontdek de 4 mooiste speeltuinen in Castricum! Interactieve kaart met filters - vind de perfecte speelplek voor jouw kinderen." />
+    <meta name="twitter:title" content="🎠 Speeltuinen Castricum - Vind de Perfecte Speeltuin voor Jouw Kinderen" />
+    <meta name="twitter:description" content="Ontdek alle speeltuinen in Castricum! Complete gids met interactieve kaart, leeftijdsfilters en foto's. Van peuterspeeltuinen tot grote speelparken." />
     <meta name="twitter:image" content="/lovable-uploads/2ea4b2d6-5537-43cf-a522-d1571d0f5108.png" />
     
     <!-- Structured Data for SEO -->
@@ -42,10 +52,51 @@
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "Speeltuinen Castricum",
-      "description": "Complete gids van alle speeltuinen in Castricum",
+      "description": "Complete gids van alle speeltuinen in Castricum voor gezinnen met kinderen",
       "url": "https://speeltuincastricum.nl",
-      "areaServed": "Castricum, Nederland",
-      "keywords": "speeltuinen, playground, kinderen, Castricum"
+      "areaServed": {
+        "@type": "City",
+        "name": "Castricum",
+        "addressRegion": "Noord-Holland",
+        "addressCountry": "NL"
+      },
+      "keywords": "speeltuinen, playground, kinderen, gezin, Castricum, Noord-Holland, buitenspelen, peuterspeeltuin",
+      "audience": {
+        "@type": "Audience",
+        "audienceType": "Gezinnen met kinderen"
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://speeltuincastricum.nl/?search={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    
+    <!-- Additional Local Business Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "Speeltuinen Castricum",
+      "description": "Gids voor alle speeltuinen in Castricum",
+      "url": "https://speeltuincastricum.nl",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Castricum",
+        "addressRegion": "Noord-Holland",
+        "addressCountry": "NL"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 52.5455,
+        "longitude": 4.6583
+      },
+      "serviceType": "Speeltuin informatie en gids",
+      "targetAudience": "Gezinnen met kinderen"
     }
     </script>
   </head>

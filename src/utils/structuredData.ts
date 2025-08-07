@@ -32,8 +32,8 @@ export const generateLocalBusinessSchema = (settings: Record<string, string>) =>
   return {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "name": settings.site_name || "Castricum Speeltuinen Gids",
-    "description": settings.site_description || "",
+    "name": settings.site_name || "Speeltuinen Castricum",
+    "description": settings.site_description || "Complete gids van alle speeltuinen in Castricum voor gezinnen met kinderen",
     "url": window.location.origin,
     "telephone": settings.contact_phone || "",
     "email": settings.contact_email || "",
@@ -42,15 +42,24 @@ export const generateLocalBusinessSchema = (settings: Record<string, string>) =>
       "streetAddress": settings.organization_address || "Dorpsstraat 30",
       "addressLocality": "Castricum",
       "postalCode": "1901 EN",
+      "addressRegion": "Noord-Holland",
       "addressCountry": "NL"
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "latitude": settings.map_center_lat || "52.5463",
-      "longitude": settings.map_center_lng || "4.6748"
+      "latitude": settings.map_center_lat || "52.5455",
+      "longitude": settings.map_center_lng || "4.6583"
     },
     "openingHours": "Mo-Su 00:00-23:59",
-    "priceRange": "€"
+    "priceRange": "€",
+    "serviceType": "Speeltuin informatie en gids",
+    "targetAudience": "Gezinnen met kinderen",
+    "areaServed": {
+      "@type": "City",
+      "name": "Castricum",
+      "addressRegion": "Noord-Holland",
+      "addressCountry": "NL"
+    }
   };
 };
 
@@ -119,9 +128,20 @@ export const generateWebsiteSchema = (settings: Record<string, string>) => {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": settings.site_name || "Castricum Speeltuinen Gids",
-    "description": settings.site_description || "",
+    "name": settings.site_name || "Speeltuinen Castricum",
+    "description": settings.site_description || "Complete gids van alle speeltuinen in Castricum voor gezinnen met kinderen",
     "url": window.location.origin,
+    "areaServed": {
+      "@type": "City",
+      "name": "Castricum",
+      "addressRegion": "Noord-Holland",
+      "addressCountry": "NL"
+    },
+    "keywords": "speeltuinen, playground, kinderen, gezin, Castricum, Noord-Holland, buitenspelen, peuterspeeltuin",
+    "audience": {
+      "@type": "Audience",
+      "audienceType": "Gezinnen met kinderen"
+    },
     "potentialAction": {
       "@type": "SearchAction",
       "target": {
@@ -133,7 +153,7 @@ export const generateWebsiteSchema = (settings: Record<string, string>) => {
     "mainEntity": {
       "@type": "ItemList",
       "name": "Speeltuinen in Castricum",
-      "description": "Complete lijst van alle speeltuinen in Castricum en omgeving"
+      "description": "Complete lijst van alle speeltuinen in Castricum en omgeving voor gezinnen met kinderen"
     }
   };
 };

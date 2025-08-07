@@ -3,10 +3,14 @@ import { Speeltuin } from '@/types/speeltuin';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { GoogleMapsButton } from '@/components/ui/google-maps-button';
+import { GoogleMapsRouteButton } from '@/components/ui/google-maps-route-button';
+import { ProblemReportButton } from '@/components/ui/problem-report-button';
 import { MapPin, Star, Clock, Users, ExternalLink, ChevronLeft, ChevronRight, AlertTriangle, X, Copy } from 'lucide-react';
 import { calculateDistance } from '@/lib/utils';
 import { BadgeType } from '@/components/SpeeltuinBadge';
 import { useToast } from '@/hooks/use-toast';
+import { generateGoogleMapsUrl } from '@/utils/googleMaps';
 
 interface SpeeltuinCardProps {
   speeltuin: Speeltuin;
@@ -188,10 +192,12 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
   const handleGoogleMapsClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (speeltuin.latitude && speeltuin.longitude) {
-      window.open(
-        `https://www.google.com/maps?q=${speeltuin.latitude},${speeltuin.longitude}`,
-        '_blank'
-      );
+      const mapsUrl = generateGoogleMapsUrl({
+        latitude: speeltuin.latitude,
+        longitude: speeltuin.longitude,
+        name: speeltuin.naam
+      });
+      window.open(mapsUrl, '_blank');
     } else {
       toast({
         title: "Locatie niet beschikbaar",
@@ -212,16 +218,33 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
             <CardTitle className="text-lg font-semibold group-hover:text-primary transition-colors">
               {speeltuin.naam}
             </CardTitle>
-            {speeltuin.latitude && speeltuin.longitude && (
-              <Button
-                variant="ghost"
+            {/* Top right controls - Route and Problem Report buttons */}
+            <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              {speeltuin.latitude && speeltuin.longitude && (
+                <GoogleMapsRouteButton
+                  href={generateGoogleMapsUrl({
+                    latitude: speeltuin.latitude,
+                    longitude: speeltuin.longitude,
+                    name: speeltuin.naam
+                  })}
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Route
+                </GoogleMapsRouteButton>
+              )}
+              <ProblemReportButton 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsFixiPopupOpen(true);
+                }}
+                variant="outline"
                 size="sm"
-                onClick={handleGoogleMapsClick}
-                className="opacity-0 group-hover:opacity-100 transition-opacity"
               >
-                <ExternalLink className="h-4 w-4" />
-              </Button>
-            )}
+                Probleem melden
+              </ProblemReportButton>
+            </div>
           </div>
           
           {/* Location and distance */}
@@ -367,40 +390,11 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
             </div>
 
             {/* Quick stats */}
-            <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
               <div className="flex items-center gap-1">
                 <Clock className="h-3 w-3" />
                 <span>Altijd open</span>
               </div>
-            </div>
-
-            {/* Spacer to push buttons to bottom */}
-            <div className="flex-1"></div>
-
-            {/* Action Buttons - always at bottom */}
-            <div className="flex flex-col gap-2 pt-4">
-              {/* Google Maps button */}
-              {speeltuin.latitude && speeltuin.longitude && (
-                <Button 
-                  onClick={handleGoogleMapsClick}
-                  className="w-full h-12 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg py-3 px-4 flex items-center justify-center gap-2"
-                >
-                  <MapPin className="text-white" />
-                  Open in Google Maps
-                </Button>
-              )}
-              
-              {/* Probleem melden button */}
-              <Button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsFixiPopupOpen(true);
-                }}
-                className="w-full bg-white hover:bg-gray-50 text-black px-4 py-2 rounded font-semibold border border-gray-300 flex items-center justify-center gap-2"
-              >
-                <AlertTriangle size={18} />
-                Probleem melden
-              </Button>
             </div>
           </div>
         </CardContent>
