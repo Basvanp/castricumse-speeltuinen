@@ -215,9 +215,19 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
       >
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
-            <CardTitle className="text-lg font-semibold group-hover:text-primary transition-colors">
-              {speeltuin.naam}
-            </CardTitle>
+            <div>
+              <CardTitle className="text-lg font-semibold group-hover:text-primary transition-colors" style={{ marginBottom: '0px' }}>
+                {speeltuin.naam}
+              </CardTitle>
+              
+              {/* Distance info below title */}
+              {distance && distance !== Infinity && (
+                <div className="text-sm text-muted-foreground" style={{ marginTop: '4px', marginLeft: '0px', fontSize: '14px', color: '#666666' }}>
+                  {distance < 1 ? `${Math.round(distance * 1000)}m` : `${distance.toFixed(1)}km`}
+                </div>
+              )}
+            </div>
+            
             {/* Top right controls - Route and Problem Report buttons */}
             <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
               {speeltuin.latitude && speeltuin.longitude && (
@@ -245,23 +255,6 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
                 Probleem melden
               </ProblemReportButton>
             </div>
-          </div>
-          
-          {/* Location and distance */}
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <MapPin className="h-4 w-4" />
-            <span>
-              {speeltuin.latitude && speeltuin.longitude 
-                ? `${speeltuin.latitude.toFixed(6)}, ${speeltuin.longitude.toFixed(6)}`
-                : 'Locatie niet beschikbaar'
-              }
-            </span>
-            {distance && distance !== Infinity && (
-              <>
-                <span>•</span>
-                <span>{distance < 1 ? `${Math.round(distance * 1000)}m` : `${distance.toFixed(1)}km`}</span>
-              </>
-            )}
           </div>
         </CardHeader>
 

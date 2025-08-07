@@ -1,19 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import SEOHead from '@/components/SEOHead';
+import { useAnalytics } from '@/hooks/useAnalytics';
+
+// 404 Page Structured Data
+const notFoundStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "404 Error Page",
+  "description": "Page not found"
+};
 
 const NotFound = () => {
   const [isLoaded, setIsLoaded] = useState(false);
+  const { trackEvent } = useAnalytics();
 
   useEffect(() => {
     setIsLoaded(true);
-  }, []);
+    
+    // Track 404 page view for analytics
+    trackEvent('page_view', undefined, {
+      error_type: '404',
+      page_type: 'error_page'
+    });
+  }, [trackEvent]);
 
   return (
     <>
       <SEOHead 
-        title="404 - Pagina Niet Gevonden | Speeltuinen Castricum"
-        description="Deze speeltuin pagina bestaat niet. Ga terug naar de hoofdpagina om alle speeltuinen in Castricum te ontdekken."
+        title="404 - Pagina niet gevonden | Speeltuinen Castricum"
+        description="De pagina die u zoekt is niet gevonden. Ontdek onze andere content."
         keywords="404, pagina niet gevonden, speeltuinen, castricum, error"
+        noindex={true}
+        structuredData={notFoundStructuredData}
       />
       <div className="min-h-screen flex items-center justify-center relative overflow-hidden px-4 playground-404">
         {/* Background Gradient */}
@@ -100,6 +118,19 @@ const NotFound = () => {
             >
               🏠 Terug naar alle speeltuinen
             </a>
+          </div>
+
+          {/* Internal Links for SEO */}
+          <div className="mt-12 text-center">
+            <div className="text-sm text-gray-600 mb-4">
+              <p>Andere nuttige pagina's:</p>
+            </div>
+            <div className="flex flex-wrap justify-center gap-4 text-sm">
+              <a href="/" className="text-blue-600 hover:text-blue-800 underline">Homepage</a>
+              <a href="/sitemap.xml" className="text-blue-600 hover:text-blue-800 underline">Sitemap</a>
+              <a href="/privacy" className="text-blue-600 hover:text-blue-800 underline">Privacy</a>
+              <a href="/terms" className="text-blue-600 hover:text-blue-800 underline">Voorwaarden</a>
+            </div>
           </div>
         </div>
 

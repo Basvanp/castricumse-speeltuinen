@@ -11,6 +11,7 @@ interface SEOHeadProps {
   url?: string;
   type?: 'website' | 'article';
   structuredData?: any;
+  noindex?: boolean;
 }
 
 const SEOHead: React.FC<SEOHeadProps> = ({
@@ -20,12 +21,13 @@ const SEOHead: React.FC<SEOHeadProps> = ({
   image,
   url,
   type = 'website',
-  structuredData
+  structuredData,
+  noindex = false
 }) => {
   const { data: settings } = useSiteSettings();
   
   // Use site settings with fallbacks optimized for families with children
-  const pageTitle = title || settings?.meta_title || settings?.site_name || '🎠 Speeltuinen Castricum - Vind de Perfecte Speeltuin voor Jouw Kinderen';
+  const pageTitle = title || settings?.meta_title || settings?.site_name || 'Speeltuinen Castricum - Vind de Perfecte Speeltuin voor Jouw Kinderen';
   const pageDescription = description || settings?.meta_description || settings?.site_description || 'Ontdek alle speeltuinen in Castricum! Complete gids met interactieve kaart, leeftijdsfilters en foto\'s. Van peuterspeeltuinen tot grote speelparken - vind de ideale speelplek voor jouw gezin in Castricum, Noord-Holland.';
   const pageKeywords = keywords || settings?.keywords || 'speeltuinen Castricum, speeltuin Castricum, kinderen spelen Castricum, speelplaats Castricum, buitenspelen Castricum, peuterspeeltuin Castricum, speelpark Castricum, Noord-Holland speeltuinen, familie uitje Castricum, kindvriendelijk Castricum, glijbaan Castricum, schommel Castricum, zandbak Castricum';
   const currentUrl = url || (typeof window !== 'undefined' ? window.location.href : '');
@@ -62,7 +64,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({
       <meta name="twitter:image" content={pageImage} />
       
       {/* Additional SEO Meta Tags */}
-      <meta name="robots" content="index, follow" />
+      <meta name="robots" content={noindex ? "noindex, follow" : "index, follow"} />
       <meta name="author" content={settings?.contact_email ? settings.contact_email.split('@')[1] : 'Gemeente Castricum'} />
       <link rel="canonical" href={currentUrl} />
       

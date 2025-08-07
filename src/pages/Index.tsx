@@ -266,7 +266,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title={(settings as any).site_name || "🎠 Speeltuinen Castricum - Vind de Perfecte Speeltuin voor Jouw Kinderen"}
+        title={(settings as any).site_name || "Speeltuinen Castricum - Vind de Perfecte Speeltuin voor Jouw Kinderen"}
         description={(settings as any).site_description || "Ontdek alle speeltuinen in Castricum! Complete gids met interactieve kaart, leeftijdsfilters en foto's. Van peuterspeeltuinen tot grote speelparken - vind de ideale speelplek voor jouw gezin in Castricum, Noord-Holland."}
         keywords="speeltuinen Castricum, speeltuin Castricum, kinderen spelen Castricum, speelplaats Castricum, buitenspelen Castricum, peuterspeeltuin Castricum, speelpark Castricum, Noord-Holland speeltuinen, familie uitje Castricum, kindvriendelijk Castricum, glijbaan Castricum, schommel Castricum, zandbak Castricum"
         structuredData={[

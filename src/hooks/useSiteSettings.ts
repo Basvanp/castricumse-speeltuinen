@@ -4,14 +4,14 @@ import { SiteSetting, SiteSettings, SiteSettingsFormData } from '@/types/siteSet
 
 // Default site settings (fallback when database table doesn't exist)
 const DEFAULT_SITE_SETTINGS: SiteSettings = {
-  site_name: '🎠 Speeltuinen Castricum',
+  site_name: 'Speeltuinen Castricum',
   site_description: 'Ontdek alle speeltuinen in Castricum! Complete gids met interactieve kaart, leeftijdsfilters en foto\'s. Van peuterspeeltuinen tot grote speelparken - vind de ideale speelplek voor jouw gezin in Castricum, Noord-Holland.',
   contact_email: 'info@castricum.nl',
   contact_phone: '0251-656565',
   facebook_url: '',
   instagram_url: '',
   twitter_url: '',
-  meta_title: '🎠 Speeltuinen Castricum - Vind de Perfecte Speeltuin voor Jouw Kinderen',
+  meta_title: 'Speeltuinen Castricum - Vind de Perfecte Speeltuin voor Jouw Kinderen',
   meta_description: 'Ontdek alle speeltuinen in Castricum! Complete gids met interactieve kaart, leeftijdsfilters en foto\'s. Van peuterspeeltuinen tot grote speelparken - vind de ideale speelplek voor jouw gezin in Castricum, Noord-Holland.',
   keywords: 'speeltuinen Castricum, speeltuin Castricum, kinderen spelen Castricum, speelplaats Castricum, buitenspelen Castricum, peuterspeeltuin Castricum, speelpark Castricum, Noord-Holland speeltuinen, familie uitje Castricum, kindvriendelijk Castricum, glijbaan Castricum, schommel Castricum, zandbak Castricum',
   default_zoom: 13,
