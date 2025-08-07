@@ -5,17 +5,32 @@ import { MapPin, Clock, Heart, ExternalLink, ArrowUp, Mail, Phone, Facebook, Ins
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 
 interface FooterProps {
-  lastUpdated?: string | Date;
+  lastUpdated?: string | Date | number;
 }
 
 const Footer = ({ lastUpdated }: FooterProps) => {
   const { data: settings } = useSiteSettings();
 
-  const formatLastUpdated = (date: string | Date | undefined) => {
+  const formatLastUpdated = (date: string | Date | number | undefined) => {
     if (!date) return 'Onbekend';
     
     try {
-      const dateObj = typeof date === 'string' ? new Date(date) : date;
+      let dateObj: Date;
+      
+      if (typeof date === 'number') {
+        // Timestamp in milliseconds
+        dateObj = new Date(date);
+      } else if (typeof date === 'string') {
+        dateObj = new Date(date);
+      } else {
+        dateObj = date;
+      }
+      
+      // Check if date is valid
+      if (isNaN(dateObj.getTime())) {
+        return 'Onbekend';
+      }
+      
       return format(dateObj, 'dd MMMM yyyy', { locale: nl });
     } catch {
       return 'Onbekend';

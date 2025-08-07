@@ -1,5 +1,6 @@
 import React from 'react';
 import SEOHead from '@/components/SEOHead';
+import Footer from '@/components/Footer';
 import { FileText, Scale, AlertTriangle, Shield, Users, Globe } from 'lucide-react';
 
 const Terms = () => {
@@ -338,6 +339,9 @@ const Terms = () => {
           </div>
         </div>
       </div>
+      
+      {/* Footer */}
+      <Footer lastUpdated={Date.now()} />
     </>
   );
 };

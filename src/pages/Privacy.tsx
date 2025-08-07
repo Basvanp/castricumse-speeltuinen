@@ -1,5 +1,6 @@
 import React from 'react';
 import SEOHead from '@/components/SEOHead';
+import Footer from '@/components/Footer';
 import { Shield, Eye, Lock, Database, Mail, Phone, MapPin } from 'lucide-react';
 
 const Privacy = () => {
@@ -296,6 +297,9 @@ const Privacy = () => {
           </div>
         </div>
       </div>
+      
+      {/* Footer */}
+      <Footer lastUpdated={Date.now()} />
     </>
   );
 };

@@ -413,7 +413,7 @@ const Index = () => {
       </main>
 
       {/* Footer */}
-      <Footer lastUpdated={(settings as any).last_updated} />
+      <Footer lastUpdated={speeltuinen.length > 0 ? Math.max(...speeltuinen.map(s => new Date(s.updated_at).getTime())) : Date.now()} />
     </div>
   );
 };
