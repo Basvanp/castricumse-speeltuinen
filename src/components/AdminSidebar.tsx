@@ -10,7 +10,8 @@ import {
   LogOut,
   Home,
   Image,
-  Upload
+  Upload,
+  X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -18,7 +19,11 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 
-const AdminSidebar = () => {
+interface AdminSidebarProps {
+  onClose?: () => void;
+}
+
+const AdminSidebar = ({ onClose }: AdminSidebarProps) => {
   const location = useLocation();
   const { signOut } = useAuth();
   const { toast } = useToast();
@@ -99,12 +104,26 @@ const AdminSidebar = () => {
     <aside className="w-64 bg-sidebar text-sidebar-foreground flex flex-col h-screen border-r border-sidebar-border">
       {/* Header */}
       <div className="p-6 border-b border-sidebar-border">
-        <h2 className="text-xl font-bold text-sidebar-primary">
-          Admin Panel
-        </h2>
-        <p className="text-sm text-sidebar-muted-foreground mt-1">
-          Castricum Speeltuinen
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-bold text-sidebar-primary">
+              Admin Panel
+            </h2>
+            <p className="text-sm text-sidebar-muted-foreground mt-1">
+              Castricum Speeltuinen
+            </p>
+          </div>
+          {onClose && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="lg:hidden p-1 h-8 w-8"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Navigation */}
