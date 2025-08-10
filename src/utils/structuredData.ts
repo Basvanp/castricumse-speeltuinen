@@ -146,7 +146,7 @@ export const generateWebsiteSchema = (settings: Record<string, string>) => {
       "@type": "SearchAction",
       "target": {
         "@type": "EntryPoint",
-        "urlTemplate": `${window.location.origin}/?search={search_term_string}`
+        "urlTemplate": "https://speeltuincastricum.nl/?q={search_term_string}"
       },
       "query-input": "required name=search_term_string"
     },

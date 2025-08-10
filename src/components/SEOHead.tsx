@@ -12,6 +12,7 @@ interface SEOHeadProps {
   type?: 'website' | 'article';
   structuredData?: any;
   noindex?: boolean;
+  twitterSite?: string;
 }
 
 const SEOHead: React.FC<SEOHeadProps> = ({
@@ -22,16 +23,17 @@ const SEOHead: React.FC<SEOHeadProps> = ({
   url,
   type = 'website',
   structuredData,
-  noindex = false
+  noindex = false,
+  twitterSite = '@speeltuincastricum'
 }) => {
   const { data: settings } = useSiteSettings();
   
   // Use site settings with fallbacks optimized for families with children
-  const pageTitle = title || settings?.meta_title || settings?.site_name || 'Speeltuinen Castricum - Interactieve Kaart & Gids';
-  const pageDescription = description || settings?.meta_description || settings?.site_description || 'Ontdek alle speeltuinen in Castricum met onze interactieve kaart. Vind de perfecte speelplek voor jouw kinderen - van peuters tot tieners!';
+  const pageTitle = title || settings?.meta_title || settings?.site_name || 'Speeltuinen in Castricum - Complete Gids';
+  const pageDescription = description || settings?.meta_description || settings?.site_description || 'Ontdek alle speeltuinen in Castricum met foto\'s, locaties en faciliteiten. Complete gids voor gezinnen met kinderen van peuters tot tieners.';
   const pageKeywords = keywords || settings?.keywords || 'speeltuinen Castricum, speeltuin Castricum, kinderen spelen Castricum, speelplaats Castricum, buitenspelen Castricum, peuterspeeltuin Castricum, speelpark Castricum, Noord-Holland speeltuinen, familie uitje Castricum, kindvriendelijk Castricum, glijbaan Castricum, schommel Castricum, zandbak Castricum';
-  const currentUrl = url || (typeof window !== 'undefined' ? window.location.href : '');
-  const defaultImage = '/lovable-uploads/2ea4b2d6-5537-43cf-a522-d1571d0f5108.png'; // Updated to use actual image
+  const currentUrl = url || (typeof window !== 'undefined' ? window.location.href : 'https://speeltuincastricum.nl');
+  const defaultImage = 'https://speeltuincastricum.nl/lovable-uploads/2ea4b2d6-5537-43cf-a522-d1571d0f5108.png';
   const pageImage = image || defaultImage;
   const siteName = settings?.site_name || 'Speeltuinen Castricum';
 
@@ -59,6 +61,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({
       
       {/* Twitter Card Tags */}
       <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:site" content={twitterSite} />
       <meta name="twitter:title" content={pageTitle} />
       <meta name="twitter:description" content={pageDescription} />
       <meta name="twitter:image" content={pageImage} />
