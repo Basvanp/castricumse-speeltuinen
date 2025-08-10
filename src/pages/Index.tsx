@@ -291,40 +291,6 @@ const Index = () => {
         onSearch={handleHeroSearch}
       />
 
-      {/* SEO Content Section */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mb-8">
-        <div className="prose prose-lg max-w-none">
-          <h1 className="text-3xl font-bold text-foreground mb-6">Speeltuinen in Castricum - Complete Gids voor Gezinnen</h1>
-          
-          <div className="text-muted-foreground space-y-4">
-            <p>
-              Welkom bij de meest complete gids van alle speeltuinen in Castricum! Of je nu op zoek bent naar een 
-              veilige peuterspeeltuin voor je kleine, een uitdagende natuurspeeltuin voor avontuurlijke kinderen, 
-              of een complete speelvoorziening met toiletten en parkeerplaatsen - wij hebben alle informatie die je nodig hebt.
-            </p>
-            
-            <p>
-              Castricum biedt een rijke diversiteit aan speelmogelijkheden verspreid door de hele gemeente. 
-              Van de gezellige buurtparken tot de grote speelbossen, elke speeltuin heeft zijn eigen charme en unieke faciliteiten. 
-              Onze interactieve kaart toont je precies waar elke speeltuin zich bevindt, compleet met foto's, 
-              faciliteitsoverzicht en praktische informatie zoals openingstijden en bereikbaarheid.
-            </p>
-
-            <p>
-              Gebruik onze handige filters om speeltuinen te vinden die perfect aansluiten bij de leeftijd van je kinderen. 
-              Zoek bijvoorbeeld naar speeltuinen met glijbanen voor de liefhebbers van snelheid, schommels voor ontspanning, 
-              of zandbakken voor creatief spel. Daarnaast kun je filteren op praktische zaken zoals de aanwezigheid van 
-              toiletten, parkeerplaatsen of schaduwplekken voor die warme zomerdagen.
-            </p>
-
-            <p>
-              Elke speeltuin in onze database is zorgvuldig gecontroleerd en voorzien van actuele informatie. 
-              We werken nauw samen met de gemeente Castricum om ervoor te zorgen dat alle gegevens up-to-date blijven. 
-              Zo weet je altijd zeker dat je naar een goed onderhouden en veilige speelplek gaat met je gezin.
-            </p>
-          </div>
-        </div>
-      </section>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -446,6 +412,41 @@ const Index = () => {
           )}
         </section>
       </main>
+
+      {/* SEO Content Section */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mb-8">
+        <div className="prose prose-lg max-w-none">
+          <h1 className="text-3xl font-bold text-foreground mb-6">Speeltuinen in Castricum - Complete Gids voor Gezinnen</h1>
+          
+          <div className="text-muted-foreground space-y-4">
+            <p>
+              Welkom bij de meest complete gids van alle speeltuinen in Castricum! Of je nu op zoek bent naar een 
+              veilige peuterspeeltuin voor je kleine, een uitdagende natuurspeeltuin voor avontuurlijke kinderen, 
+              of een complete speelvoorziening met toiletten en parkeerplaatsen - wij hebben alle informatie die je nodig hebt.
+            </p>
+            
+            <p>
+              Castricum biedt een rijke diversiteit aan speelmogelijkheden verspreid door de hele gemeente. 
+              Van de gezellige buurtparken tot de grote speelbossen, elke speeltuin heeft zijn eigen charme en unieke faciliteiten. 
+              Onze interactieve kaart toont je precies waar elke speeltuin zich bevindt, compleet met foto's, 
+              faciliteitsoverzicht en praktische informatie zoals openingstijden en bereikbaarheid.
+            </p>
+
+            <p>
+              Gebruik onze handige filters om speeltuinen te vinden die perfect aansluiten bij de leeftijd van je kinderen. 
+              Zoek bijvoorbeeld naar speeltuinen met glijbanen voor de liefhebbers van snelheid, schommels voor ontspanning, 
+              of zandbakken voor creatief spel. Daarnaast kun je filteren op praktische zaken zoals de aanwezigheid van 
+              toiletten, parkeerplaatsen of schaduwplekken voor die warme zomerdagen.
+            </p>
+
+            <p>
+              Elke speeltuin in onze database is zorgvuldig gecontroleerd en voorzien van actuele informatie. 
+              We werken nauw samen met de gemeente Castricum om ervoor te zorgen dat alle gegevens up-to-date blijven. 
+              Zo weet je altijd zeker dat je naar een goed onderhouden en veilige speelplek gaat met je gezin.
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* Footer */}
       <Footer lastUpdated={speeltuinen.length > 0 ? Math.max(...speeltuinen.map(s => new Date(s.updated_at).getTime())) : Date.now()} />
