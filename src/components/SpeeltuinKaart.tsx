@@ -86,7 +86,7 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
 
   // Update markers when speeltuinen change or map initializes
   useEffect(() => {
-    if (!mapInstanceRef.current || !speeltuinen.length) return;
+    if (!mapInstanceRef.current) return;
 
     import('leaflet').then((L) => {
       // Clear existing playground markers
@@ -250,7 +250,7 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
         });
       });
     });
-  }, [speeltuinen, siteSettings?.marker_color]); // Update when speeltuinen or marker color changes
+  }, [speeltuinen, siteSettings?.marker_color, isInitializedRef.current]); // Update when speeltuinen or marker color changes
 
   // Update user location marker
   useEffect(() => {
