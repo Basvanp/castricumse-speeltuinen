@@ -4,9 +4,6 @@ Allow: /
 # Sitemap
 Sitemap: https://speeltuincastricum.nl/sitemap.xml
 
-# Allow crawling of all public content
-Allow: /
-
 # Block admin areas (security measure)
 Disallow: /admin/
 Disallow: /auth/
@@ -20,6 +17,7 @@ Allow: /*.jpeg
 Allow: /*.gif
 Allow: /*.svg
 Allow: /*.webp
+Allow: /*.ico
 
 # Specific crawl delays for different bots
 User-agent: Googlebot
