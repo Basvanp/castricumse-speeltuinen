@@ -29,8 +29,8 @@ const SEOHead: React.FC<SEOHeadProps> = ({
   const { data: settings } = useSiteSettings();
   
   // Use site settings with fallbacks optimized for families with children
-  const pageTitle = title || settings?.meta_title || settings?.site_name || 'Speeltuinen in Castricum - Complete Gids';
-  const pageDescription = description || settings?.meta_description || settings?.site_description || 'Ontdek alle speeltuinen in Castricum met foto\'s, locaties en faciliteiten. Complete gids voor gezinnen met kinderen van peuters tot tieners.';
+  const pageTitle = title || settings?.meta_title || settings?.site_name || 'Speeltuinen in Castricum - Complete Gids voor Gezinnen';
+  const pageDescription = description || settings?.meta_description || settings?.site_description || 'Ontdek alle 4 speeltuinen in Castricum! 🎠 Gratis toegang, foto\'s, locaties en faciliteiten. Perfect voor peuters, kleuters en schoolkinderen.';
   const pageKeywords = keywords || settings?.keywords || 'speeltuinen Castricum, speeltuin Castricum, kinderen spelen Castricum, speelplaats Castricum, buitenspelen Castricum, peuterspeeltuin Castricum, speelpark Castricum, Noord-Holland speeltuinen, familie uitje Castricum, kindvriendelijk Castricum, glijbaan Castricum, schommel Castricum, zandbak Castricum';
   const currentUrl = url || (typeof window !== 'undefined' ? window.location.href : 'https://speeltuincastricum.nl');
   const defaultImage = 'https://speeltuincastricum.nl/lovable-uploads/2ea4b2d6-5537-43cf-a522-d1571d0f5108.png';
