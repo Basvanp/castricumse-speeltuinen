@@ -359,57 +359,220 @@ const Index = () => {
 
         {/* Speeltuinen Section */}
         <section ref={speeltuinenRef} className="mb-16">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-3xl font-bold text-foreground mb-2">
-                Alle Speeltuinen
-              </h2>
-              <p className="text-muted-foreground">
-                {filteredSpeeltuinen.length} van {speeltuinen.length} speeltuinen
-                {searchQuery && ` voor "${searchQuery}"`}
-              </p>
-            </div>
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-foreground mb-4">Alle Speeltuinen in Castricum</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Ontdek alle {speeltuinen.length} speeltuinen in Castricum. 
+              Gebruik de filters om de perfecte speelplek te vinden voor jouw kinderen.
+            </p>
           </div>
 
-          {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="bg-card border border-border rounded-lg p-6 animate-pulse">
-                  <div className="h-48 bg-muted rounded-lg mb-4"></div>
-                  <div className="h-4 bg-muted rounded mb-2"></div>
-                  <div className="h-3 bg-muted rounded w-2/3"></div>
-                </div>
-              ))}
+          {/* Filters and Speeltuinen Grid */}
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* Desktop Filters */}
+            <div className="hidden lg:block w-80 flex-shrink-0">
+              <SpeeltuinFiltersComponent
+                filters={filters}
+                onFiltersChange={setFilters}
+                onApplyFilters={handleApplyFilters}
+                onClearFilters={clearAllFilters}
+              />
             </div>
-          ) : filteredSpeeltuinen.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="text-6xl mb-4">🎪</div>
-              <h3 className="text-xl font-semibold text-foreground mb-2">Geen speeltuinen gevonden</h3>
-              <p className="text-muted-foreground mb-4">
-                {searchQuery 
-                  ? `Geen speeltuinen gevonden voor "${searchQuery}". Probeer andere zoektermen.`
-                  : "Er zijn momenteel geen speeltuinen beschikbaar."
-                }
-              </p>
-              {(searchQuery || Object.keys(filters).length > 0) && (
-                <Button onClick={clearAllFilters} variant="outline">
-                  Alle filters wissen
-                </Button>
+
+            {/* Speeltuinen Grid */}
+            <div className="flex-1">
+              {isLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="h-64 bg-muted animate-pulse rounded-lg" />
+                  ))}
+                </div>
+              ) : filteredSpeeltuinen.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="text-6xl mb-4">🎯</div>
+                  <h3 className="text-xl font-semibold mb-2">Geen speeltuinen gevonden</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Probeer je filters aan te passen of je zoekopdracht te wijzigen.
+                  </p>
+                  <Button onClick={clearAllFilters} variant="outline">
+                    Alle filters wissen
+                  </Button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredSpeeltuinen.map((speeltuin) => (
+                    <SpeeltuinCard
+                      key={speeltuin.id}
+                      speeltuin={speeltuin}
+                      onSelect={setSelectedSpeeltuin}
+                      userLocation={userLocation}
+                    />
+                  ))}
+                </div>
               )}
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {filteredSpeeltuinen.map((speeltuin) => (
-                <SpeeltuinCard
-                  key={speeltuin.id}
-                  speeltuin={speeltuin as any}
-                  onSelect={setSelectedSpeeltuin}
-                  userLocation={userLocation}
-                  showDistance={true}
-                />
-              ))}
+          </div>
+        </section>
+
+        {/* FAQ Section - SEO Optimization for "People Also Ask" */}
+        <section className="mb-16">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-foreground mb-4">
+                Veelgestelde Vragen over Speeltuinen in Castricum
+              </h2>
+              <p className="text-muted-foreground">
+                Antwoorden op de meest gestelde vragen van ouders en verzorgers
+              </p>
             </div>
-          )}
+
+            <div className="space-y-6">
+              {/* FAQ Item 1 */}
+              <Collapsible className="border border-border rounded-lg">
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" className="w-full justify-between p-6 h-auto text-left">
+                    <h3 className="text-lg font-semibold">Welke speeltuinen zijn geschikt voor peuters in Castricum?</h3>
+                    <ChevronDown className="h-5 w-5 flex-shrink-0 transition-transform" />
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="px-6 pb-6">
+                  <div className="space-y-3 text-muted-foreground">
+                    <p>
+                      In Castricum zijn er verschillende speeltuinen die perfect geschikt zijn voor peuters:
+                    </p>
+                    <ul className="list-disc list-inside space-y-1 ml-4">
+                      <li><strong>Speeltuin Albertshoeve:</strong> Kleine glijbaan, veilige schommels en zandbak</li>
+                      <li><strong>Speeltuin De Oude Keuken:</strong> Peutervriendelijke speeltoestellen en zachte ondergrond</li>
+                      <li><strong>Alle speeltuinen</strong> hebben veilige speeltoestellen voor kinderen vanaf 2 jaar</li>
+                    </ul>
+                    <p className="text-sm text-primary">
+                      💡 Tip: Gebruik de filters bovenaan om speeltuinen te vinden met specifieke voorzieningen voor peuters.
+                    </p>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+
+              {/* FAQ Item 2 */}
+              <Collapsible className="border border-border rounded-lg">
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" className="w-full justify-between p-6 h-auto text-left">
+                    <h3 className="text-lg font-semibold">Zijn de speeltuinen in Castricum gratis toegankelijk?</h3>
+                    <ChevronDown className="h-5 w-5 flex-shrink-0 transition-transform" />
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="px-6 pb-6">
+                  <div className="space-y-3 text-muted-foreground">
+                    <p>
+                      <strong>Ja, alle speeltuinen in Castricum zijn volledig gratis toegankelijk!</strong> Dit maakt Castricum een ideale bestemming voor gezinnen met kinderen.
+                    </p>
+                    <p>
+                      De speeltuinen zijn openbaar eigendom van de gemeente en staan open voor iedereen. Je hoeft geen entree te betalen en kunt zo lang blijven spelen als je wilt.
+                    </p>
+                    <p className="text-sm text-primary">
+                      🎯 Perfect voor: Dagjes uit, regelmatige bezoeken, en spontane speelmomenten zonder kosten.
+                    </p>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+
+              {/* FAQ Item 3 */}
+              <Collapsible className="border border-border rounded-lg">
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" className="w-full justify-between p-6 h-auto text-left">
+                    <h3 className="text-lg font-semibold">Wat zijn de openingstijden van de speeltuinen?</h3>
+                    <ChevronDown className="h-5 w-5 flex-shrink-0 transition-transform" />
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="px-6 pb-6">
+                  <div className="space-y-3 text-muted-foreground">
+                    <p>
+                      <strong>Alle speeltuinen in Castricum zijn 24/7 open en gratis toegankelijk!</strong> Dit betekent dat je kunt spelen wanneer het jou uitkomt.
+                    </p>
+                    <p>
+                      <strong>Beste speeltijden:</strong>
+                    </p>
+                    <ul className="list-disc list-inside space-y-1 ml-4">
+                      <li><strong>Ochtend:</strong> 9:00 - 12:00 (minder druk, frisse lucht)</li>
+                      <li><strong>Middag:</strong> 14:00 - 17:00 (meeste kinderen, gezellige sfeer)</li>
+                      <li><strong>Avond:</strong> 18:00 - 20:00 (zomermaanden, koeler weer)</li>
+                    </ul>
+                    <p className="text-sm text-primary">
+                      🌞 Let op: In de wintermaanden kan het vroeg donker worden, dus plan je bezoek overdag.
+                    </p>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+
+              {/* FAQ Item 4 */}
+              <Collapsible className="border border-border rounded-lg">
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" className="w-full justify-between p-6 h-auto text-left">
+                    <h3 className="text-lg font-semibold">Welke speeltuinen hebben de beste voorzieningen?</h3>
+                    <ChevronDown className="h-5 w-5 flex-shrink-0 transition-transform" />
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="px-6 pb-6">
+                  <div className="space-y-3 text-muted-foreground">
+                    <p>
+                      Elke speeltuin in Castricum heeft unieke voorzieningen. Hier is een overzicht van de beste:
+                    </p>
+                    <div className="grid md:grid-cols-2 gap-4 mt-4">
+                      <div className="bg-muted/50 p-4 rounded-lg">
+                        <h4 className="font-semibold mb-2">🎠 Speeltuin Albertshoeve</h4>
+                        <ul className="text-sm space-y-1">
+                          <li>• Grote glijbaan</li>
+                          <li>• Meerdere schommels</li>
+                          <li>• Zandbak met speelgoed</li>
+                          <li>• Picknicktafels</li>
+                        </ul>
+                      </div>
+                      <div className="bg-muted/50 p-4 rounded-lg">
+                        <h4 className="font-semibold mb-2">🏰 Speeltuin De Oude Keuken</h4>
+                        <ul className="text-sm space-y-1">
+                          <li>• Klimtoestellen</li>
+                          <li>• Wipwap</li>
+                          <li>• Veilige ondergrond</li>
+                          <li>• Schaduwrijke plekken</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <p className="text-sm text-primary mt-4">
+                      🔍 Gebruik de filters bovenaan om speeltuinen te vinden met specifieke voorzieningen die jij zoekt.
+                    </p>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+
+              {/* FAQ Item 5 */}
+              <Collapsible className="border border-border rounded-lg">
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" className="w-full justify-between p-6 h-auto text-left">
+                    <h3 className="text-lg font-semibold">Is er parkeergelegenheid bij de speeltuinen?</h3>
+                    <ChevronDown className="h-5 w-5 flex-shrink-0 transition-transform" />
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="px-6 pb-6">
+                  <div className="space-y-3 text-muted-foreground">
+                    <p>
+                      <strong>Ja, alle speeltuinen in Castricum hebben goede parkeermogelijkheden:</strong>
+                    </p>
+                    <ul className="list-disc list-inside space-y-1 ml-4">
+                      <li><strong>Gratis parkeren:</strong> Alle parkeerplaatsen zijn kosteloos</li>
+                      <li><strong>Ruime parkeerplaatsen:</strong> Voldoende plek voor meerdere auto's</li>
+                      <li><strong>Veilige locaties:</strong> Goed verlichte parkeerplaatsen</li>
+                      <li><strong>Fietsenstallingen:</strong> Ook perfect bereikbaar met de fiets</li>
+                    </ul>
+                    <p>
+                      <strong>Openbaar vervoer:</strong> Alle speeltuinen zijn ook goed bereikbaar met de bus. Kijk op de kaart voor de exacte locaties en routes.
+                    </p>
+                    <p className="text-sm text-primary">
+                      🚗 Tip: Kom je met de auto? Plan je bezoek buiten de spitsuren voor de beste parkeerplek.
+                    </p>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            </div>
+          </div>
         </section>
       </main>
 
