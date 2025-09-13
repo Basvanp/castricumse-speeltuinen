@@ -70,7 +70,6 @@ export interface Speeltuin {
   // Metadata
   bouwjaar?: number;
   fixi_copy_tekst?: string;
-  toegevoegd_door?: string;
   created_at: string;
   updated_at: string;
 }

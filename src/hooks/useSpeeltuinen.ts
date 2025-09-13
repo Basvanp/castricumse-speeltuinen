@@ -9,7 +9,54 @@ export const useSpeeltuinen = (filters?: SpeeltuinFilters) => {
     queryFn: async () => {
       let query = supabase
         .from('speeltuinen')
-        .select('*')
+        .select(`
+          id,
+          naam,
+          omschrijving,
+          latitude,
+          longitude,
+          fotos,
+          heeft_glijbaan,
+          heeft_schommel,
+          heeft_zandbak,
+          heeft_kabelbaan,
+          heeft_bankjes,
+          heeft_sportveld,
+          heeft_klimtoestel,
+          heeft_water_pomp,
+          heeft_panakooi,
+          heeft_skatebaan,
+          heeft_basketbalveld,
+          heeft_wipwap,
+          heeft_duikelrek,
+          heeft_toilet,
+          heeft_parkeerplaats,
+          heeft_horeca,
+          type_natuurspeeltuin,
+          type_buurtspeeltuin,
+          type_schoolplein,
+          type_speelbos,
+          leeftijd_0_2_jaar,
+          leeftijd_2_6_jaar,
+          leeftijd_6_12_jaar,
+          leeftijd_12_plus_jaar,
+          ondergrond_zand,
+          ondergrond_gras,
+          ondergrond_rubber,
+          ondergrond_tegels,
+          ondergrond_kunstgras,
+          geschikt_peuters,
+          geschikt_kleuters,
+          geschikt_kinderen,
+          is_omheind,
+          heeft_schaduw,
+          grootte,
+          badge,
+          bouwjaar,
+          fixi_copy_tekst,
+          created_at,
+          updated_at
+        `)
         .order('naam');
 
       if (filters?.searchTerm) {
@@ -242,7 +289,54 @@ export const useSpeeltuin = (id: string) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('speeltuinen')
-        .select('*')
+        .select(`
+          id,
+          naam,
+          omschrijving,
+          latitude,
+          longitude,
+          fotos,
+          heeft_glijbaan,
+          heeft_schommel,
+          heeft_zandbak,
+          heeft_kabelbaan,
+          heeft_bankjes,
+          heeft_sportveld,
+          heeft_klimtoestel,
+          heeft_water_pomp,
+          heeft_panakooi,
+          heeft_skatebaan,
+          heeft_basketbalveld,
+          heeft_wipwap,
+          heeft_duikelrek,
+          heeft_toilet,
+          heeft_parkeerplaats,
+          heeft_horeca,
+          type_natuurspeeltuin,
+          type_buurtspeeltuin,
+          type_schoolplein,
+          type_speelbos,
+          leeftijd_0_2_jaar,
+          leeftijd_2_6_jaar,
+          leeftijd_6_12_jaar,
+          leeftijd_12_plus_jaar,
+          ondergrond_zand,
+          ondergrond_gras,
+          ondergrond_rubber,
+          ondergrond_tegels,
+          ondergrond_kunstgras,
+          geschikt_peuters,
+          geschikt_kleuters,
+          geschikt_kinderen,
+          is_omheind,
+          heeft_schaduw,
+          grootte,
+          badge,
+          bouwjaar,
+          fixi_copy_tekst,
+          created_at,
+          updated_at
+        `)
         .eq('id', id)
         .single();
 
