@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
     <title>Speeltuinen Castricum - Interactieve Kaart & Gids</title>
     <meta name="description" content="Ontdek alle 4 speeltuinen in Castricum! 🎠 Gratis toegang, foto's, locaties en faciliteiten. Perfect voor peuters, kleuters en schoolkinderen. FAQ over openingstijden, parkeren en voorzieningen. Interactieve kaart met alle speelplaatsen!" />
+    
+    <!-- Preload critical content for better crawling -->
+    <link rel="preload" href="/src/main.tsx" as="script">
+    <link rel="preload" href="/src/pages/Index.tsx" as="script">
     <meta name="author" content="Speeltuinen Castricum" />
     <meta name="keywords" content="speeltuinen Castricum, speeltuin Castricum, kinderen spelen Castricum, speelplaats Castricum, buitenspelen Castricum, peuterspeeltuin Castricum, speelpark Castricum, Noord-Holland speeltuinen, familie uitje Castricum, kindvriendelijk Castricum, speeltuin openingstijden Castricum, speeltuin parkeren Castricum, speeltuin peuters Castricum, speeltuin gratis Castricum, speeltuin voorzieningen Castricum" />
     <meta name="robots" content="index, follow" />
@@ -216,7 +220,34 @@
   </head>
 
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Fallback content for search engines when JavaScript is disabled -->
+      <noscript>
+        <div style="padding: 20px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
+          <h1>Speeltuinen in Castricum - Complete Gids voor Gezinnen</h1>
+          <p>Ontdek alle 4 speeltuinen in Castricum! Gratis toegang, foto's, locaties en faciliteiten. Perfect voor peuters, kleuters en schoolkinderen.</p>
+          
+          <h2>Veelgestelde Vragen over Speeltuinen in Castricum</h2>
+          
+          <h3>Welke speeltuinen zijn geschikt voor peuters in Castricum?</h3>
+          <p>In Castricum zijn er verschillende speeltuinen die perfect geschikt zijn voor peuters: Speeltuin Albertshoeve heeft een kleine glijbaan, veilige schommels en zandbak. Speeltuin De Oude Keuken heeft peutervriendelijke speeltoestellen en zachte ondergrond. Alle speeltuinen hebben veilige speeltoestellen voor kinderen vanaf 2 jaar.</p>
+          
+          <h3>Zijn de speeltuinen in Castricum gratis toegankelijk?</h3>
+          <p>Ja, alle speeltuinen in Castricum zijn volledig gratis toegankelijk! Dit maakt Castricum een ideale bestemming voor gezinnen met kinderen. De speeltuinen zijn openbaar eigendom van de gemeente en staan open voor iedereen.</p>
+          
+          <h3>Wat zijn de openingstijden van de speeltuinen?</h3>
+          <p>Alle speeltuinen in Castricum zijn 24/7 open en gratis toegankelijk! Dit betekent dat je kunt spelen wanneer het jou uitkomt. Beste speeltijden zijn: Ochtend 9:00-12:00 (minder druk), Middag 14:00-17:00 (meeste kinderen), Avond 18:00-20:00 (zomermaanden).</p>
+          
+          <h3>Welke speeltuinen hebben de beste voorzieningen?</h3>
+          <p>Elke speeltuin in Castricum heeft unieke voorzieningen. Speeltuin Albertshoeve heeft een grote glijbaan, meerdere schommels, zandbak met speelgoed en picknicktafels. Speeltuin De Oude Keuken heeft klimtoestellen, wipwap, veilige ondergrond en schaduwrijke plekken.</p>
+          
+          <h3>Is er parkeergelegenheid bij de speeltuinen?</h3>
+          <p>Ja, alle speeltuinen in Castricum hebben goede parkeermogelijkheden: Gratis parkeren, ruime parkeerplaatsen, veilige locaties en fietsenstallingen. Alle speeltuinen zijn ook goed bereikbaar met de bus.</p>
+          
+          <p><strong>Voor de volledige interactieve ervaring, schakel JavaScript in en bezoek onze website.</strong></p>
+        </div>
+      </noscript>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

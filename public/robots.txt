@@ -8,7 +8,7 @@ Sitemap: https://speeltuincastricum.nl/sitemap.xml
 Disallow: /admin/
 Disallow: /auth/
 
-# Allow common crawl paths
+# Allow all static assets for better crawling
 Allow: /*.css
 Allow: /*.js
 Allow: /*.png
@@ -18,12 +18,25 @@ Allow: /*.gif
 Allow: /*.svg
 Allow: /*.webp
 Allow: /*.ico
+Allow: /*.woff
+Allow: /*.woff2
+Allow: /*.ttf
+Allow: /*.eot
 
-# Specific crawl delays for different bots
+# Explicitly allow main pages
+Allow: /
+Allow: /index.html
+Allow: /privacy
+Allow: /terms
+
+# Googlebot specific rules - no crawl delay for better indexing
 User-agent: Googlebot
-Crawl-delay: 1
+Allow: /
+Crawl-delay: 0
 
+# Other search engines
 User-agent: Bingbot
+Allow: /
 Crawl-delay: 1
 
 # Block specific bots that might cause issues
