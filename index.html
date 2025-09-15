@@ -217,31 +217,106 @@
   </head>
 
   <body>
+    <!-- Critical CSS for fallback styling -->
+    <style>
+      .fallback-hero {
+        background: linear-gradient(135deg, rgba(15, 118, 110, 0.4) 0%, rgba(6, 182, 212, 0.3) 100%), url('/lovable-uploads/heroimage.jpg');
+        background-size: cover;
+        background-position: center;
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+        padding: 2rem 1rem;
+      }
+      .fallback-content {
+        max-width: 800px;
+        margin: 0 auto;
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+      }
+      .fallback-hero h1 {
+        font-size: clamp(2.5rem, 5vw, 4.5rem);
+        font-weight: bold;
+        margin-bottom: 1.5rem;
+        line-height: 1.1;
+      }
+      .fallback-hero p {
+        font-size: clamp(1.1rem, 2vw, 1.3rem);
+        opacity: 0.9;
+        margin-bottom: 2rem;
+      }
+      .fallback-section {
+        padding: 2rem 1rem;
+        max-width: 800px;
+        margin: 0 auto;
+        font-family: Arial, sans-serif;
+      }
+      .fallback-section h2 {
+        color: #0f766e;
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+      }
+      .fallback-section h3 {
+        color: #0d9488;
+        font-size: 1.3rem;
+        margin: 2rem 0 1rem 0;
+      }
+      .fallback-section p {
+        margin-bottom: 1rem;
+        color: #374151;
+        line-height: 1.6;
+      }
+      .fallback-cta {
+        background: #10b981;
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 0.5rem;
+        text-align: center;
+        margin: 2rem 0;
+        font-weight: bold;
+      }
+    </style>
+
     <div id="root">
-      <!-- Fallback content for search engines when JavaScript is disabled -->
+      <!-- Enhanced fallback content with better styling -->
       <noscript>
-        <div style="padding: 20px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
-          <h1>Speeltuinen in Castricum - Complete Gids voor Gezinnen</h1>
-          <p>Ontdek alle 4 speeltuinen in Castricum! Gratis toegang, foto's, locaties en faciliteiten. Perfect voor peuters, kleuters en schoolkinderen.</p>
-          
+        <!-- Hero Section -->
+        <div class="fallback-hero">
+          <div>
+            <h1>Ontdek alle speeltuinen in Castricum</h1>
+            <p>Complete gids met foto's, faciliteiten en locatie-informatie. Vind de perfecte speeltuin voor jouw kinderen!</p>
+            <div class="fallback-cta">
+              4 Gratis Speeltuinen • 24/7 Open • Perfect voor Peuters & Kinderen
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="fallback-section">
           <h2>Veelgestelde Vragen over Speeltuinen in Castricum</h2>
           
-          <h3>Welke speeltuinen zijn geschikt voor peuters in Castricum?</h3>
-          <p>In Castricum zijn er verschillende speeltuinen die perfect geschikt zijn voor peuters: Speeltuin Albertshoeve heeft een kleine glijbaan, veilige schommels en zandbak. Speeltuin De Oude Keuken heeft peutervriendelijke speeltoestellen en zachte ondergrond. Alle speeltuinen hebben veilige speeltoestellen voor kinderen vanaf 2 jaar.</p>
+          <h3>🎪 Welke speeltuinen zijn geschikt voor peuters in Castricum?</h3>
+          <p>In Castricum zijn er verschillende speeltuinen die perfect geschikt zijn voor peuters: <strong>Speeltuin Albertshoeve</strong> heeft een kleine glijbaan, veilige schommels en zandbak. <strong>Speeltuin De Oude Keuken</strong> heeft peutervriendelijke speeltoestellen en zachte ondergrond. Alle speeltuinen hebben veilige speeltoestellen voor kinderen vanaf 2 jaar.</p>
           
-          <h3>Zijn de speeltuinen in Castricum gratis toegankelijk?</h3>
-          <p>Ja, alle speeltuinen in Castricum zijn volledig gratis toegankelijk! Dit maakt Castricum een ideale bestemming voor gezinnen met kinderen. De speeltuinen zijn openbaar eigendom van de gemeente en staan open voor iedereen.</p>
+          <h3>💰 Zijn de speeltuinen in Castricum gratis toegankelijk?</h3>
+          <p><strong>Ja, alle speeltuinen in Castricum zijn volledig gratis toegankelijk!</strong> Dit maakt Castricum een ideale bestemming voor gezinnen met kinderen. De speeltuinen zijn openbaar eigendom van de gemeente en staan open voor iedereen.</p>
           
-          <h3>Wat zijn de openingstijden van de speeltuinen?</h3>
-          <p>Alle speeltuinen in Castricum zijn 24/7 open en gratis toegankelijk! Dit betekent dat je kunt spelen wanneer het jou uitkomt. Beste speeltijden zijn: Ochtend 9:00-12:00 (minder druk), Middag 14:00-17:00 (meeste kinderen), Avond 18:00-20:00 (zomermaanden).</p>
+          <h3>🕐 Wat zijn de openingstijden van de speeltuinen?</h3>
+          <p><strong>Alle speeltuinen in Castricum zijn 24/7 open en gratis toegankelijk!</strong> Dit betekent dat je kunt spelen wanneer het jou uitkomt. Beste speeltijden zijn: Ochtend 9:00-12:00 (minder druk), Middag 14:00-17:00 (meeste kinderen), Avond 18:00-20:00 (zomermaanden).</p>
           
-          <h3>Welke speeltuinen hebben de beste voorzieningen?</h3>
-          <p>Elke speeltuin in Castricum heeft unieke voorzieningen. Speeltuin Albertshoeve heeft een grote glijbaan, meerdere schommels, zandbak met speelgoed en picknicktafels. Speeltuin De Oude Keuken heeft klimtoestellen, wipwap, veilige ondergrond en schaduwrijke plekken.</p>
+          <h3>🎠 Welke speeltuinen hebben de beste voorzieningen?</h3>
+          <p>Elke speeltuin in Castricum heeft unieke voorzieningen. <strong>Speeltuin Albertshoeve</strong> heeft een grote glijbaan, meerdere schommels, zandbak met speelgoed en picknicktafels. <strong>Speeltuin De Oude Keuken</strong> heeft klimtoestellen, wipwap, veilige ondergrond en schaduwrijke plekken.</p>
           
-          <h3>Is er parkeergelegenheid bij de speeltuinen?</h3>
-          <p>Ja, alle speeltuinen in Castricum hebben goede parkeermogelijkheden: Gratis parkeren, ruime parkeerplaatsen, veilige locaties en fietsenstallingen. Alle speeltuinen zijn ook goed bereikbaar met de bus.</p>
+          <h3>🚗 Is er parkeergelegenheid bij de speeltuinen?</h3>
+          <p><strong>Ja, alle speeltuinen in Castricum hebben goede parkeermogelijkheden:</strong> Gratis parkeren, ruime parkeerplaatsen, veilige locaties en fietsenstallingen. Alle speeltuinen zijn ook goed bereikbaar met de bus.</p>
           
-          <p><strong>Voor de volledige interactieve ervaring, schakel JavaScript in en bezoek onze website.</strong></p>
+          <div class="fallback-cta">
+            Voor de volledige interactieve ervaring met kaart en zoekfunctie, schakel JavaScript in en bezoek onze website.
+          </div>
         </div>
       </noscript>
     </div>

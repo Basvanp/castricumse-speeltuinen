@@ -23,14 +23,23 @@ const Hero: React.FC<HeroProps> = ({
     // Remove instant search to prevent stuttering
   };
   return <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden -mt-16 z-10">
-      {/* Background Image with Overlay */}
+      {/* Fallback Image for Better SEO */}
+      <img 
+        src="/lovable-uploads/heroimage.jpg" 
+        alt="Speeltuinen in Castricum - Interactieve kaart en gids voor gezinnen" 
+        className="absolute inset-0 w-full h-full object-cover -z-10"
+        loading="eager"
+        fetchPriority="high"
+      />
+      
+      {/* Background Image with Overlay (CSS fallback) */}
       <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{
-      backgroundImage: `url('/lovable-uploads/heroimage.jpg')`
-    }}>
+        backgroundImage: `url('/lovable-uploads/heroimage.jpg')`
+      }}>
         {/* Gradient Overlay */}
         <div className="absolute inset-0" style={{
-        background: 'linear-gradient(135deg, rgba(15, 118, 110, 0.4) 0%, rgba(6, 182, 212, 0.3) 100%)'
-      }} />
+          background: 'linear-gradient(135deg, rgba(15, 118, 110, 0.4) 0%, rgba(6, 182, 212, 0.3) 100%)'
+        }} />
       </div>
 
       {/* Content */}
