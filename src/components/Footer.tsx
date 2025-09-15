@@ -1,7 +1,7 @@
 import React from 'react';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
-import { MapPin, Clock, Heart, ExternalLink, ArrowUp, Mail, Phone, Facebook, Instagram, Twitter } from 'lucide-react';
+import { MapPin, Clock, Heart, ExternalLink, ArrowUp, Mail, Phone, Facebook, Instagram, Twitter, Share2, Copy, MessageCircle, Linkedin, Link2 } from 'lucide-react';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 
 interface FooterProps {
@@ -41,6 +41,53 @@ const Footer = ({ lastUpdated }: FooterProps) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Social sharing functions
+  const shareUrl = typeof window !== 'undefined' ? window.location.href : 'https://speeltuincastricum.nl';
+  const shareTitle = 'Ontdek alle speeltuinen in Castricum';
+  const shareText = 'Bekijk deze geweldige gids voor alle speeltuinen in Castricum!';
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: shareTitle,
+          text: shareText,
+          url: shareUrl,
+        });
+      } catch (err) {
+        console.log('Error sharing:', err);
+      }
+    } else {
+      // Fallback: copy to clipboard
+      handleCopyLink();
+    }
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      // You might want to show a toast notification here
+    } catch (err) {
+      console.log('Error copying to clipboard:', err);
+    }
+  };
+
+  const shareOnFacebook = () => {
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+  };
+
+  const shareOnTwitter = () => {
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+  };
+
+  const shareOnLinkedIn = () => {
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, '_blank');
+  };
+
+  const shareOnWhatsApp = () => {
+    window.open(`https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`, '_blank');
+  };
+
   // Check if we have any contact information
   const hasContactInfo = settings?.contact_email || settings?.contact_phone;
   
@@ -78,29 +125,77 @@ const Footer = ({ lastUpdated }: FooterProps) => {
             <div className="h-px bg-gradient-to-l from-transparent to-border w-20"></div>
           </div>
 
-          {/* Contact Information - Only show if we have contact data */}
-          {hasContactInfo && (
-            <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground flex-wrap">
-              {settings?.contact_email && (
-                <a 
-                  href={`mailto:${settings.contact_email}`}
-                  className="hover:text-foreground transition-colors flex items-center gap-2"
-                >
-                  <Mail className="w-4 h-4" />
-                  <span>{settings.contact_email}</span>
-                </a>
-              )}
-              {settings?.contact_phone && (
-                <a 
-                  href={`tel:${settings.contact_phone}`}
-                  className="hover:text-foreground transition-colors flex items-center gap-2"
-                >
-                  <Phone className="w-4 h-4" />
-                  <span>{settings.contact_phone}</span>
-                </a>
-              )}
+          {/* Contact Information */}
+          <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground flex-wrap">
+            <a 
+              href="mailto:hallo@speeltuincastricum.nl"
+              className="hover:text-foreground transition-colors flex items-center gap-2"
+            >
+              <Mail className="w-4 h-4" />
+              <span>hallo@speeltuincastricum.nl</span>
+            </a>
+            {settings?.contact_phone && (
+              <a 
+                href={`tel:${settings.contact_phone}`}
+                className="hover:text-foreground transition-colors flex items-center gap-2"
+              >
+                <Phone className="w-4 h-4" />
+                <span>{settings.contact_phone}</span>
+              </a>
+            )}
+          </div>
+
+          {/* Share Section */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium text-foreground flex items-center justify-center gap-2">
+              <Share2 className="w-5 h-5" />
+              Deel deze pagina
+            </h3>
+            <div className="flex items-center justify-center gap-3 flex-wrap">
+              <button
+                onClick={shareOnFacebook}
+                className="text-muted-foreground hover:text-foreground transition-colors p-3 rounded-full hover:bg-blue-500/10 border border-border hover:border-blue-500/20"
+                aria-label="Deel op Facebook"
+              >
+                <Facebook className="w-5 h-5" />
+              </button>
+              <button
+                onClick={shareOnTwitter}
+                className="text-muted-foreground hover:text-foreground transition-colors p-3 rounded-full hover:bg-blue-400/10 border border-border hover:border-blue-400/20"
+                aria-label="Deel op Twitter"
+              >
+                <Twitter className="w-5 h-5" />
+              </button>
+              <button
+                onClick={shareOnLinkedIn}
+                className="text-muted-foreground hover:text-foreground transition-colors p-3 rounded-full hover:bg-blue-600/10 border border-border hover:border-blue-600/20"
+                aria-label="Deel op LinkedIn"
+              >
+                <Linkedin className="w-5 h-5" />
+              </button>
+              <button
+                onClick={shareOnWhatsApp}
+                className="text-muted-foreground hover:text-foreground transition-colors p-3 rounded-full hover:bg-green-500/10 border border-border hover:border-green-500/20"
+                aria-label="Deel op WhatsApp"
+              >
+                <MessageCircle className="w-5 h-5" />
+              </button>
+              <button
+                onClick={handleCopyLink}
+                className="text-muted-foreground hover:text-foreground transition-colors p-3 rounded-full hover:bg-primary/10 border border-border hover:border-primary/20"
+                aria-label="Kopieer link"
+              >
+                <Link2 className="w-5 h-5" />
+              </button>
+              <button
+                onClick={handleShare}
+                className="text-muted-foreground hover:text-foreground transition-colors p-3 rounded-full hover:bg-primary/10 border border-border hover:border-primary/20"
+                aria-label="Deel via systeem"
+              >
+                <Share2 className="w-5 h-5" />
+              </button>
             </div>
-          )}
+          </div>
 
           {/* Social Media Links - Only show if we have social media data */}
           {hasSocialMedia && (

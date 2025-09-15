@@ -6,6 +6,7 @@ import SpeeltuinCard from '@/components/SpeeltuinCard';
 import Hero from '@/components/Hero';
 import SEOHead from '@/components/SEOHead';
 import BreadcrumbNav from '@/components/BreadcrumbNav';
+import Footer from '@/components/Footer';
 import { generateWebsiteSchema } from '@/utils/structuredData';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -165,6 +166,8 @@ const Index = () => {
             </div>
           </section>
         </main>
+        
+        <Footer lastUpdated={Date.now()} />
       </div>
     </>
   );
