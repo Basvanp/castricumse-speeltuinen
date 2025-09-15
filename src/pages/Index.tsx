@@ -99,6 +99,7 @@ const Index = () => {
           </header>
 
           <SpeeltuinFilters
+            filters={filters}
             onFiltersChange={handleFilterChange}
           />
 
