@@ -12,22 +12,56 @@ const Terms = () => {
         keywords="voorwaarden, gebruiksvoorwaarden, algemene voorwaarden, Castricum speeltuinen"
       />
       
+      {/* Hero Section */}
+      <section className="relative min-h-[50vh] flex items-center justify-center overflow-hidden">
+        {/* Background Image */}
+        <img 
+          src="/lovable-uploads/heroimage.jpg" 
+          alt="Algemene Voorwaarden - Castricum Speeltuinen" 
+          className="absolute inset-0 w-full h-full object-cover -z-10"
+          loading="eager"
+        />
+        
+        {/* Background Image with Overlay (CSS fallback) */}
+        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{
+          backgroundImage: `url('/lovable-uploads/heroimage.jpg')`
+        }}>
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0" style={{
+            background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.7) 0%, rgba(59, 130, 246, 0.6) 100%)'
+          }} />
+        </div>
+
+        {/* Content */}
+        <div className="relative z-20 text-center text-white px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full mb-6">
+            <FileText className="w-10 h-10 text-white" />
+          </div>
+          <h1 className="font-bold mb-4" style={{
+            fontSize: 'clamp(2rem, 4vw, 3rem)',
+            lineHeight: '1.1'
+          }}>
+            Algemene Voorwaarden
+          </h1>
+          <p className="text-lg opacity-90 max-w-2xl mx-auto" style={{
+            fontSize: 'clamp(1rem, 2vw, 1.2rem)'
+          }}>
+            De voorwaarden voor het gebruik van onze speeltuinen website
+          </p>
+        </div>
+      </section>
+
       <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
         <div className="max-w-4xl mx-auto px-4 py-12">
           
-          {/* Header */}
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-6">
-              <FileText className="w-8 h-8 text-green-600" />
-            </div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Algemene Voorwaarden
-            </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              De voorwaarden voor het gebruik van onze speeltuinen website
-            </p>
-            <div className="mt-4 text-sm text-gray-500">
-              Laatst bijgewerkt: 1 augustus 2025
+          {/* Last Updated */}
+          <div className="text-center mb-8">
+            <div className="text-sm text-gray-500">
+              Laatst bijgewerkt: {new Date().toLocaleDateString('nl-NL', { 
+                day: 'numeric', 
+                month: 'long', 
+                year: 'numeric' 
+              })}
             </div>
           </div>
 
@@ -320,9 +354,7 @@ const Terms = () => {
                   Heeft u vragen over deze algemene voorwaarden?
                 </p>
                 <div className="space-y-2 text-gray-700">
-                  <p><strong>E-mail:</strong> juridisch@castricum-speeltuinen.nl</p>
-                  <p><strong>Telefoon:</strong> 0251-123456</p>
-                  <p><strong>Post:</strong> Gemeente Castricum, t.a.v. Juridische Zaken</p>
+                  <p><strong>E-mail:</strong> hallo@speeltuincastricum.nl</p>
                 </div>
               </div>
             </section>

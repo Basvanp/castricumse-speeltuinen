@@ -9,6 +9,7 @@ import Header from '@/components/Header';
 import SEOHead from '@/components/SEOHead';
 import BreadcrumbNav from '@/components/BreadcrumbNav';
 import Footer from '@/components/Footer';
+import BackToTop from '@/components/BackToTop';
 import { generateWebsiteSchema } from '@/utils/structuredData';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -292,6 +293,9 @@ const Index = () => {
         </main>
         
         <Footer lastUpdated={Date.now()} />
+        
+        {/* Back to Top Button */}
+        <BackToTop />
       </div>
     </>
   );
