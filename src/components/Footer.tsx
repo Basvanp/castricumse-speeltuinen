@@ -95,9 +95,9 @@ const Footer = ({ lastUpdated }: FooterProps) => {
   const hasSocialMedia = settings?.facebook_url || settings?.instagram_url || settings?.twitter_url;
 
   return (
-    <footer className="relative bg-gradient-to-t from-primary/5 via-background to-background border-t border-border/50 mt-16">
-      {/* Decorative top border */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent"></div>
+    <footer className="relative bg-muted/50 border-t-4 border-primary/20 mt-16">
+      {/* Decorative top border with gradient */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary/50 via-primary to-primary/50"></div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center space-y-8">
