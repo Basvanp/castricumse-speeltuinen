@@ -78,7 +78,7 @@ const Index = () => {
     },
     {
       question: "Wat moet ik doen als ik kapotte of gevaarlijke speeltoestellen tegenkom?",
-      answer: "Meld kapotte of onveilige speeltoestellen direct bij de gemeente Castricum. Er zijn verschillende manieren om dit te doen:\n\n🚀 Snelste methode - Via Fixi app:\n\n• Klik op de knop 'Probleem melden' bij de betreffende speeltuin op onze website\n• Kies voor 'Probleem melden via Fixi' om direct naar de Fixi-app te gaan\n• Of kopieer de locatiegegevens en plak deze in de Fixi-app voor automatische locatie-invulling\n• Geef een duidelijke omschrijving van het probleem en voeg indien mogelijk foto's toe"
+      answer: "Meld kapotte of onveilige speeltoestellen direct bij de gemeente Castricum.\n\n• Klik op de knop 'Probleem melden' bij de betreffende speeltuin op onze website\n• Kies voor 'Probleem melden via Fixi' om direct naar de Fixi-app te gaan\n• Of kopieer de locatiegegevens en plak deze in de Fixi-app voor automatische locatie-invulling\n• Geef een duidelijke omschrijving van het probleem en voeg indien mogelijk foto's toe"
     },
     {
       question: "Zijn honden toegestaan op de speeltuinen?",
