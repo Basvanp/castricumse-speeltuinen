@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.12 (cd3cf9e)"
@@ -528,9 +528,19 @@ export type Database = {
       find_orphaned_photos: {
         Args: Record<PropertyKey, never>
         Returns: {
-          url: string
-          size_bytes: number
           created_at: string
+          size_bytes: number
+          url: string
+        }[]
+      }
+      get_anonymized_error_logs: {
+        Args: { user_uuid?: string }
+        Returns: {
+          anonymized_data: Json
+          created_at: string
+          error_code: string
+          error_message: string
+          id: number
         }[]
       }
       get_current_user_role: {
@@ -540,21 +550,21 @@ export type Database = {
       get_error_statistics: {
         Args: { p_days?: number }
         Returns: {
-          error_code: string
           category: string
-          title: string
           count: number
+          error_code: string
           last_occurrence: string
+          title: string
         }[]
       }
       get_security_events: {
         Args: { days_back?: number }
         Returns: {
+          details: Json
           event_time: string
           event_type: string
           table_name: string
           user_id: string
-          details: Json
         }[]
       }
       get_user_role: {
@@ -571,20 +581,20 @@ export type Database = {
       }
       log_error: {
         Args: {
-          p_error_code: string
-          p_user_id?: string
-          p_session_id?: string
-          p_page_url?: string
-          p_user_agent?: string
-          p_error_message?: string
-          p_stack_trace?: string
           p_additional_data?: Json
+          p_error_code: string
+          p_error_message?: string
           p_ip_address?: unknown
+          p_page_url?: string
+          p_session_id?: string
+          p_stack_trace?: string
+          p_user_agent?: string
+          p_user_id?: string
         }
         Returns: number
       }
       validate_role_change: {
-        Args: { target_user_id: string; new_role: string }
+        Args: { new_role: string; target_user_id: string }
         Returns: boolean
       }
     }
