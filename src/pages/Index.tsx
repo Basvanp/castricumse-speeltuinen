@@ -4,6 +4,7 @@ import SpeeltuinFilters from '@/components/SpeeltuinFilters';
 import SpeeltuinKaart from '@/components/SpeeltuinKaart';
 import SpeeltuinCard from '@/components/SpeeltuinCard';
 import Hero from '@/components/Hero';
+import Header from '@/components/Header';
 import SEOHead from '@/components/SEOHead';
 import BreadcrumbNav from '@/components/BreadcrumbNav';
 import Footer from '@/components/Footer';
@@ -84,6 +85,7 @@ const Index = () => {
       />
       
       <div className="min-h-screen bg-background">
+        <Header />
         <BreadcrumbNav />
         
         <Hero onSearch={handleSearch} />
