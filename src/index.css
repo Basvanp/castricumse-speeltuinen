@@ -53,6 +53,10 @@ All colors MUST be HSL.
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Footer colors */
+    --footer-bg: 204 100% 94%;
+    --footer-text: 221 83% 25%;
   }
 
   .dark {
@@ -91,6 +95,10 @@ All colors MUST be HSL.
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Footer colors - dark mode */
+    --footer-bg: 221 83% 15%;
+    --footer-text: 204 100% 85%;
   }
 }
 

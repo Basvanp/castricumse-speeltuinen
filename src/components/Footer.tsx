@@ -1,7 +1,7 @@
 import React from 'react';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
-import { MapPin, Clock, Heart, ExternalLink, ArrowUp, Mail, Phone, Facebook, Instagram, Twitter, Share2, Copy, MessageCircle, Linkedin, Link2 } from 'lucide-react';
+import { Clock, Heart, ArrowUp, Mail, Facebook, Instagram, Twitter, Linkedin } from 'lucide-react';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 
 interface FooterProps {
@@ -18,7 +18,6 @@ const Footer = ({ lastUpdated }: FooterProps) => {
       let dateObj: Date;
       
       if (typeof date === 'number') {
-        // Timestamp in milliseconds
         dateObj = new Date(date);
       } else if (typeof date === 'string') {
         dateObj = new Date(date);
@@ -26,7 +25,6 @@ const Footer = ({ lastUpdated }: FooterProps) => {
         dateObj = date;
       }
       
-      // Check if date is valid
       if (isNaN(dateObj.getTime())) {
         return 'Onbekend';
       }
@@ -41,278 +39,112 @@ const Footer = ({ lastUpdated }: FooterProps) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Social sharing functions
-  const shareUrl = typeof window !== 'undefined' ? window.location.href : 'https://speeltuincastricum.nl';
-  const shareTitle = 'Ontdek alle speeltuinen in Castricum';
-  const shareText = 'Bekijk deze geweldige gids voor alle speeltuinen in Castricum!';
+  const menuLinks = [
+    { label: "Home", href: "/" },
+    { label: "Aanbod", href: "/" },
+    { label: "Over", href: "/" },
+    { label: "Contact", href: "/" }
+  ];
 
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: shareTitle,
-          text: shareText,
-          url: shareUrl,
-        });
-      } catch (err) {
-        console.log('Error sharing:', err);
-      }
-    } else {
-      // Fallback: copy to clipboard
-      handleCopyLink();
-    }
-  };
-
-  const handleCopyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      // You might want to show a toast notification here
-    } catch (err) {
-      console.log('Error copying to clipboard:', err);
-    }
-  };
-
-  const shareOnFacebook = () => {
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
-  };
-
-  const shareOnTwitter = () => {
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
-  };
-
-  const shareOnLinkedIn = () => {
-    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, '_blank');
-  };
-
-  const shareOnWhatsApp = () => {
-    window.open(`https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`, '_blank');
-  };
-
-  // Check if we have any contact information
-  const hasContactInfo = settings?.contact_email || settings?.contact_phone;
-  
-  // Check if we have any social media links
-  const hasSocialMedia = settings?.facebook_url || settings?.instagram_url || settings?.twitter_url;
+  const socialLinks = [
+    { platform: "Facebook", href: "https://facebook.com", icon: Facebook },
+    { platform: "Twitter", href: "https://twitter.com", icon: Twitter },
+    { platform: "LinkedIn", href: "https://linkedin.com", icon: Linkedin },
+    { platform: "Instagram", href: "https://instagram.com", icon: Instagram }
+  ];
 
   return (
-    <footer className="relative bg-muted/50 border-t-4 border-primary/20 mt-16">
-      {/* Decorative top border with gradient */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary/50 via-primary to-primary/50"></div>
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center space-y-8">
-          {/* Quote section */}
-          <div className="max-w-4xl mx-auto">
-            <div className="relative">
-              {/* Quote marks */}
-              <div className="absolute -top-4 -left-4 text-6xl text-primary/20 font-serif">"</div>
-              <div className="absolute -bottom-8 -right-4 text-6xl text-primary/20 font-serif">"</div>
-              
-              <blockquote className="text-xl lg:text-2xl font-medium text-foreground leading-relaxed italic">
-                {settings?.site_description || 'Ontdek alle speeltuinen in Castricum en omgeving. Van kleine buurtpleintjes tot grotere speeltuinen voor uren speelplezier.'}
-              </blockquote>
-            </div>
-          </div>
-
-          {/* Decorative separator */}
-          <div className="flex items-center justify-center gap-4">
-            <div className="h-px bg-gradient-to-r from-transparent to-border w-20"></div>
-            <img 
-              src="/lovable-uploads/c0bf8c44-fa41-463d-8c65-11c75f715265.png" 
-              alt="Speeltuinen logo" 
-              className="w-20 h-20 opacity-80 hover:opacity-100 transition-opacity duration-300"
-            />
-            <div className="h-px bg-gradient-to-l from-transparent to-border w-20"></div>
-          </div>
-
-          {/* Contact Information */}
-          <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground flex-wrap">
-            <a 
-              href="mailto:hallo@speeltuincastricum.nl"
-              className="hover:text-foreground transition-colors flex items-center gap-2"
-            >
-              <Mail className="w-4 h-4" />
-              <span>hallo@speeltuincastricum.nl</span>
-            </a>
-            {settings?.contact_phone && (
-              <a 
-                href={`tel:${settings.contact_phone}`}
-                className="hover:text-foreground transition-colors flex items-center gap-2"
-              >
-                <Phone className="w-4 h-4" />
-                <span>{settings.contact_phone}</span>
-              </a>
-            )}
-          </div>
-
-          {/* Share Section */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium text-foreground flex items-center justify-center gap-2">
-              <Share2 className="w-5 h-5" />
-              Deel deze pagina
-            </h3>
-            <div className="flex items-center justify-center gap-3 flex-wrap">
-              <button
-                onClick={shareOnFacebook}
-                className="text-muted-foreground hover:text-foreground transition-colors p-3 rounded-full hover:bg-blue-500/10 border border-border hover:border-blue-500/20"
-                aria-label="Deel op Facebook"
-              >
-                <Facebook className="w-5 h-5" />
-              </button>
-              <button
-                onClick={shareOnTwitter}
-                className="text-muted-foreground hover:text-foreground transition-colors p-3 rounded-full hover:bg-blue-400/10 border border-border hover:border-blue-400/20"
-                aria-label="Deel op Twitter"
-              >
-                <Twitter className="w-5 h-5" />
-              </button>
-              <button
-                onClick={shareOnLinkedIn}
-                className="text-muted-foreground hover:text-foreground transition-colors p-3 rounded-full hover:bg-blue-600/10 border border-border hover:border-blue-600/20"
-                aria-label="Deel op LinkedIn"
-              >
-                <Linkedin className="w-5 h-5" />
-              </button>
-              <button
-                onClick={shareOnWhatsApp}
-                className="text-muted-foreground hover:text-foreground transition-colors p-3 rounded-full hover:bg-green-500/10 border border-border hover:border-green-500/20"
-                aria-label="Deel op WhatsApp"
-              >
-                <MessageCircle className="w-5 h-5" />
-              </button>
-              <button
-                onClick={handleCopyLink}
-                className="text-muted-foreground hover:text-foreground transition-colors p-3 rounded-full hover:bg-primary/10 border border-border hover:border-primary/20"
-                aria-label="Kopieer link"
-              >
-                <Link2 className="w-5 h-5" />
-              </button>
-              <button
-                onClick={handleShare}
-                className="text-muted-foreground hover:text-foreground transition-colors p-3 rounded-full hover:bg-primary/10 border border-border hover:border-primary/20"
-                aria-label="Deel via systeem"
-              >
-                <Share2 className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-
-          {/* Social Media Links - Only show if we have social media data */}
-          {hasSocialMedia && (
-            <div className="flex items-center justify-center gap-4">
-              {settings?.facebook_url && (
-                <a 
-                  href={settings.facebook_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-foreground transition-colors p-2 rounded-full hover:bg-primary/10"
-                  aria-label="Facebook"
+    <footer className="bg-footer-bg text-footer-text mt-16 relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Main grid layout */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
+          {/* Menu Section */}
+          <div className="space-y-4 animate-fade-in-up">
+            <h3 className="text-lg font-semibold text-footer-text">Menu</h3>
+            <nav className="space-y-2">
+              {menuLinks.map((link, index) => (
+                <a
+                  key={index}
+                  href={link.href}
+                  className="block text-footer-text/80 hover:text-footer-text transition-colors duration-200 hover:underline"
                 >
-                  <Facebook className="w-5 h-5" />
+                  {link.label}
                 </a>
-              )}
-              {settings?.instagram_url && (
-                <a 
-                  href={settings.instagram_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-foreground transition-colors p-2 rounded-full hover:bg-primary/10"
-                  aria-label="Instagram"
-                >
-                  <Instagram className="w-5 h-5" />
-                </a>
-              )}
-              {settings?.twitter_url && (
-                <a 
-                  href={settings.twitter_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-foreground transition-colors p-2 rounded-full hover:bg-primary/10"
-                  aria-label="Twitter"
-                >
-                  <Twitter className="w-5 h-5" />
-                </a>
-              )}
-            </div>
-          )}
-
-          {/* Last updated section */}
-          <div className="flex items-center justify-center gap-2 text-muted-foreground">
-            <Clock className="w-4 h-4" />
-            <span className="text-sm">
-              Laatst bijgewerkt: <span className="font-medium text-foreground">{formatLastUpdated(lastUpdated)}</span>
-            </span>
+              ))}
+            </nav>
           </div>
 
-          {/* Legal Links */}
-          <div className="pt-6 border-t border-border/30">
-            <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground mb-4 flex-wrap">
-              <a href="/privacy" className="hover:text-foreground transition-colors flex items-center gap-1">
-                🔒 Privacybeleid
-              </a>
-              <span>•</span>
-              <a href="/terms" className="hover:text-foreground transition-colors flex items-center gap-1">
-                📄 Algemene Voorwaarden
-              </a>
-              <span>•</span>
-              <a href="https://www.castricum.nl" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors flex items-center gap-1">
-                🏛️ Gemeente Castricum
-                <ExternalLink className="w-3 h-3" />
-              </a>
+          {/* Social Media Section */}
+          <div className="space-y-4 animate-fade-in-up [animation-delay:0.2s]">
+            <h3 className="text-lg font-semibold text-footer-text">Socials</h3>
+            <div className="flex justify-center md:justify-start gap-4">
+              {socialLinks.map((social, index) => {
+                const IconComponent = social.icon;
+                return (
+                  <a
+                    key={index}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-footer-text/80 hover:text-white hover:scale-115 transition-all duration-250 ease-in-out p-2 rounded-full hover:bg-footer-text/10"
+                    aria-label={social.platform}
+                  >
+                    <IconComponent size={24} />
+                  </a>
+                );
+              })}
             </div>
           </div>
 
-          {/* Copyright section */}
-          <div className="pt-4 border-t border-border/30">
-            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground flex-wrap">
-              <span>© 2025 {settings?.site_name || 'Castricum Speeltuinen Gids'}</span>
-              <span>•</span>
-              <span className="flex items-center gap-1">
-                Gemaakt met <Heart className="w-4 h-4 text-red-500 fill-current animate-pulse" /> voor families in Castricum
-              </span>
+          {/* Contact Section */}
+          <div className="space-y-4 animate-fade-in-up [animation-delay:0.4s]">
+            <h3 className="text-lg font-semibold text-footer-text">Contact</h3>
+            <div className="space-y-2">
+              <a
+                href="mailto:hallo@speeltuincastricum.nl"
+                className="flex items-center justify-center md:justify-start gap-2 text-footer-text/80 hover:text-footer-text transition-colors duration-200 hover:underline"
+              >
+                <Mail size={16} />
+                <span>hallo@speeltuincastricum.nl</span>
+              </a>
             </div>
-          </div>
-
-          {/* Scroll to top button */}
-          <div className="pt-4">
-            <button
-              onClick={scrollToTop}
-              className="inline-flex items-center gap-2 bg-primary/10 hover:bg-primary/20 text-primary px-4 py-2 rounded-full transition-all duration-300 hover:scale-105"
-              aria-label="Terug naar boven"
-            >
-              <ArrowUp className="w-4 h-4" />
-              <span className="text-sm">Terug naar boven</span>
-            </button>
-          </div>
-
-          {/* Background decoration */}
-          <div className="absolute bottom-4 left-1/4 opacity-5">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" className="text-primary">
-              {/* Playground swing */}
-              <path d="M4 2h2v20H4V2zm14 0h2v20h-2V2zM8 6h8v2H8V6zm0 4h8v2l-2 6h-4l-2-6V10z"/>
-            </svg>
-          </div>
-          
-          <div className="absolute bottom-8 right-1/3 opacity-5">
-            <svg width="35" height="35" viewBox="0 0 24 24" fill="currentColor" className="text-accent">
-              {/* Slide */}
-              <path d="M22 2H2v20h20V2zM8 18H4v-4h4v4zm0-6H4V8h4v4zm6 6h-4v-4h4v4zm0-6h-4V8h4v4zm6 6h-4v-4h4v4zm0-6h-4V8h4v4z"/>
-            </svg>
           </div>
         </div>
-      </div>
 
-      {/* Custom CSS for animations */}
-      <style>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-5px); }
-        }
-        
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-      `}</style>
+        {/* Footer bottom with copyright */}
+        <div className="mt-8 pt-6 border-t border-footer-text/20 text-center animate-fade-in-up [animation-delay:0.6s]">
+          <div className="space-y-4">
+            <div className="flex items-center justify-center gap-2 text-sm text-footer-text/80">
+              <Clock className="w-4 h-4" />
+              <span>
+                Laatst bijgewerkt: <span className="font-medium text-footer-text">{formatLastUpdated(lastUpdated)}</span>
+              </span>
+            </div>
+            
+            <div className="text-sm text-footer-text/70">
+              © 2025 Speeltuin Castricum. Alle rechten voorbehouden.
+            </div>
+            
+            <div className="flex items-center justify-center gap-1 text-sm text-footer-text/70">
+              <span>Gemaakt met</span>
+              <Heart className="w-4 h-4 text-red-400 fill-current animate-pulse" />
+              <span>voor families in Castricum</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Scroll to top button */}
+        <div className="mt-6 text-center">
+          <button
+            onClick={scrollToTop}
+            className="inline-flex items-center gap-2 bg-footer-text/10 hover:bg-footer-text/20 text-footer-text px-4 py-2 rounded-full transition-all duration-300 hover:scale-105"
+            aria-label="Terug naar boven"
+          >
+            <ArrowUp className="w-4 h-4" />
+            <span className="text-sm">Terug naar boven</span>
+          </button>
+        </div>
+      </div>
     </footer>
   );
 };
