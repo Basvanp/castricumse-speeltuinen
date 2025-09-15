@@ -313,10 +313,10 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
             )}
           </div>
           
-          {/* Dot indicators - only show if multiple photos */}
-          {hasMultiplePhotos && (
-            <div className="flex justify-center space-x-3 py-6 bg-gray-50">
-              {photos.map((_, index) => (
+          {/* Dot indicators - always show for consistent layout */}
+          <div className="flex justify-center space-x-3 py-6 bg-gray-50">
+            {hasMultiplePhotos ? (
+              photos.map((_, index) => (
                 <button
                   key={index}
                   onClick={(e) => {
@@ -348,9 +348,19 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
                   }}
                   aria-label={`Ga naar foto ${index + 1}`}
                 />
-              ))}
-            </div>
-          )}
+              ))
+            ) : (
+              // Show single dot for single photo to maintain consistent spacing
+              <div className="w-4 h-4 rounded-full bg-blue-500" style={{
+                width: '16px',
+                height: '16px',
+                minWidth: '16px',
+                maxWidth: '16px',
+                minHeight: '16px',
+                maxHeight: '16px',
+              }} />
+            )}
+          </div>
 
           {/* Content area that grows to fill space */}
           <div className="flex flex-col flex-1">
@@ -395,13 +405,13 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
               </div>
             )}
 
-            {/* Badges */}
-            <div className="flex flex-wrap gap-1 mb-4">
+            {/* Badges - Fixed height for consistent layout */}
+            <div className="flex flex-wrap gap-1 mb-4 min-h-[60px]">
               {badges.slice(0, 6).map(getBadgeHTML)}
             </div>
 
-            {/* Quick stats */}
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
+            {/* Quick stats - Always at bottom */}
+            <div className="flex items-center justify-between text-xs text-muted-foreground mt-auto">
               <div className="flex items-center gap-1">
                 <Clock className="h-3 w-3" />
                 <span>Altijd open</span>

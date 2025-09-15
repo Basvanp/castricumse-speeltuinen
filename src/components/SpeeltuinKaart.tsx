@@ -220,23 +220,79 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
 
         const badgesHTML = badges.slice(0, 6).map(getBadgeHTML).join('');
 
-        const popupContent = `
-          <div class="min-w-64">
-            <h3 class="font-bold text-lg mb-2">${speeltuin.naam}</h3>
-            ${speeltuin.omschrijving ? `<p class="text-sm text-gray-600 mb-3">${speeltuin.omschrijving}</p>` : ''}
-            <div class="mb-3">
-              ${badgesHTML}
+        // Get photos array
+        const photos = Array.isArray(speeltuin.fotos) && speeltuin.fotos.length > 0
+          ? speeltuin.fotos
+          : [];
+
+        // Create photo carousel HTML if photos exist
+        let photoCarouselHTML = '';
+        if (photos.length > 0) {
+          const firstPhoto = photos[0];
+          const photoCounter = photos.length > 1 ? `<div class="absolute top-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs"><span data-current-photo>1</span> / ${photos.length}</div>` : '';
+          
+          photoCarouselHTML = `
+            <div class="relative mb-4">
+              <img src="${firstPhoto}" alt="${speeltuin.naam} - foto 1" class="w-full h-32 object-cover rounded-lg shadow-sm" />
+              ${photoCounter}
+              ${photos.length > 1 ? `
+                <button onclick="window.previousPhoto('${speeltuin.id}')" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-2 rounded-full transition-all duration-200">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                </button>
+                <button onclick="window.nextPhoto('${speeltuin.id}')" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-2 rounded-full transition-all duration-200">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+              ` : ''}
             </div>
-            <div class="flex gap-2">
-              <button onclick="window.selectSpeeltuin('${speeltuin.id}')" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">
-                Bekijk details
-              </button>
-              ${speeltuin.latitude && speeltuin.longitude ? 
-                `<button onclick="window.openGoogleMaps(${speeltuin.latitude}, ${speeltuin.longitude})" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm">
-                  Open in Maps
-                </button>` 
-                : ''
-              }
+          `;
+        } else {
+          // Placeholder image if no photos - consistent height and styling
+          photoCarouselHTML = `
+            <div class="relative mb-4">
+              <div class="w-full h-32 bg-gray-200 rounded-lg flex items-center justify-center border border-gray-300">
+                <div class="text-center">
+                  <svg class="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                  </svg>
+                  <span class="text-gray-500 text-sm">Geen foto beschikbaar</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        const popupContent = `
+          <div class="min-w-80 max-w-96" data-speeltuin-id="${speeltuin.id}">
+            ${photoCarouselHTML}
+            <div class="content-section">
+              <h3 class="font-bold text-lg mb-2">${speeltuin.naam}</h3>
+              ${speeltuin.omschrijving ? `<p class="text-sm text-gray-600 mb-3">${speeltuin.omschrijving}</p>` : ''}
+              
+              <!-- Badges Section - Always shown consistently -->
+              <div class="badges-section mb-4">
+                <div class="flex flex-wrap gap-1 mb-2">
+                  ${badgesHTML}
+                </div>
+                <div class="flex items-center gap-1 text-xs text-gray-500">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <span>Altijd open</span>
+                </div>
+              </div>
+              
+              <!-- Action Buttons -->
+              <div class="flex gap-2">
+                <button onclick="window.selectSpeeltuin('${speeltuin.id}')" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">
+                  Bekijk details
+                </button>
+                ${speeltuin.latitude && speeltuin.longitude ? 
+                  `<button onclick="window.openGoogleMaps(${speeltuin.latitude}, ${speeltuin.longitude})" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm">
+                    Open in Maps
+                  </button>` 
+                  : ''
+                }
+              </div>
             </div>
           </div>
         `;
@@ -318,7 +374,7 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
     }
   }, [selectedSpeeltuin]);
 
-  // Add global functions for popup buttons
+  // Add global functions for popup buttons and photo navigation
   useEffect(() => {
     if (typeof window !== 'undefined') {
       (window as any).selectSpeeltuin = (speeltuinId: string) => {
@@ -333,8 +389,50 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
           window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
         }
       };
+
+      // Photo navigation functions
+      (window as any).nextPhoto = (speeltuinId: string) => {
+        const speeltuin = speeltuinen.find(s => s.id === speeltuinId);
+        if (speeltuin && Array.isArray(speeltuin.fotos) && speeltuin.fotos.length > 1) {
+          const currentIndex = parseInt(document.querySelector(`[data-speeltuin-id="${speeltuinId}"] [data-current-photo]`)?.textContent?.split(' / ')[0] || '1') - 1;
+          const nextIndex = (currentIndex + 1) % speeltuin.fotos.length;
+          updatePopupPhoto(speeltuinId, nextIndex);
+        }
+      };
+
+      (window as any).previousPhoto = (speeltuinId: string) => {
+        const speeltuin = speeltuinen.find(s => s.id === speeltuinId);
+        if (speeltuin && Array.isArray(speeltuin.fotos) && speeltuin.fotos.length > 1) {
+          const currentIndex = parseInt(document.querySelector(`[data-speeltuin-id="${speeltuinId}"] [data-current-photo]`)?.textContent?.split(' / ')[0] || '1') - 1;
+          const prevIndex = currentIndex === 0 ? speeltuin.fotos.length - 1 : currentIndex - 1;
+          updatePopupPhoto(speeltuinId, prevIndex);
+        }
+      };
     }
   }, [speeltuinen, onSpeeltuinSelect]);
+
+  // Function to update popup photo
+  const updatePopupPhoto = (speeltuinId: string, photoIndex: number) => {
+    const speeltuin = speeltuinen.find(s => s.id === speeltuinId);
+    if (!speeltuin || !Array.isArray(speeltuin.fotos) || !speeltuin.fotos[photoIndex]) return;
+
+    // Find the popup element
+    const popupElement = document.querySelector(`[data-speeltuin-id="${speeltuinId}"]`);
+    if (!popupElement) return;
+
+    // Update the image
+    const imgElement = popupElement.querySelector('img');
+    if (imgElement) {
+      imgElement.src = speeltuin.fotos[photoIndex];
+      imgElement.alt = `${speeltuin.naam} - foto ${photoIndex + 1}`;
+    }
+
+    // Update the counter
+    const counterElement = popupElement.querySelector('[data-current-photo]');
+    if (counterElement) {
+      counterElement.textContent = `${photoIndex + 1} / ${speeltuin.fotos.length}`;
+    }
+  };
 
   return (
     <div className="relative">

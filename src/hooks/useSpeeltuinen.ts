@@ -59,7 +59,9 @@ export const useSpeeltuinen = (filters?: SpeeltuinFilters) => {
         `)
         .order('naam');
 
+      // Enhanced search functionality
       if (filters?.searchTerm) {
+        // First, try to find exact match or partial match in naam
         query = query.ilike('naam', `%${filters.searchTerm}%`);
       }
 
@@ -232,6 +234,42 @@ export const useSpeeltuinen = (filters?: SpeeltuinFilters) => {
 
       if (error) {
         throw error;
+      }
+
+      // Enhanced search logic
+      if (filters?.searchTerm) {
+        const searchTerm = filters.searchTerm.toLowerCase();
+        
+        // First, try to find exact match
+        const exactMatch = data.find(speeltuin => 
+          speeltuin.naam.toLowerCase() === searchTerm
+        );
+        
+        if (exactMatch) {
+          // If exact match found, return that speeltuin + all speeltuinen within 200m
+          const nearbySpeeltuinen = data.filter(speeltuin => {
+            if (speeltuin.id === exactMatch.id) return true; // Always include the exact match
+            
+            if (!speeltuin.latitude || !speeltuin.longitude || 
+                !exactMatch.latitude || !exactMatch.longitude) {
+              return false;
+            }
+            
+            const distance = calculateDistance(
+              exactMatch.latitude,
+              exactMatch.longitude,
+              speeltuin.latitude,
+              speeltuin.longitude
+            );
+            
+            return distance <= 0.2; // 200 meters = 0.2 km
+          });
+          
+          return nearbySpeeltuinen;
+        }
+        
+        // If no exact match, use the regular ilike search results
+        return data;
       }
 
       // Filter by distance if user location is provided

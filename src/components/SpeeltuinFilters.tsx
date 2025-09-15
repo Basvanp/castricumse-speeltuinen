@@ -45,7 +45,7 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({
   const activeFilterCount = Object.values(filters).filter(v => v === true || (typeof v === 'string' && v)).length;
 
   return (
-    <Card className="w-full max-h-[80vh] flex flex-col">
+    <Card className="w-full max-w-sm max-h-[80vh] flex flex-col">
       <CardHeader className="flex-shrink-0">
         <CardTitle className="text-lg">Filters</CardTitle>
       </CardHeader>

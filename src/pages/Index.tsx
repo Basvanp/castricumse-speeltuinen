@@ -29,13 +29,26 @@ interface FilterOptions {
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState<FilterOptions>({});
-  const [viewMode, setViewMode] = useState<'grid' | 'kaart'>('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'kaart'>('kaart');
   const [selectedSpeeltuin, setSelectedSpeeltuin] = useState<Speeltuin | null>(null);
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
   const { data: settings } = useSiteSettings();
 
   const { data: speeltuinen = [], isLoading, error } = useSpeeltuinen(
     searchQuery ? { searchTerm: searchQuery, ...filters } : filters
   );
+
+  // Automatically request location on page load
+  React.useEffect(() => {
+    if (!userLocation && !isLocating && navigator.geolocation) {
+      // Small delay to let the page load first
+      const timer = setTimeout(() => {
+        handleLocationRequest();
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, []); // Only run once on mount
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -56,6 +69,55 @@ const Index = () => {
   const handleSpeeltuinSelect = (speeltuin: Speeltuin) => {
     setSelectedSpeeltuin(speeltuin);
     setViewMode('kaart');
+  };
+
+  const handleLocationRequest = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocatie wordt niet ondersteund door deze browser.');
+      return;
+    }
+
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setUserLocation([latitude, longitude]);
+        setIsLocating(false);
+      },
+      (error) => {
+        console.error('Error getting location:', error);
+        alert('Kon locatie niet ophalen. Controleer of locatie-toegang is ingeschakeld.');
+        setIsLocating(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 300000 // 5 minutes
+      }
+    );
+  };
+
+  // Scroll functions for header navigation
+  const handleScrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleScrollToSpeeltuinen = () => {
+    const speeltuinenSection = document.getElementById('speeltuinen');
+    if (speeltuinenSection) {
+      speeltuinenSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleScrollToMap = () => {
+    // Switch to map view and scroll to it
+    setViewMode('kaart');
+    setTimeout(() => {
+      const speeltuinenSection = document.getElementById('speeltuinen');
+      if (speeltuinenSection) {
+        speeltuinenSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
   };
 
   // Generate structured data for the homepage
@@ -110,7 +172,11 @@ const Index = () => {
       />
       
       <div className="min-h-screen bg-background">
-        <Header />
+        <Header 
+          onScrollToTop={handleScrollToTop}
+          onScrollToMap={handleScrollToMap}
+          onScrollToSpeeltuinen={handleScrollToSpeeltuinen}
+        />
         <BreadcrumbNav />
         
         <Hero onSearch={handleSearch} />
@@ -126,70 +192,82 @@ const Index = () => {
             </p>
           </header>
 
-          <SpeeltuinFilters
-            filters={filters}
-            onFiltersChange={handleFilterChange}
-          />
-
-          {/* View Mode Switcher */}
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
-            <div className="text-center sm:text-left">
-              <p className="text-muted-foreground">
-                {speeltuinen.length} speeltuinen gevonden
-              </p>
-            </div>
-            
-            <ToggleGroup type="single" value={viewMode} onValueChange={(value) => value && handleViewModeChange(value as 'grid' | 'kaart')}>
-              <ToggleGroupItem value="grid" aria-label="Grid weergave">
-                <Grid3X3 className="h-4 w-4 mr-2" />
-                Grid
-              </ToggleGroupItem>
-              <ToggleGroupItem value="kaart" aria-label="Kaart weergave">
-                <MapPin className="h-4 w-4 mr-2" />
-                Kaart
-              </ToggleGroupItem>
-            </ToggleGroup>
-          </div>
-
-          {error && (
-            <div className="text-center py-8">
-              <p className="text-destructive">Er is een fout opgetreden bij het laden van de speeltuinen.</p>
-            </div>
-          )}
-
-          {isLoading ? (
-            <div className="text-center py-8">
-              <p>Speeltuinen laden...</p>
-            </div>
-          ) : viewMode === 'kaart' ? (
-            <div className="h-[600px] rounded-lg overflow-hidden shadow-lg">
-              <SpeeltuinKaart 
-                speeltuinen={speeltuinen} 
-                selectedSpeeltuin={selectedSpeeltuin}
-                userLocation={null}
-                isLocating={false}
-                onLocationRequest={() => {}}
+          {/* Side-by-side layout for filters and map */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+            {/* Filters - Takes 1 column on large screens */}
+            <div className="lg:col-span-1">
+              <SpeeltuinFilters
+                filters={filters}
+                onFiltersChange={handleFilterChange}
               />
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {speeltuinen.map((speeltuin) => (
-                <SpeeltuinCard 
-                  key={speeltuin.id} 
-                  speeltuin={speeltuin} 
-                  onSelect={handleSpeeltuinSelect}
-                />
-              ))}
-            </div>
-          )}
+            
+            {/* Map/Content area - Takes 3 columns on large screens */}
+            <div className="lg:col-span-3">
 
-          {speeltuinen.length === 0 && !isLoading && !error && (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">
-                Geen speeltuinen gevonden die voldoen aan je filters.
-              </p>
+              {/* View Mode Switcher */}
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
+                <div className="text-center sm:text-left">
+                  <p className="text-muted-foreground">
+                    {speeltuinen.length} speeltuinen gevonden
+                  </p>
+                </div>
+                
+                <ToggleGroup type="single" value={viewMode} onValueChange={(value) => value && handleViewModeChange(value as 'grid' | 'kaart')}>
+                  <ToggleGroupItem value="grid" aria-label="Grid weergave">
+                    <Grid3X3 className="h-4 w-4 mr-2" />
+                    Grid
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="kaart" aria-label="Kaart weergave">
+                    <MapPin className="h-4 w-4 mr-2" />
+                    Kaart
+                  </ToggleGroupItem>
+                </ToggleGroup>
+              </div>
+
+              {error && (
+                <div className="text-center py-8">
+                  <p className="text-destructive">Er is een fout opgetreden bij het laden van de speeltuinen.</p>
+                </div>
+              )}
+
+              {isLoading ? (
+                <div className="text-center py-8">
+                  <p>Speeltuinen laden...</p>
+                </div>
+              ) : viewMode === 'kaart' ? (
+                <div className="h-[600px] rounded-lg overflow-hidden shadow-lg">
+                  <SpeeltuinKaart 
+                    speeltuinen={speeltuinen} 
+                    selectedSpeeltuin={selectedSpeeltuin}
+                    userLocation={userLocation}
+                    isLocating={isLocating}
+                    onLocationRequest={handleLocationRequest}
+                  />
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {speeltuinen.map((speeltuin) => (
+                    <SpeeltuinCard 
+                      key={speeltuin.id} 
+                      speeltuin={speeltuin} 
+                      onSelect={handleSpeeltuinSelect}
+                      userLocation={userLocation}
+                      showDistance={true}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {speeltuinen.length === 0 && !isLoading && !error && (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">
+                    Geen speeltuinen gevonden die voldoen aan je filters.
+                  </p>
+                </div>
+              )}
             </div>
-          )}
+          </div>
 
           {/* FAQ Section */}
           <section className="mt-16">
