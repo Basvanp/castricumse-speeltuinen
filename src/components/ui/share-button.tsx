@@ -79,7 +79,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
             variant="outline"
             size="sm"
             onClick={() => window.open(shareLinks.whatsapp, '_blank')}
-            className="bg-white/90 hover:bg-green-50 border-green-200 hover:border-green-300"
+            className="bg-white/90 hover:bg-green-50 border-green-200 hover:border-green-300 text-gray-700"
           >
             <MessageCircle className="w-4 h-4 text-green-600" />
             WhatsApp
@@ -89,7 +89,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
             variant="outline"
             size="sm"
             onClick={() => window.open(shareLinks.facebook, '_blank')}
-            className="bg-white/90 hover:bg-blue-50 border-blue-200 hover:border-blue-300"
+            className="bg-white/90 hover:bg-blue-50 border-blue-200 hover:border-blue-300 text-gray-700"
           >
             <Facebook className="w-4 h-4 text-blue-600" />
             Facebook
@@ -99,7 +99,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
             variant="outline"
             size="sm"
             onClick={() => window.open(shareLinks.twitter, '_blank')}
-            className="bg-white/90 hover:bg-sky-50 border-sky-200 hover:border-sky-300"
+            className="bg-white/90 hover:bg-sky-50 border-sky-200 hover:border-sky-300 text-gray-700"
           >
             <Twitter className="w-4 h-4 text-sky-600" />
             Twitter
@@ -109,7 +109,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
             variant="outline"
             size="sm"
             onClick={() => window.open(shareLinks.linkedin, '_blank')}
-            className="bg-white/90 hover:bg-blue-50 border-blue-200 hover:border-blue-300"
+            className="bg-white/90 hover:bg-blue-50 border-blue-200 hover:border-blue-300 text-gray-700"
           >
             <Linkedin className="w-4 h-4 text-blue-700" />
             LinkedIn
@@ -119,7 +119,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
             variant="outline"
             size="sm"
             onClick={() => window.open(shareLinks.email)}
-            className="bg-white/90 hover:bg-gray-50 border-gray-200 hover:border-gray-300"
+            className="bg-white/90 hover:bg-gray-50 border-gray-200 hover:border-gray-300 text-gray-700"
           >
             <Mail className="w-4 h-4 text-gray-600" />
             Email
@@ -130,7 +130,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
           variant="outline"
           size="sm"
           onClick={handleCopyLink}
-          className="bg-white/90 hover:bg-gray-50 border-gray-200 hover:border-gray-300 mx-auto"
+          className="bg-white/90 hover:bg-gray-50 border-gray-200 hover:border-gray-300 mx-auto text-gray-700"
         >
           {copied ? (
             <>
