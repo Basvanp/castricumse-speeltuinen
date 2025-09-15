@@ -2,6 +2,7 @@ import React from 'react';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
 import { Clock, Heart, ArrowUp, Mail, Facebook, Instagram, Twitter, Linkedin } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 
 interface FooterProps {
@@ -40,10 +41,10 @@ const Footer = ({ lastUpdated }: FooterProps) => {
   };
 
   const menuLinks = [
-    { label: "Home", href: "/" },
-    { label: "Aanbod", href: "/" },
-    { label: "Over", href: "/" },
-    { label: "Contact", href: "/" }
+    { label: "Home", href: "/", type: "internal" },
+    { label: "Aanbod", href: "/#speeltuinen", type: "scroll" },
+    { label: "Over", href: "/privacy", type: "internal" },
+    { label: "Contact", href: "mailto:hallo@speeltuincastricum.nl", type: "external" }
   ];
 
   const socialLinks = [
@@ -63,13 +64,40 @@ const Footer = ({ lastUpdated }: FooterProps) => {
             <h3 className="text-lg font-semibold text-footer-text">Menu</h3>
             <nav className="space-y-2">
               {menuLinks.map((link, index) => (
-                <a
-                  key={index}
-                  href={link.href}
-                  className="block text-footer-text/80 hover:text-footer-text transition-colors duration-200 hover:underline"
-                >
-                  {link.label}
-                </a>
+                link.type === "internal" ? (
+                  <Link
+                    key={index}
+                    to={link.href}
+                    className="block text-footer-text/80 hover:text-footer-text transition-colors duration-200 hover:underline"
+                  >
+                    {link.label}
+                  </Link>
+                ) : link.type === "scroll" ? (
+                  <a
+                    key={index}
+                    href={link.href}
+                    className="block text-footer-text/80 hover:text-footer-text transition-colors duration-200 hover:underline"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const element = document.querySelector('#speeltuinen');
+                      if (element) {
+                        element.scrollIntoView({ behavior: 'smooth' });
+                      } else {
+                        window.location.href = '/';
+                      }
+                    }}
+                  >
+                    {link.label}
+                  </a>
+                ) : (
+                  <a
+                    key={index}
+                    href={link.href}
+                    className="block text-footer-text/80 hover:text-footer-text transition-colors duration-200 hover:underline"
+                  >
+                    {link.label}
+                  </a>
+                )
               ))}
             </nav>
           </div>
