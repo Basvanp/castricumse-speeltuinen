@@ -112,20 +112,23 @@ const Footer = ({ lastUpdated }: FooterProps) => {
         </div>
 
         {/* Footer bottom with copyright */}
-        <div className="mt-8 pt-6 border-t border-footer-text/20 text-center animate-fade-in-up [animation-delay:0.6s]">
-          <div className="space-y-4">
-            <div className="flex items-center justify-center gap-2 text-sm text-footer-text/80">
+        <div className="mt-8 pt-6 border-t border-footer-text/20 animate-fade-in-up [animation-delay:0.6s]">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-sm">
+            {/* Copyright - Left */}
+            <div className="text-footer-text/70 text-center sm:text-left">
+              © 2025 Speeltuin Castricum. Alle rechten voorbehouden.
+            </div>
+            
+            {/* Last Updated - Center */}
+            <div className="flex items-center justify-center gap-2 text-footer-text/80 order-first sm:order-none">
               <Clock className="w-4 h-4" />
               <span>
                 Laatst bijgewerkt: <span className="font-medium text-footer-text">{formatLastUpdated(lastUpdated)}</span>
               </span>
             </div>
             
-            <div className="text-sm text-footer-text/70">
-              © 2025 Speeltuin Castricum. Alle rechten voorbehouden.
-            </div>
-            
-            <div className="flex items-center justify-center gap-1 text-sm text-footer-text/70">
+            {/* Made with love - Right */}
+            <div className="flex items-center justify-center sm:justify-end gap-1 text-footer-text/70">
               <span>Gemaakt met</span>
               <Heart className="w-4 h-4 text-red-400 fill-current animate-pulse" />
               <span>voor families in Castricum</span>
