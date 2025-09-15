@@ -71,6 +71,18 @@ const Index = () => {
     {
       question: "Wat zijn de openingstijden van de speeltuinen?",
       answer: "De meeste speeltuinen in Castricum zijn 24/7 open en toegankelijk, tenzij anders vermeld. Sommige speeltuinen kunnen beperkte openingstijden hebben vanwege hun locatie."
+    },
+    {
+      question: "Zijn er toiletten en andere voorzieningen bij de speeltuinen?",
+      answer: "De voorzieningen verschillen per speeltuin. Veel speeltuinen hebben bankjes en prullenbakken. Openbare toiletten zijn helaas niet bij alle speeltuinen aanwezig. Controleer bij de details van elke speeltuin welke voorzieningen beschikbaar zijn, of plan een bezoek aan nabijgelegen winkels of horecagelegenheden."
+    },
+    {
+      question: "Wat moet ik doen als ik kapotte of gevaarlijke speeltoestellen tegenkom?",
+      answer: "Meld kapotte of onveilige speeltoestellen direct bij de gemeente Castricum. Er zijn verschillende manieren om dit te doen:\n\n🚀 Snelste methode - Via Fixi app:\n\n• Klik op de knop 'Probleem melden' bij de betreffende speeltuin op onze website\n• Kies voor 'Probleem melden via Fixi' om direct naar de Fixi-app te gaan\n• Of kopieer de locatiegegevens en plak deze in de Fixi-app voor automatische locatie-invulling\n• Geef een duidelijke omschrijving van het probleem en voeg indien mogelijk foto's toe"
+    },
+    {
+      question: "Zijn honden toegestaan op de speeltuinen?",
+      answer: "Honden zijn meestal wel toegestaan op de speeltuinen, maar moeten altijd aangelijnd zijn. Per speeltuin kunnen er verschillende regels gelden. Houd rekening met andere kinderen en zorg ervoor dat je hond geen overlast veroorzaakt. Ruim altijd hondenpoep op en neem afvalzakjes mee."
     }
   ];
 
