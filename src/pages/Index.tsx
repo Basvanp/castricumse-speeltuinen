@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Speeltuin } from '@/types/speeltuin';
 import { useSpeeltuinen } from '@/hooks/useSpeeltuinen';
 import SpeeltuinFilters from '@/components/SpeeltuinFilters';
 import SpeeltuinKaart from '@/components/SpeeltuinKaart';
@@ -29,6 +30,7 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState<FilterOptions>({});
   const [viewMode, setViewMode] = useState<'grid' | 'kaart'>('grid');
+  const [selectedSpeeltuin, setSelectedSpeeltuin] = useState<Speeltuin | null>(null);
   const { data: settings } = useSiteSettings();
 
   const { data: speeltuinen = [], isLoading, error } = useSpeeltuinen(
@@ -45,6 +47,15 @@ const Index = () => {
 
   const handleViewModeChange = (mode: 'grid' | 'kaart') => {
     setViewMode(mode);
+    // Clear selected speeltuin when switching to map view manually
+    if (mode === 'kaart') {
+      setSelectedSpeeltuin(null);
+    }
+  };
+
+  const handleSpeeltuinSelect = (speeltuin: Speeltuin) => {
+    setSelectedSpeeltuin(speeltuin);
+    setViewMode('kaart');
   };
 
   // Generate structured data for the homepage
@@ -154,6 +165,7 @@ const Index = () => {
             <div className="h-[600px] rounded-lg overflow-hidden shadow-lg">
               <SpeeltuinKaart 
                 speeltuinen={speeltuinen} 
+                selectedSpeeltuin={selectedSpeeltuin}
                 userLocation={null}
                 isLocating={false}
                 onLocationRequest={() => {}}
@@ -162,7 +174,11 @@ const Index = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {speeltuinen.map((speeltuin) => (
-                <SpeeltuinCard key={speeltuin.id} speeltuin={speeltuin} />
+                <SpeeltuinCard 
+                  key={speeltuin.id} 
+                  speeltuin={speeltuin} 
+                  onSelect={handleSpeeltuinSelect}
+                />
               ))}
             </div>
           )}

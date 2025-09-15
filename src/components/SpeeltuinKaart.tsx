@@ -9,6 +9,7 @@ import { usePublicSiteSettings } from '@/hooks/useSiteSettings';
 interface SpeeltuinKaartProps {
   speeltuinen: Speeltuin[];
   onSpeeltuinSelect?: (speeltuin: Speeltuin) => void;
+  selectedSpeeltuin?: Speeltuin | null;
   userLocation: [number, number] | null;
   isLocating: boolean;
   onLocationRequest: () => void;
@@ -17,6 +18,7 @@ interface SpeeltuinKaartProps {
 const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({ 
   speeltuinen, 
   onSpeeltuinSelect, 
+  selectedSpeeltuin,
   userLocation, 
   isLocating, 
   onLocationRequest 
@@ -295,6 +297,26 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
       }
     });
   }, [userLocation]);
+
+  // Center map on selected speeltuin
+  useEffect(() => {
+    if (!mapInstanceRef.current || !selectedSpeeltuin) return;
+    
+    if (selectedSpeeltuin.latitude && selectedSpeeltuin.longitude) {
+      mapInstanceRef.current.setView([selectedSpeeltuin.latitude, selectedSpeeltuin.longitude], 16);
+      
+      // Find and open the popup for the selected speeltuin
+      const marker = playgroundMarkersRef.current.find(marker => {
+        const markerLatLng = marker.getLatLng();
+        return Math.abs(markerLatLng.lat - selectedSpeeltuin.latitude) < 0.0001 && 
+               Math.abs(markerLatLng.lng - selectedSpeeltuin.longitude) < 0.0001;
+      });
+      
+      if (marker) {
+        marker.openPopup();
+      }
+    }
+  }, [selectedSpeeltuin]);
 
   // Add global functions for popup buttons
   useEffect(() => {
