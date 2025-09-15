@@ -51,7 +51,7 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({
       </CardHeader>
       <CardContent className="space-y-4 overflow-y-auto overscroll-contain touch-pan-y flex-1 min-h-0">
         
-        <div className='filter-sections-container space-y-6'>
+        <div className='filter-sections-container space-y-4'>
           
           {/* Voorzieningen */}
           <div className='filter-section'>
@@ -60,71 +60,71 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({
                 <span className='font-semibold'>Voorzieningen</span>
                 <ChevronDown className='chevron w-5 h-5' />
               </CollapsibleTrigger>
-              <CollapsibleContent className='filter-options pl-2 space-y-2'>
-                <Label className='checkbox-item flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg'>
+              <CollapsibleContent className='filter-options pl-1 space-y-0'>
+                <Label className='checkbox-item flex items-center space-x-2 px-1.5 py-0.5 hover:bg-gray-50 rounded-md'>
                   <Checkbox
                     id="hasGlijbaan"
                     checked={filters.hasGlijbaan || false}
                     onCheckedChange={(checked) => updateFilter('hasGlijbaan', checked as boolean)}
-                    className="w-5 h-5"
+                    className="w-1.5 h-1.5"
                   />
-                  <span className='emoji-badge bg-teal-100 text-teal-700 px-2 py-1 rounded'>🛝</span>
-                  <span>Glijbaan</span>
+                  <span className='emoji-badge bg-teal-100 text-teal-700 px-1.5 py-0.5 rounded text-sm'>🛝</span>
+                  <span className="text-sm">Glijbaan</span>
                 </Label>
 
-                <Label className='checkbox-item flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg'>
+                <Label className='checkbox-item flex items-center space-x-2 px-1.5 py-0.5 hover:bg-gray-50 rounded-md'>
                   <Checkbox
                     id="hasSchommel"
                     checked={filters.hasSchommel || false}
                     onCheckedChange={(checked) => updateFilter('hasSchommel', checked as boolean)}
-                    className="w-5 h-5"
+                    className="w-1.5 h-1.5"
                   />
-                  <span className='emoji-badge bg-orange-100 text-orange-700 px-2 py-1 rounded'>⚡</span>
-                  <span>Schommel</span>
+                  <span className='emoji-badge bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded text-sm'>⚡</span>
+                  <span className="text-sm">Schommel</span>
                 </Label>
 
-                <Label className='checkbox-item flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg'>
+                <Label className='checkbox-item flex items-center space-x-2 px-1.5 py-0.5 hover:bg-gray-50 rounded-md'>
                   <Checkbox
                     id="hasZandbak"
                     checked={filters.hasZandbak || false}
                     onCheckedChange={(checked) => updateFilter('hasZandbak', checked as boolean)}
-                    className="w-5 h-5"
+                    className="w-1.5 h-1.5"
                   />
-                  <span className='emoji-badge bg-yellow-100 text-yellow-700 px-2 py-1 rounded'>🏖️</span>
-                  <span>Zandbak</span>
+                  <span className='emoji-badge bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded text-sm'>🏖️</span>
+                  <span className="text-sm">Zandbak</span>
                 </Label>
 
-                <Label className='checkbox-item flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg'>
+                <Label className='checkbox-item flex items-center space-x-2 px-1.5 py-0.5 hover:bg-gray-50 rounded-md'>
                   <Checkbox
                     id="hasKlimtoestel"
                     checked={filters.hasKlimtoestel || false}
                     onCheckedChange={(checked) => updateFilter('hasKlimtoestel', checked as boolean)}
-                    className="w-5 h-5"
+                    className="w-1.5 h-1.5"
                   />
-                  <span className='emoji-badge bg-blue-100 text-blue-700 px-2 py-1 rounded'>🏗️</span>
-                  <span>Klimtoestel</span>
+                  <span className='emoji-badge bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded text-sm'>🏗️</span>
+                  <span className="text-sm">Klimtoestel</span>
                 </Label>
 
-                <Label className='checkbox-item flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg'>
+                <Label className='checkbox-item flex items-center space-x-2 px-1.5 py-0.5 hover:bg-gray-50 rounded-md'>
                   <Checkbox
                     id="hasKabelbaan"
                     checked={filters.hasKabelbaan || false}
                     onCheckedChange={(checked) => updateFilter('hasKabelbaan', checked as boolean)}
-                    className="w-5 h-5"
+                    className="w-1.5 h-1.5"
                   />
-                  <span className='emoji-badge bg-purple-100 text-purple-700 px-2 py-1 rounded'>🚡</span>
-                  <span>Kabelbaan</span>
+                  <span className='emoji-badge bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded text-sm'>🚡</span>
+                  <span className="text-sm">Kabelbaan</span>
                 </Label>
 
-                <Label className='checkbox-item flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg'>
+                <Label className='checkbox-item flex items-center space-x-2 px-1.5 py-0.5 hover:bg-gray-50 rounded-md'>
                   <Checkbox
                     id="hasWaterPomp"
                     checked={filters.hasWaterPomp || false}
                     onCheckedChange={(checked) => updateFilter('hasWaterPomp', checked as boolean)}
-                    className="w-5 h-5"
+                    className="w-1.5 h-1.5"
                   />
-                  <span className='emoji-badge bg-cyan-100 text-cyan-700 px-2 py-1 rounded'>💧</span>
-                  <span>Waterpomp</span>
+                  <span className='emoji-badge bg-cyan-100 text-cyan-700 px-1.5 py-0.5 rounded text-sm'>💧</span>
+                  <span className="text-sm">Waterpomp</span>
                 </Label>
               </CollapsibleContent>
             </Collapsible>
@@ -137,49 +137,49 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({
                 <span className='font-semibold'>Type Speeltuin</span>
                 <ChevronDown className='chevron w-5 h-5' />
               </CollapsibleTrigger>
-              <CollapsibleContent className='filter-options pl-2 space-y-2'>
-                <Label className='checkbox-item flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg'>
+              <CollapsibleContent className='filter-options pl-1 space-y-0'>
+                <Label className='checkbox-item flex items-center space-x-2 px-1.5 py-0.5 hover:bg-gray-50 rounded-md'>
                   <Checkbox
                     id="typeNatuurspeeltuin"
                     checked={filters.isTypeNatuurspeeltuin || false}
                     onCheckedChange={(checked) => updateFilter('isTypeNatuurspeeltuin', checked as boolean)}
-                    className="w-5 h-5"
+                    className="w-1.5 h-1.5"
                   />
-                  <span className='emoji-badge bg-green-100 text-green-700 px-2 py-1 rounded'>🌳</span>
-                  <span>Natuurspeeltuin</span>
+                  <span className='emoji-badge bg-green-100 text-green-700 px-1.5 py-0.5 rounded text-sm'>🌳</span>
+                  <span className="text-sm">Natuurspeeltuin</span>
                 </Label>
 
-                <Label className='checkbox-item flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg'>
+                <Label className='checkbox-item flex items-center space-x-2 px-1.5 py-0.5 hover:bg-gray-50 rounded-md'>
                   <Checkbox
                     id="typeBuurtspeeltuin"
                     checked={filters.isTypeBuurtspeeltuin || false}
                     onCheckedChange={(checked) => updateFilter('isTypeBuurtspeeltuin', checked as boolean)}
-                    className="w-5 h-5"
+                    className="w-1.5 h-1.5"
                   />
-                  <span className='emoji-badge bg-indigo-100 text-indigo-700 px-2 py-1 rounded'>🏘️</span>
-                  <span>Buurtspeeltuin</span>
+                  <span className='emoji-badge bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded text-sm'>🏘️</span>
+                  <span className="text-sm">Buurtspeeltuin</span>
                 </Label>
 
-                <Label className='checkbox-item flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg'>
+                <Label className='checkbox-item flex items-center space-x-2 px-1.5 py-0.5 hover:bg-gray-50 rounded-md'>
                   <Checkbox
                     id="typeSchoolplein"
                     checked={filters.isTypeSchoolplein || false}
                     onCheckedChange={(checked) => updateFilter('isTypeSchoolplein', checked as boolean)}
-                    className="w-5 h-5"
+                    className="w-1.5 h-1.5"
                   />
-                  <span className='emoji-badge bg-amber-100 text-amber-700 px-2 py-1 rounded'>🎓</span>
-                  <span>Schoolplein</span>
+                  <span className='emoji-badge bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded text-sm'>🎓</span>
+                  <span className="text-sm">Schoolplein</span>
                 </Label>
 
-                <Label className='checkbox-item flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg'>
+                <Label className='checkbox-item flex items-center space-x-2 px-1.5 py-0.5 hover:bg-gray-50 rounded-md'>
                   <Checkbox
                     id="typeSpeelbos"
                     checked={filters.isTypeSpeelbos || false}
                     onCheckedChange={(checked) => updateFilter('isTypeSpeelbos', checked as boolean)}
-                    className="w-5 h-5"
+                    className="w-1.5 h-1.5"
                   />
-                  <span className='emoji-badge bg-emerald-100 text-emerald-700 px-2 py-1 rounded'>🌲</span>
-                  <span>Speelbos</span>
+                  <span className='emoji-badge bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded text-sm'>🌲</span>
+                  <span className="text-sm">Speelbos</span>
                 </Label>
               </CollapsibleContent>
             </Collapsible>
@@ -192,49 +192,49 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({
                 <span className='font-semibold'>Praktische Zaken</span>
                 <ChevronDown className='chevron w-5 h-5' />
               </CollapsibleTrigger>
-              <CollapsibleContent className='filter-options pl-2 space-y-2'>
-                <Label className='checkbox-item flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg'>
+              <CollapsibleContent className='filter-options pl-1 space-y-0'>
+                <Label className='checkbox-item flex items-center space-x-2 px-1.5 py-0.5 hover:bg-gray-50 rounded-md'>
                   <Checkbox
                     id="isRolstoeltoegankelijk"
                     checked={filters.isRolstoeltoegankelijk || false}
                     onCheckedChange={(checked) => updateFilter('isRolstoeltoegankelijk', checked as boolean)}
-                    className="w-5 h-5"
+                    className="w-1.5 h-1.5"
                   />
-                  <span className='emoji-badge bg-blue-100 text-blue-700 px-2 py-1 rounded'>♿</span>
-                  <span>Rolstoeltoegankelijk</span>
+                  <span className='emoji-badge bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded text-sm'>♿</span>
+                  <span className="text-sm">Rolstoeltoegankelijk</span>
                 </Label>
 
-                <Label className='checkbox-item flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg'>
+                <Label className='checkbox-item flex items-center space-x-2 px-1.5 py-0.5 hover:bg-gray-50 rounded-md'>
                   <Checkbox
                     id="hasSchaduw"
                     checked={filters.hasSchaduw || false}
                     onCheckedChange={(checked) => updateFilter('hasSchaduw', checked as boolean)}
-                    className="w-5 h-5"
+                    className="w-1.5 h-1.5"
                   />
-                  <span className='emoji-badge bg-green-100 text-green-700 px-2 py-1 rounded'>🌳</span>
-                  <span>Schaduw</span>
+                  <span className='emoji-badge bg-green-100 text-green-700 px-1.5 py-0.5 rounded text-sm'>🌳</span>
+                  <span className="text-sm">Schaduw</span>
                 </Label>
 
-                <Label className='checkbox-item flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg'>
+                <Label className='checkbox-item flex items-center space-x-2 px-1.5 py-0.5 hover:bg-gray-50 rounded-md'>
                   <Checkbox
                     id="hasParkeerplaats"
                     checked={filters.hasParkeerplaats || false}
                     onCheckedChange={(checked) => updateFilter('hasParkeerplaats', checked as boolean)}
-                    className="w-5 h-5"
+                    className="w-1.5 h-1.5"
                   />
-                  <span className='emoji-badge bg-gray-100 text-gray-700 px-2 py-1 rounded'>🚗</span>
-                  <span>Parkeerplaats</span>
+                  <span className='emoji-badge bg-gray-100 text-gray-700 px-1.5 py-0.5 rounded text-sm'>🚗</span>
+                  <span className="text-sm">Parkeerplaats</span>
                 </Label>
 
-                <Label className='checkbox-item flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg'>
+                <Label className='checkbox-item flex items-center space-x-2 px-1.5 py-0.5 hover:bg-gray-50 rounded-md'>
                   <Checkbox
                     id="hasToilet"
                     checked={filters.hasToilet || false}
                     onCheckedChange={(checked) => updateFilter('hasToilet', checked as boolean)}
-                    className="w-5 h-5"
+                    className="w-1.5 h-1.5"
                   />
-                  <span className='emoji-badge bg-pink-100 text-pink-700 px-2 py-1 rounded'>🚻</span>
-                  <span>Toilet</span>
+                  <span className='emoji-badge bg-pink-100 text-pink-700 px-1.5 py-0.5 rounded text-sm'>🚻</span>
+                  <span className="text-sm">Toilet</span>
                 </Label>
               </CollapsibleContent>
             </Collapsible>
@@ -247,38 +247,38 @@ const SpeeltuinFilters: React.FC<SpeeltuinFiltersProps> = ({
                 <span className='font-semibold'>Grootte</span>
                 <ChevronDown className='chevron w-5 h-5' />
               </CollapsibleTrigger>
-              <CollapsibleContent className='filter-options pl-2 space-y-2'>
-                <Label className='checkbox-item flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg'>
+              <CollapsibleContent className='filter-options pl-1 space-y-0'>
+                <Label className='checkbox-item flex items-center space-x-2 px-1.5 py-0.5 hover:bg-gray-50 rounded-md'>
                   <Checkbox
                     id="grootteKlein"
                     checked={filters.grootte === 'klein'}
                     onCheckedChange={(checked) => updateFilter('grootte', checked ? 'klein' : undefined)}
-                    className="w-5 h-5"
+                    className="w-1.5 h-1.5"
                   />
-                  <span className='emoji-badge bg-lime-100 text-lime-700 px-2 py-1 rounded'>🔸</span>
-                  <span>Klein</span>
+                  <span className='emoji-badge bg-lime-100 text-lime-700 px-1.5 py-0.5 rounded text-sm'>🔸</span>
+                  <span className="text-sm">Klein</span>
                 </Label>
 
-                <Label className='checkbox-item flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg'>
+                <Label className='checkbox-item flex items-center space-x-2 px-1.5 py-0.5 hover:bg-gray-50 rounded-md'>
                   <Checkbox
                     id="grootteMiddel"
                     checked={filters.grootte === 'middel'}
                     onCheckedChange={(checked) => updateFilter('grootte', checked ? 'middel' : undefined)}
-                    className="w-5 h-5"
+                    className="w-1.5 h-1.5"
                   />
-                  <span className='emoji-badge bg-orange-100 text-orange-700 px-2 py-1 rounded'>🔶</span>
-                  <span>Middel</span>
+                  <span className='emoji-badge bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded text-sm'>🔶</span>
+                  <span className="text-sm">Middel</span>
                 </Label>
 
-                <Label className='checkbox-item flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg'>
+                <Label className='checkbox-item flex items-center space-x-2 px-1.5 py-0.5 hover:bg-gray-50 rounded-md'>
                   <Checkbox
                     id="grootteGroot"
                     checked={filters.grootte === 'groot'}
                     onCheckedChange={(checked) => updateFilter('grootte', checked ? 'groot' : undefined)}
-                    className="w-5 h-5"
+                    className="w-1.5 h-1.5"
                   />
-                  <span className='emoji-badge bg-blue-100 text-blue-700 px-2 py-1 rounded'>🔵</span>
-                  <span>Groot</span>
+                  <span className='emoji-badge bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded text-sm'>🔵</span>
+                  <span className="text-sm">Groot</span>
                 </Label>
               </CollapsibleContent>
             </Collapsible>
