@@ -11,6 +11,8 @@ import Footer from '@/components/Footer';
 import { generateWebsiteSchema } from '@/utils/structuredData';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Grid3X3, MapPin } from 'lucide-react';
 
 interface FilterOptions {
   searchTerm?: string;
@@ -118,10 +120,24 @@ const Index = () => {
             onFiltersChange={handleFilterChange}
           />
 
-          <div className="text-center mb-4">
-            <p className="text-muted-foreground">
-              {speeltuinen.length} speeltuinen gevonden
-            </p>
+          {/* View Mode Switcher */}
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
+            <div className="text-center sm:text-left">
+              <p className="text-muted-foreground">
+                {speeltuinen.length} speeltuinen gevonden
+              </p>
+            </div>
+            
+            <ToggleGroup type="single" value={viewMode} onValueChange={(value) => value && handleViewModeChange(value as 'grid' | 'kaart')}>
+              <ToggleGroupItem value="grid" aria-label="Grid weergave">
+                <Grid3X3 className="h-4 w-4 mr-2" />
+                Grid
+              </ToggleGroupItem>
+              <ToggleGroupItem value="kaart" aria-label="Kaart weergave">
+                <MapPin className="h-4 w-4 mr-2" />
+                Kaart
+              </ToggleGroupItem>
+            </ToggleGroup>
           </div>
 
           {error && (
