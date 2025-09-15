@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ShareButton } from '@/components/ui/share-button';
 import { Search } from 'lucide-react';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
 interface HeroProps {
   onSearch: (query: string) => void;
 }
@@ -9,6 +11,7 @@ const Hero: React.FC<HeroProps> = ({
   onSearch
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const { data: siteSettings } = useSiteSettings();
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch(searchQuery);
@@ -69,7 +72,14 @@ const Hero: React.FC<HeroProps> = ({
           </div>
         </form>
 
-
+        {/* Share Section */}
+        <div className="animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
+          <ShareButton 
+            title={siteSettings?.site_name || 'Speeltuinen Castricum'}
+            description={siteSettings?.site_description || 'Ontdek alle speeltuinen in Castricum! Complete gids met interactieve kaart.'}
+            className="mx-auto"
+          />
+        </div>
       </div>
 
       {/* Scroll Indicator */}
