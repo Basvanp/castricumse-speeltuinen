@@ -52,7 +52,7 @@ const Index = () => {
   const faqData = [
     {
       question: "Zijn alle speeltuinen in Castricum gratis toegankelijk?",
-      answer: "Ja, alle 4 speeltuinen in Castricum zijn volledig gratis toegankelijk voor alle kinderen en gezinnen."
+      answer: "Ja, alle speeltuinen in Castricum zijn volledig gratis toegankelijk voor alle kinderen en gezinnen."
     },
     {
       question: "Voor welke leeftijden zijn de speeltuinen geschikt?",
@@ -76,7 +76,7 @@ const Index = () => {
     <>
       <SEOHead
         title="Speeltuinen in Castricum - Complete Gids voor Gezinnen"
-        description="Ontdek alle 4 speeltuinen in Castricum! Gratis toegang, foto's, locaties en faciliteiten. Perfect voor peuters, kleuters en schoolkinderen. FAQ over openingstijden, parkeren en voorzieningen."
+        description="Ontdek alle speeltuinen in Castricum! Gratis toegang, foto's, locaties en faciliteiten. Perfect voor peuters, kleuters en schoolkinderen. FAQ over openingstijden, parkeren en voorzieningen."
         keywords="speeltuinen Castricum, speeltuin Castricum, kinderen spelen Castricum, speelplaats Castricum, buitenspelen Castricum, peuterspeeltuin Castricum, speelpark Castricum, Noord-Holland speeltuinen, familie uitje Castricum, kindvriendelijk Castricum"
         image="https://speeltuincastricum.nl/og-playground-hero.jpg"
         structuredData={structuredData}
@@ -93,7 +93,7 @@ const Index = () => {
               Alle Speeltuinen in Castricum
             </h1>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              Castricum heeft 4 prachtige speeltuinen, elk met unieke voorzieningen. 
+              Castricum heeft {speeltuinen.length} prachtige speeltuinen, elk met unieke voorzieningen. 
               Vind de perfecte speeltuin voor jouw kinderen met onze handige filters en kaart.
             </p>
           </header>
