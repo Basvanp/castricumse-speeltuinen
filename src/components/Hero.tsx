@@ -151,7 +151,7 @@ const Hero: React.FC<HeroProps> = ({
         <h1 className="font-thin mb-6 animate-fade-in-up" style={{
         fontSize: 'clamp(2.5rem, 5vw, 4.5rem)',
         lineHeight: '1.1'
-      }}>Ontdek alle speeltuinen in Castricum</h1>
+      }}>Ontdek <span className="font-bold">alle</span> speeltuinen in Castricum</h1>
 
         {/* Animated Subtitle */}
         <p className="mb-8 opacity-90 animate-fade-in-up" style={{
