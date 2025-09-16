@@ -148,7 +148,7 @@ const Hero: React.FC<HeroProps> = ({
       {/* Content */}
       <div className="relative z-20 text-center text-white px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
         {/* Animated Title */}
-        <h1 className="font-bold mb-6 animate-fade-in-up" style={{
+        <h1 className="font-thin mb-6 animate-fade-in-up" style={{
         fontSize: 'clamp(2.5rem, 5vw, 4.5rem)',
         lineHeight: '1.1'
       }}>Ontdek alle speeltuinen in Castricum</h1>
