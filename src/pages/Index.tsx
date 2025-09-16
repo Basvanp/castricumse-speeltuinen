@@ -104,10 +104,14 @@ const Index = () => {
   };
 
   const handleScrollToSpeeltuinen = () => {
-    const speeltuinenSection = document.getElementById('speeltuinen');
-    if (speeltuinenSection) {
-      speeltuinenSection.scrollIntoView({ behavior: 'smooth' });
-    }
+    // Switch to grid view and scroll to it
+    setViewMode('grid');
+    setTimeout(() => {
+      const speeltuinenSection = document.getElementById('speeltuinen');
+      if (speeltuinenSection) {
+        speeltuinenSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
   };
 
   const handleScrollToMap = () => {
@@ -194,7 +198,7 @@ const Index = () => {
           </header>
 
           {/* Side-by-side layout for filters and map */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
             {/* Filters - Takes 1 column on large screens */}
             <div className="lg:col-span-1">
               <SpeeltuinFilters
@@ -203,8 +207,8 @@ const Index = () => {
               />
             </div>
             
-            {/* Map/Content area - Takes 3 columns on large screens */}
-            <div className="lg:col-span-3">
+            {/* Map/Content area - Takes 4 columns on large screens */}
+            <div className="lg:col-span-4">
 
               {/* View Mode Switcher */}
               <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
@@ -237,14 +241,30 @@ const Index = () => {
                   <p>Speeltuinen laden...</p>
                 </div>
               ) : viewMode === 'kaart' ? (
-                <div className="h-[600px] rounded-lg overflow-hidden shadow-lg">
-                  <SpeeltuinKaart 
-                    speeltuinen={speeltuinen} 
-                    selectedSpeeltuin={selectedSpeeltuin}
-                    userLocation={userLocation}
-                    isLocating={isLocating}
-                    onLocationRequest={handleLocationRequest}
-                  />
+                <div className="space-y-8">
+                  {/* Map */}
+                  <div className="h-[600px] rounded-lg overflow-hidden shadow-lg">
+                    <SpeeltuinKaart 
+                      speeltuinen={speeltuinen} 
+                      selectedSpeeltuin={selectedSpeeltuin}
+                      userLocation={userLocation}
+                      isLocating={isLocating}
+                      onLocationRequest={handleLocationRequest}
+                    />
+                  </div>
+                  
+                  {/* Speeltuinen cards below the map */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {speeltuinen.map((speeltuin) => (
+                      <SpeeltuinCard 
+                        key={speeltuin.id} 
+                        speeltuin={speeltuin} 
+                        onSelect={handleSpeeltuinSelect}
+                        userLocation={userLocation}
+                        showDistance={true}
+                      />
+                    ))}
+                  </div>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">

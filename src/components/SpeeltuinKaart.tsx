@@ -178,7 +178,7 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
           const config = badgeConfig[badgeType];
           if (!config) return '';
 
-          return `<span class="inline-block px-2 py-1 text-xs font-medium rounded-full ${config.color} mr-1 mb-1">${config.text}</span>`;
+          return `<span class="inline-flex items-center justify-center px-3 py-1 text-xs font-semibold rounded-full ${config.color} mr-1 mb-1 min-w-[60px] h-6">${config.text}</span>`;
         };
 
         // Determine badges to show

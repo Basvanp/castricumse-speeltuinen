@@ -383,9 +383,11 @@ const SpeeltuinCard: React.FC<SpeeltuinCardProps> = ({
                           <a
                             href={cleanUrl}
                             target="_blank"
-                            rel="noopener noreferrer"
+                            rel="noopener noreferrer sponsored"
                             className="inline-flex items-center gap-1 text-primary hover:text-primary/80 underline transition-colors"
                             onClick={(e) => e.stopPropagation()}
+                            title={`Bezoek website: ${displayUrl}`}
+                            aria-label={`Externe link naar ${displayUrl} (opent in nieuw tabblad)`}
                           >
                             <ExternalLink className="h-3 w-3" />
                             {displayUrl}
