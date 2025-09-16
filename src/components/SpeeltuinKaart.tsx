@@ -265,7 +265,7 @@ const SpeeltuinKaart: React.FC<SpeeltuinKaartProps> = ({
           <div class="min-w-80 max-w-96" data-speeltuin-id="${speeltuin.id}">
             ${photoCarouselHTML}
             <div class="content-section">
-              <h3 class="font-bold text-lg mb-2">${speeltuin.naam}</h3>
+              <h3 class="font-bold text-lg mb-2 whitespace-nowrap overflow-hidden text-ellipsis">${speeltuin.naam}</h3>
               ${speeltuin.omschrijving ? `<p class="text-sm text-gray-600 mb-3">${speeltuin.omschrijving}</p>` : ''}
               
               <!-- Badges Section - Always shown consistently -->
