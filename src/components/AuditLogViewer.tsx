@@ -8,7 +8,7 @@ import { format } from 'date-fns';
 
 interface AuditLog {
   id: string;
-  user_id: string;
+  user_id: string | null;
   action: string;
   table_name: string;
   record_id: string;
@@ -120,7 +120,7 @@ const AuditLogViewer = () => {
                   </div>
                   <div className="flex items-center gap-1 text-sm text-muted-foreground">
                     <User className="h-3 w-3" />
-                    {log.user_id.substring(0, 8)}...
+                    {log.user_id ? log.user_id.substring(0, 8) + '...' : 'Systeem'}
                   </div>
                 </div>
                 
